@@ -42,9 +42,9 @@ class Ui_Form(object):
         self.create_button = QtWidgets.QPushButton(Form)
         self.create_button.setGeometry(QtCore.QRect(290, 270, 75, 23))
         self.create_button.setObjectName("create_button")
-        self.textEdit = QtWidgets.QTextEdit(Form)
-        self.textEdit.setGeometry(QtCore.QRect(100, 120, 261, 121))
-        self.textEdit.setObjectName("textEdit")
+        self.description_edit = QtWidgets.QTextEdit(Form)
+        self.description_edit.setGeometry(QtCore.QRect(100, 120, 261, 121))
+        self.description_edit.setObjectName("description_edit")
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -57,7 +57,7 @@ class Ui_Form(object):
         self.label_3.setText(_translate("Form", "Description"))
         self.label_4.setText(_translate("Form", "Capacity"))
         self.create_button.setText(_translate("Form", "Create"))
-        self.textEdit.setHtml(_translate("Form", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+        self.description_edit.setHtml(_translate("Form", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
