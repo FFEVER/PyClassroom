@@ -1,21 +1,24 @@
 import socket
 import sys
 import traceback
-from threading import Thread
+from threading import Thread, Timer
 import pickle
 import struct
 
 from StudentHandler import StudentHandler
 from TeacherHanlder import TeacherHanlder
+from ClientSocket import ClientSocket
 
 class Server:
     def __init__(self):
-        self.room_list = []      # list of room
-        self.teacher_list = []  # list of teacher handler
+        self.room_list = []     # list of room
+        self.teacher_list = {}  # dict of teacher handler -> {room_id : teacherHandler}
         self.student_list = []  # list of student handler
         self.room_count = 0
 
     def start_server(self):
+        self.inactive_handler()
+
         soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         
         soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)   # SO_REUSEADDR flag tells the kernel to reuse a local socket in TIME_WAIT state, without waiting for its natural timeout to expire
@@ -35,7 +38,9 @@ class Server:
 
         # infinite loop- do not reset for every requests
         while True:
-            connection, address = soc.accept()
+            cli_soc, address = soc.accept()
+            connection = ClientSocket(cli_soc)
+            
             ip, port = str(address[0]), str(address[1])
             print("Incoming connection -> " + ip + ":" + port)
             try:
@@ -49,7 +54,7 @@ class Server:
     def manage_incoming_connection(self, connection, ip, port):
         '''Differentiate between Student or Teacher'''
 
-        decoded_input = self.recv_with_size_and_decode(connection)
+        decoded_input = connection.recv_with_size_and_decode()
         print(decoded_input)
 
         if decoded_input[0] == "Teacher":
@@ -61,57 +66,43 @@ class Server:
 
             # teacher
             teacher = room.teacher
+            # response to teacher
+            connection.sendall_with_size("Create room successfully.")
             # teacher handler
             teacherHandler = TeacherHanlder(self,connection,teacher,room)
-            self.teacher_list.append(teacherHandler)
+            self.teacher_list[room.id] = teacherHandler
             teacherHandler.start()
-            # response to teacher
-            self.sendall_with_size(connection,"Create room successfully.")
 
         elif decoded_input[0] == "Student":
             student = decoded_input[1]
             # send room list to student
-            self.sendall_with_size(connection,self.room_list)
+            connection.sendall_with_size(self.room_list)
             # student handler
             studentHandler = StudentHandler(self,connection,student)
             self.student_list.append(studentHandler)
             studentHandler.start()
 
         else:
-            self.sendall_with_size(connection,"Error: You are not teacher or student.")
+            connection.sendall_with_size("Error: You are not teacher or student.")
             connection.close()
 
-    def recv_with_size_and_decode(self,sock):
-        # Get buffer size by reading the first 4 bytes of a buffer
-        raw_buffer_size = self.recv_n(sock,4)
-        if(raw_buffer_size == None):
-            print("Error: buffer_size can't be None type")
-            sock.close()
-            return
-        # decode buffer from binary to integer by unpacking
-        buffer_size = struct.unpack('>L',raw_buffer_size)[0]
 
-        # get the data from buffer
-        client_input = self.recv_n(sock,buffer_size)
-        
-        decoded_input = pickle.loads(client_input)
+    def inactive_handler(self):
+        Timer(5.0,self.inactive_handler).start()
+        print("Clearing inactive users...")
 
-        return decoded_input
-        
-    def recv_n(self, sock, n):
-        ''' recv n bytes or return None if EOF is hit '''
-        data = b''
-        while len(data) < n:
-            packet = sock.recv(n - len(data))
-            if not packet:
-                return None
-            data += packet
-        return data
+        inactive_room = []
+        for room_id in self.teacher_list:
+            if not self.teacher_list[room_id].isAlive():
+                del self.teacher_list[room_id]
+                inactive_room.append(room_id)
 
-    def sendall_with_size(self,sock,data):
-        packet = pickle.dumps(data)
-        size = struct.pack('>L',len(packet))
-        sock.sendall(size + packet)
+        self.room_list = [room for room in self.room_list if room.id not in inactive_room]
+
+        for student in self.student_list:
+            if not student.isAlive():
+                student.alive = False
+        self.student_list = [student for student in self.student_list if student.alive]
 
 if __name__ == "__main__":
     server = Server()

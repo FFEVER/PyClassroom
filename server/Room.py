@@ -10,6 +10,7 @@ class Room():
         self.teacher = teacher
         self.student = []
         self.description = description
+        self.material = []
 
     def set_id(self, id):
         self.id = id
