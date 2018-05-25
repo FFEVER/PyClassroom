@@ -259,17 +259,7 @@
     <attribute name="title">
      <string>Viewer</string>
     </attribute>
-    <widget class="QTableView" name="tableView">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
-       <y>50</y>
-       <width>501</width>
-       <height>241</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_4">
+    <widget class="QPushButton" name="kick_button">
      <property name="geometry">
       <rect>
        <x>450</x>
@@ -280,6 +270,16 @@
      </property>
      <property name="text">
       <string>Kick</string>
+     </property>
+    </widget>
+    <widget class="QListWidget" name="student_list">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>50</y>
+       <width>501</width>
+       <height>241</height>
+      </rect>
      </property>
     </widget>
    </widget>

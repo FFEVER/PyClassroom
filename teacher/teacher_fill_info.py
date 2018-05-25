@@ -5,17 +5,24 @@ from teacher_fill_info_ui import Ui_Form
 from teacher_main import TeacherMain
 from validator import *
 
-class TeacherFillInfo(QMainWindow):
+class TeacherFillInfo(QWidget):
     def __init__(self):
-        QMainWindow.__init__(self, None)
+        QWidget.__init__(self, None)
 
         self.ui = Ui_Form()
         self.ui.setupUi(self)
+        self.setWindowTitle("Information")
 
         self.main_window = TeacherMain(self)
         self.main_window.hide()
 
         self.ui.create_button.clicked.connect(self.create)
+
+    def clear_info(self):
+        name = self.ui.teacher_name_edit.setText("")
+        room_name = self.ui.room_name_edit.setText("")
+        description = self.ui.description_edit.setText("")
+        capacity = self.ui.capacity_edit.setText("")
 
     def create(self):
         name = self.ui.teacher_name_edit.text()
