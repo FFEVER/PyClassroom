@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QLabel" name="label">
+  <widget class="QLabel" name="indicatorLabel">
    <property name="geometry">
     <rect>
      <x>190</x>
@@ -29,7 +29,7 @@
     <string>You are a: </string>
    </property>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>20</x>
@@ -40,22 +40,9 @@
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="QPushButton" name="pushButton_2">
+     <widget class="QPushButton" name="teacherButton">
       <property name="styleSheet">
-       <string notr="true">QPushButton{
-    background-color: MediumTurquoise;
-    border-style: outset;
-    border-width: 2px;
-    border-radius: 10px;
-    border-color: beige;
-    font: bold 14px;
-    min-width: 10em;
-    padding: 6px;
-}
-QPushButton {
-    background-color: MediumAquaMarine ;
-    border-style: inset;
-}</string>
+       <string notr="true"/>
       </property>
       <property name="text">
        <string>Teacher</string>
@@ -63,22 +50,9 @@ QPushButton {
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="pushButton">
+     <widget class="QPushButton" name="studentButton">
       <property name="styleSheet">
-       <string notr="true">QPushButton{
-    background-color: MediumTurquoise;
-    border-style: outset;
-    border-width: 2px;
-    border-radius: 10px;
-    border-color: beige;
-    font: bold 14px;
-    min-width: 10em;
-    padding: 6px;
-}
-QPushButton {
-    background-color: MediumAquaMarine ;
-    border-style: inset;
-}</string>
+       <string notr="true"/>
       </property>
       <property name="text">
        <string>Student</string>
