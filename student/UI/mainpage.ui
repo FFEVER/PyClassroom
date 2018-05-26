@@ -32,7 +32,7 @@
     <enum>QTabWidget::Triangular</enum>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>2</number>
    </property>
    <property name="elideMode">
     <enum>Qt::ElideRight</enum>
@@ -200,16 +200,6 @@
     <attribute name="toolTip">
      <string>Watch Stream</string>
     </attribute>
-    <widget class="QOpenGLWidget" name="openGLWidget">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>40</y>
-       <width>341</width>
-       <height>261</height>
-      </rect>
-     </property>
-    </widget>
     <widget class="QPushButton" name="pushButton_4">
      <property name="geometry">
       <rect>
@@ -251,6 +241,16 @@
        </layout>
       </item>
      </layout>
+    </widget>
+    <widget class="QWidget" name="streamWidget" native="true">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>40</y>
+       <width>291</width>
+       <height>251</height>
+      </rect>
+     </property>
     </widget>
    </widget>
   </widget>

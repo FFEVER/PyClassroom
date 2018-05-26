@@ -96,9 +96,6 @@ class Ui_Form(object):
         self.tabWidget.addTab(self.materialsTab, icon1, "")
         self.streamTab = QtWidgets.QWidget()
         self.streamTab.setObjectName("streamTab")
-        self.openGLWidget = QtWidgets.QOpenGLWidget(self.streamTab)
-        self.openGLWidget.setGeometry(QtCore.QRect(10, 40, 341, 261))
-        self.openGLWidget.setObjectName("openGLWidget")
         self.pushButton_4 = QtWidgets.QPushButton(self.streamTab)
         self.pushButton_4.setGeometry(QtCore.QRect(440, 0, 113, 32))
         self.pushButton_4.setObjectName("pushButton_4")
@@ -120,12 +117,15 @@ class Ui_Form(object):
         self.pushButton_3.setObjectName("pushButton_3")
         self.horizontalLayout.addWidget(self.pushButton_3)
         self.verticalLayout_3.addLayout(self.horizontalLayout)
+        self.streamWidget = QtWidgets.QWidget(self.streamTab)
+        self.streamWidget.setGeometry(QtCore.QRect(40, 40, 291, 251))
+        self.streamWidget.setObjectName("streamWidget")
         icon2 = QtGui.QIcon()
         icon2.addPixmap(QtGui.QPixmap("eyeicon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.tabWidget.addTab(self.streamTab, icon2, "")
 
         self.retranslateUi(Form)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(2)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
     def retranslateUi(self, Form):
