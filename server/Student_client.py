@@ -30,8 +30,7 @@ def main():
                 sender.sendall_with_size([constant.SEND_MSG, msg])
             elif command[0] == "leave_room":
                 sender.sendall_with_size([constant.LEAVE_ROOM])
-            elif command[0] == "refresh_mat":
-                sender.sendall_with_size([constant.REFRESH_MATERIAL])
+
     except KeyboardInterrupt:
         pass
     finally:
@@ -90,6 +89,10 @@ def create_receiver(student_id):
 def receiver_handler(receiver):
     while True:
         decoded_input = receiver.recv_with_size_and_decode()
+        if decoded_input == None:
+            print("Server has down.")
+            sys.exit(1)
+            break
         print(decoded_input)
         cmd = decoded_input[0]
         if cmd == constant.REFRESH_ROOM_LIST:
@@ -100,10 +103,22 @@ def receiver_handler(receiver):
             print_list(student_list)
         elif cmd == constant.MESSAGE_FROM_STUDENT:
             data = decoded_input[1]
-            student_name = data[0]
+            student = data[0]
             msg = data[1]
-            print(student_name,": ",msg)
+            # Please check if it is your own msg, so don't print it.
+            print(student,": ",msg)
 
+        elif cmd == constant.REFRESH_MATERIAL:
+            materials = decoded_input[1]
+            print("Materials updated: ",materials)
+        elif cmd == constant.JOIN_ROOM_SUCCESS:
+            room = decoded_input[1]
+            print("Joined room: " , room)
+        elif cmd == constant.JOIN_ROOM_FAIL:
+            msg = decoded_input[1]
+            print("Join room failed: ", msg)
+        elif cmd == constant.KICK_STUDENT:
+            print("You have been kicked")
 
 def print_list(data_list):
     print("[", end="")

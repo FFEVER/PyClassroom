@@ -21,6 +21,10 @@ CLOSE_ROOM = "close_room"
 STUDENT_LIST_UPDATED = "student_list_updated"
 MESSAGE_FROM_STUDENT = "message_from_student"
 
+# Server -> Student
+JOIN_ROOM_SUCCESS = "join_room_success"
+JOIN_ROOM_FAIL = "join_room_failed"
+
 # Student commands
 JOIN_ROOM = "join_room"
 LEAVE_ROOM = "leave_room"

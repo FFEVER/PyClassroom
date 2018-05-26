@@ -40,7 +40,6 @@ class StudentHandler(Thread):
                     room_id = decoded_input[1]
                     print(self.student.name,"join a room ->",room_id)
                     self.cmd_join_room(room_id)
-
                 elif command == constant.REFRESH_ROOM_LIST:
                     print(self.student.name,"refresh room list.")
                     self.cmd_refresh_room_list()
@@ -54,27 +53,25 @@ class StudentHandler(Thread):
                 elif command == constant.LEAVE_ROOM:
                     print(self.student.name,"leave a room.")
                     self.cmd_leave_room()
-                elif command == constant.REFRESH_MATERIAL:
-                    print(self.student.name,"refresh materail")
-                    self.cmd_refresh_material()
                 else:
                     pass
 
         self.receiver.close()
 
     def cmd_join_room(self,room_id):
-        self.teacher = self.server.teacher_list[room_id]
+        try:
+            self.teacher = self.server.teacher_list[room_id]
+        except KeyError:
+            return self.notify_student(constant.JOIN_ROOM_FAIL,"Room doesn't exist.")
         self.teacher.add_student_handler(self)
     def cmd_refresh_room_list(self):
         self.notify_student(constant.REFRESH_ROOM_LIST,self.server.room_list)
     def cmd_send_msg(self,msg):
-        pass
+        self.teacher.notify_all_student(constant.MESSAGE_FROM_STUDENT,[self.student,msg])
+        self.teacher.notify_teacher(constant.MESSAGE_FROM_STUDENT,[self.student,msg])
     def cmd_leave_room(self):
         self.teacher.remove_student_handler(self)
         self.teacher = None
-
-    def cmd_refresh_material(self):
-        pass
 
     def notify_student(self,cmd,data):
         if self.sender != None:

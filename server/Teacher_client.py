@@ -20,6 +20,7 @@ def main():
         print("Thread did not start.")
         traceback.print_exc()
 
+    materials = []
     try:
         while True:
             command = input()
@@ -30,7 +31,8 @@ def main():
                 sender.sendall_with_size([constant.END_LIVE])
             elif command[0] == "add_mat":
                 material = command[1]
-                sender.sendall_with_size([constant.ADD_MATERIAL, material])
+                materials.append(material)
+                sender.sendall_with_size([constant.ADD_MATERIAL, materials])
             elif command[0] == "remove_mat":
                 material = command[1]
                 sender.sendall_with_size([constant.REMOVE_MATERIAL, material])
@@ -39,6 +41,7 @@ def main():
                 sender.sendall_with_size([constant.KICK_STUDENT, student_name])
             elif command[0] == "close_room":
                 sender.sendall_with_size([constant.CLOSE_ROOM])
+                sys.exit(1)
     except KeyboardInterrupt:
         pass
     finally:
@@ -66,7 +69,7 @@ def create_sender():
 
     data = []
     data.append(constant.I_AM_TEACHER_SENDER)
-    data.append(Room(0, "JavaScript", 50, Teacher(
+    data.append(Room(0, "JavaScript", 1, Teacher(
         "John Smith"), "This is a javascript class."))
     sender.sendall_with_size(data)
 
@@ -98,6 +101,10 @@ def create_receiver(room_id):
 def receiver_handler(receiver):
     while True:
         decoded_input = receiver.recv_with_size_and_decode()
+        if decoded_input == None:
+            print("Server has down.")
+            sys.exit(1)
+            break
         print(decoded_input)
         cmd = decoded_input[0]
         if cmd == constant.STUDENT_LIST_UPDATED:
@@ -105,9 +112,12 @@ def receiver_handler(receiver):
             print_list(student_list)
         elif cmd == constant.MESSAGE_FROM_STUDENT:
             data = decoded_input[1]
-            student_name = data[0]
+            student = data[0]
             msg = data[1]
-            print(student_name,": ",msg)
+            # Please check if it is your own msg, so don't print it.
+            print(student,": ",msg)
+            
+            
 
 
 def print_list(data_list):

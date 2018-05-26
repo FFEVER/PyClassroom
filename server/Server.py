@@ -91,6 +91,7 @@ class Server:
             student = decoded_input[1]
             self.student_count += 1
             student_id = str(uuid.uuid4())[:5] + str(self.student_count)
+            student.set_id(student_id)
             # send room list to student and tell them their id
             socket.sendall_with_size([student_id,[self.room_list]])
             # student handler
