@@ -1,17 +1,25 @@
 from Teacher import Teacher
 from Room import Room
 from ClientSocket import ClientSocket
-import constant 
+import constant
 
 import socket
 import sys
 import struct
 import pickle
+from threading import Thread
+import traceback
+
 
 def main():
-    sender,room_id = create_sender()
+    sender, room_id = create_sender()
     receiver = create_receiver(room_id)
-    Thread(target=self.receiver_handler, args=(receiver).start())
+    try:
+        Thread(target=receiver_handler, args=(receiver,)).start()
+    except:
+        print("Thread did not start.")
+        traceback.print_exc()
+
     
     try:
         while True:
@@ -85,7 +93,9 @@ def create_receiver(room_id):
 
 
 def receiver_handler(receiver):
-    pass
+    while True:
+        decoded_input = receiver.recv_with_size_and_decode()
+        print(decoded_input)
 
 
 if __name__ == "__main__":

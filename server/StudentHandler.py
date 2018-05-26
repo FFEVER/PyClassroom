@@ -39,22 +39,39 @@ class StudentHandler(Thread):
                 if command == constant.JOIN_ROOM:
                     room_id = decoded_input[1]
                     print(self.student.name,"join a room ->",room_id)
+                    self.cmd_join_room(room_id)
+
                 elif command == constant.REFRESH_ROOM_LIST:
                     print(self.student.name,"refresh room list.")
+                    self.cmd_refresh_room_list()
                 else:
                     pass
             else:
                 if command == constant.SEND_MSG:
                     msg = decoded_input[1]
                     print(self.student.name,"send a msg ->",msg)
+                    self.cmd_send_msg(msg)
                 elif command == constant.LEAVE_ROOM:
                     print(self.student.name,"leave a room.")
+                    self.cmd_leave_room()
                 elif command == constant.REFRESH_MATERIAL:
                     print(self.student.name,"refresh materail")
+                    self.cmd_refresh_material()
                 else:
                     pass
 
         self.receiver.close()
+
+    def cmd_join_room(self,room_id):
+        pass
+    def cmd_refresh_room_list(self):
+        self.sender.sendall_with_size([constant.REFRESH_ROOM_LIST,self.server.room_list])
+    def cmd_send_msg(self,msg):
+        pass
+    def cmd_leave_room(self):
+        pass
+    def cmd_refresh_material(self):
+        pass
 
     def set_sender(self, sender):
         self.sender = sender

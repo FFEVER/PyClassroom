@@ -4,6 +4,7 @@ import traceback
 from threading import Thread, Timer
 import pickle
 import struct
+import uuid
 
 from StudentHandler import StudentHandler
 from TeacherHanlder import TeacherHanlder
@@ -73,26 +74,28 @@ class Server:
             # room
             room = decoded_input[1]
             self.room_count += 1
-            room.set_id(str(self.room_count))
+            room_id = str(uuid.uuid4())[:4]+str(self.room_count)
+            room.set_id(room_id)
             self.room_list.append(room)
 
             # teacher
             teacher = room.teacher
             # tell teacher his room id
-            socket.sendall_with_size(["room_created_successfully",str(self.room_count)])
+            socket.sendall_with_size(["room_created_successfully",room_id])
             # teacher handler
             teacherHandler = TeacherHanlder(self,socket,teacher,room)
-            self.teacher_list[room.id] = teacherHandler
+            self.teacher_list[room_id] = teacherHandler
             teacherHandler.start()
 
         elif decoded_input[0] == constant.I_AM_STUDENT_SENDER:
             student = decoded_input[1]
             self.student_count += 1
+            student_id = str(uuid.uuid4())[:5] + str(self.student_count)
             # send room list to student and tell them their id
-            socket.sendall_with_size([str(self.student_count),[self.room_list]])
+            socket.sendall_with_size([student_id,[self.room_list]])
             # student handler
             studentHandler = StudentHandler(self,socket,student)
-            self.student_list[str(self.student_count)] = studentHandler
+            self.student_list[student_id] = studentHandler
             studentHandler.start()
 
         elif decoded_input[0] == constant.I_AM_TEACHER_RECEIVER:

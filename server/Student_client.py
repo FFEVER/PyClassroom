@@ -6,12 +6,14 @@ import socket
 import sys
 import struct
 import pickle
+import traceback
+from threading import Thread
 
 def main():
     
     sender, student_id, room_list = create_sender()
     receiver = create_receiver(student_id)
-    Thread(target=self.receiver_handler, args=(receiver).start())
+    Thread(target=receiver_handler, args=(receiver,)).start()
 
 
     try:
@@ -61,6 +63,7 @@ def create_sender():
     decoded_input = sender.recv_with_size_and_decode()
     student_id = decoded_input[0]
     room_list = decoded_input[1]
+    print(student_id,room_list)
     return (sender,student_id,room_list)
 
 def create_receiver(student_id):
@@ -81,7 +84,10 @@ def create_receiver(student_id):
     return receiver
 
 def receiver_handler(receiver):
-    pass
+    while True:
+        decoded_input = receiver.recv_with_size_and_decode()
+        print(decoded_input)
+
 
 if __name__ == "__main__":
     main()
