@@ -11,12 +11,13 @@ import constant
 
 class TeacherHanlder(Thread):
 
-    def __init__(self, server, socket, teacher, room):
+    def __init__(self, server, receiver, teacher, room):
         Thread.__init__(self)
         self.alive = True  # use for server to remove this from the teacher_list
         self.server = server
         self.teacher = teacher
-        self.socket = socket  # TODO: self.socket = socket
+        self.receiver = receiver 
+        self.sender = None
         self.room = room
         self.student_list = []  # list of studentHandler
 
@@ -31,11 +32,14 @@ class TeacherHanlder(Thread):
         print("Teacher Thread:", self.teacher)
         print(self.room)
 
-        while self.is_alive:
-            decoded_input = self.socket.recv_with_size_and_decode()
+        while True:
+            if self.sender == None:
+                continue
+            decoded_input = self.receiver.recv_with_size_and_decode()
             if decoded_input == None:
                 self.disconnected()
                 break
+            
 
             command = decoded_input[0]
             if command == constant.START_LIVE:
@@ -53,14 +57,21 @@ class TeacherHanlder(Thread):
                 print(self.teacher.name,"kick student ->",student_name)
             elif command == constant.CLOSE_ROOM:
                 print(self.teacher.name,"closed a room.")
+        self.receiver.close()
 
     def add_student_handler(self, studentHanlder):
         self.student_list.append(studentHanlder)
 
+    def remove_student_handler(self, studentHandler):
+        self.student_list.remove(studentHandler)
+    
+    def set_sender(self, sender):
+        self.sender = sender
+
     def disconnected(self):
         ''' Clean up after teacher disconnected'''
         # tell every student that teacher has disconnected
-        msg = ["room_closed", "The room has been closed"]
+        msg = [constant.CLOSE_ROOM, "The room has been closed"]
         for student in self.student_list:
             student.room = None
             student.socket.sendall_with_size(msg)

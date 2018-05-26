@@ -1,6 +1,13 @@
 # Network Info
 PORT = 8888
 
+# Identifier
+I_AM_STUDENT_SENDER = "i_am_student_sender"
+I_AM_TEACHER_SENDER = "i_am_teacher_sender"
+I_AM_STUDENT_RECEIVER = "i_am_student_receiver"
+I_AM_TEACHER_RECEIVER = "i_am_teacher_receiver"
+SUCCESS = "success"
+
 # Teacher commands
 START_LIVE = "start_live"
 END_LIVE = "end_live"

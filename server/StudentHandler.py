@@ -8,12 +8,13 @@ from Student import Student
 import constant
 
 class StudentHandler(Thread):
-    def __init__(self,server,socket,student):
+    def __init__(self,server,receiver,student):
         Thread.__init__(self)
         self.alive = True
         self.server = server
         self.student = student
-        self.socket = socket
+        self.receiver = receiver
+        self.sender = None
         self.teacher = None # Teacher Handler
 
     def run(self):
@@ -24,9 +25,12 @@ class StudentHandler(Thread):
         '''
         print("Student thread:", self.student)
         while True:
+            if self.sender == None:
+                continue
             # Not in room
-            decoded_input = self.socket.recv_with_size_and_decode()
+            decoded_input = self.receiver.recv_with_size_and_decode()
             if decoded_input == None:
+                self.disconnected()
                 break
 
             command = decoded_input[0]
@@ -49,4 +53,13 @@ class StudentHandler(Thread):
                     print(self.student.name,"refresh materail")
                 else:
                     pass
+
+        self.receiver.close()
+
+    def set_sender(self, sender):
+        self.sender = sender
+
+    def disconnected(self):
+        if self.teacher != None:
+            self.teacher.remove_student_handler(self)
 

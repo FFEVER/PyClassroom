@@ -14,8 +14,9 @@ class Server:
     def __init__(self):
         self.room_list = []     # list of room
         self.teacher_list = {}  # dict of teacher handler -> {room_id : teacherHandler}
-        self.student_list = []  # list of student handler
+        self.student_list = {}  # dict of student handler -> {student_id : studentHandler}
         self.room_count = 0
+        self.student_count = 0
 
     def start_server(self):
         self.inactive_handler()
@@ -55,46 +56,60 @@ class Server:
         finally:
             # Clean up.
             for room_id in self.teacher_list:
-                self.teacher_list[room_id].socket.close()
+                self.teacher_list[room_id].sender.close()
+                self.teacher_list[room_id].receiver.close()
             for student_handler in self.student_list:
-                student_handler.socket.close()
+                student_handler.sender.close()
+                student_handler.receiver.close()
             soc.close()
 
-    def manage_incoming_connection(self, connection, ip, port):
+    def manage_incoming_connection(self, socket, ip, port):
         '''Differentiate between Student or Teacher'''
 
-        decoded_input = connection.recv_with_size_and_decode()
+        decoded_input = socket.recv_with_size_and_decode()
         print(decoded_input)
 
-        if decoded_input[0] == "Teacher":
+        if decoded_input[0] == constant.I_AM_TEACHER_SENDER:
             # room
             room = decoded_input[1]
             self.room_count += 1
-            room.set_id(self.room_count)
+            room.set_id(str(self.room_count))
             self.room_list.append(room)
 
             # teacher
             teacher = room.teacher
-            # response to teacher
-            connection.sendall_with_size(["room_id",str(room_count)])
+            # tell teacher his room id
+            socket.sendall_with_size(["room_created_successfully",str(self.room_count)])
             # teacher handler
-            teacherHandler = TeacherHanlder(self,connection,teacher,room)
+            teacherHandler = TeacherHanlder(self,socket,teacher,room)
             self.teacher_list[room.id] = teacherHandler
             teacherHandler.start()
 
-        elif decoded_input[0] == "Student":
+        elif decoded_input[0] == constant.I_AM_STUDENT_SENDER:
             student = decoded_input[1]
-            # send room list to student
-            connection.sendall_with_size(self.room_list)
+            self.student_count += 1
+            # send room list to student and tell them their id
+            socket.sendall_with_size([str(self.student_count),[self.room_list]])
             # student handler
-            studentHandler = StudentHandler(self,connection,student)
-            self.student_list.append(studentHandler)
+            studentHandler = StudentHandler(self,socket,student)
+            self.student_list[str(self.student_count)] = studentHandler
             studentHandler.start()
 
-        else:
-            connection.sendall_with_size("Error: You are not teacher or student.")
-            connection.close()
+        elif decoded_input[0] == constant.I_AM_TEACHER_RECEIVER:
+            room_id = decoded_input[1]
+            socket.sendall_with_size(constant.SUCCESS)
+            self.teacher_list[room_id].set_sender(socket)
 
+        elif decoded_input[0] == constant.I_AM_STUDENT_RECEIVER:
+            student_id = decoded_input[1]
+            socket.sendall_with_size(constant.SUCCESS)
+            self.student_list[student_id].set_sender(socket)
+
+        else:
+            socket.sendall_with_size("Error: You are not teacher or student.")
+            socket.close()
+
+        print("=======================================")
 
     def inactive_handler(self):
         Timer(1.0,self.inactive_handler).start()
@@ -108,11 +123,12 @@ class Server:
             del self.teacher_list[room_id]
         self.room_list = [room for room in self.room_list if room.id not in inactive_room]
 
-
-        for student in self.student_list:
-            if not student.isAlive():
-                student.alive = False
-        self.student_list = [student for student in self.student_list if student.alive]
+        inactive_student = []
+        for student_id in self.student_list:
+            if not self.student_list[student_id].isAlive():
+                inactive_student.append(student_id)
+        for student_id in inactive_student:
+            del self.student_list[student_id]
 
 if __name__ == "__main__":
     server = Server()
