@@ -63,15 +63,22 @@ class StudentHandler(Thread):
         self.receiver.close()
 
     def cmd_join_room(self,room_id):
-        pass
+        self.teacher = self.server.teacher_list[room_id]
+        self.teacher.add_student_handler(self)
     def cmd_refresh_room_list(self):
-        self.sender.sendall_with_size([constant.REFRESH_ROOM_LIST,self.server.room_list])
+        self.notify_student(constant.REFRESH_ROOM_LIST,self.server.room_list)
     def cmd_send_msg(self,msg):
         pass
     def cmd_leave_room(self):
-        pass
+        self.teacher.remove_student_handler(self)
+        self.teacher = None
+
     def cmd_refresh_material(self):
         pass
+
+    def notify_student(self,cmd,data):
+        if self.sender != None:
+            self.sender.sendall_with_size([cmd,data])
 
     def set_sender(self, sender):
         self.sender = sender

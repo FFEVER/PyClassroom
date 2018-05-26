@@ -7,6 +7,7 @@ I_AM_TEACHER_SENDER = "i_am_teacher_sender"
 I_AM_STUDENT_RECEIVER = "i_am_student_receiver"
 I_AM_TEACHER_RECEIVER = "i_am_teacher_receiver"
 SUCCESS = "success"
+FAIL = "fail"
 
 # Teacher commands
 START_LIVE = "start_live"
@@ -15,6 +16,10 @@ ADD_MATERIAL = "add_material"
 REMOVE_MATERIAL = "remove_mat"
 KICK_STUDENT = "kick_student"
 CLOSE_ROOM = "close_room"
+
+# Server -> All
+STUDENT_LIST_UPDATED = "student_list_updated"
+MESSAGE_FROM_STUDENT = "message_from_student"
 
 # Student commands
 JOIN_ROOM = "join_room"

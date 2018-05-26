@@ -59,11 +59,29 @@ class TeacherHanlder(Thread):
                 print(self.teacher.name,"closed a room.")
         self.receiver.close()
 
-    def add_student_handler(self, studentHanlder):
-        self.student_list.append(studentHanlder)
+    def add_student_handler(self, studentHandler):
+        self.student_list.append(studentHandler)
+        student_data_list = []
+        for studentHandler in self.student_list:
+            student_data_list.append(studentHandler.student)
+        self.notify_all_student(constant.STUDENT_LIST_UPDATED,student_data_list)
+        self.notify_teacher(constant.STUDENT_LIST_UPDATED,student_data_list)
 
     def remove_student_handler(self, studentHandler):
         self.student_list.remove(studentHandler)
+        student_data_list = []
+        for studentHandler in self.student_list:
+            student_data_list.append(studentHandler.student)
+        self.notify_all_student(constant.STUDENT_LIST_UPDATED,student_data_list)
+        self.notify_teacher(constant.STUDENT_LIST_UPDATED,student_data_list)
+
+    def notify_all_student(self,cmd,data):
+        for student in self.student_list:
+            student.notify_student(cmd,data)
+
+    def notify_teacher(self,cmd,data):
+        if self.sender != None:
+            self.sender.sendall_with_size([cmd,data])
     
     def set_sender(self, sender):
         self.sender = sender
@@ -71,7 +89,6 @@ class TeacherHanlder(Thread):
     def disconnected(self):
         ''' Clean up after teacher disconnected'''
         # tell every student that teacher has disconnected
-        msg = [constant.CLOSE_ROOM, "The room has been closed"]
         for student in self.student_list:
-            student.room = None
-            student.socket.sendall_with_size(msg)
+            student.teacher = None
+            student.notify_student(constant.CLOSE_ROOM,"The room has been closed.")
