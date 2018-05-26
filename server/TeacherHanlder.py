@@ -69,10 +69,19 @@ class TeacherHanlder(Thread):
 
     def cmd_kick_student(self, student_id):
         print(self.teacher.name, "kick student ->", student_id)
+        target = None
         for studentHandler in self.student_list:
             if studentHandler.student.id == student_id:
                 studentHandler.teacher = None
+                target = studentHandler
                 studentHandler.notify_student(constant.KICK_STUDENT, None)
+        self.student_list.remove(target)
+
+        student_data_list = []
+        for studentHandler in self.student_list:
+            student_data_list.append(studentHandler.student)
+        self.notify_all_student(
+            constant.STUDENT_LIST_UPDATED, student_data_list)
 
     def cmd_close_room(self):
         print(self.teacher.name, "closed a room.")
