@@ -8,6 +8,7 @@ import struct
 from StudentHandler import StudentHandler
 from TeacherHanlder import TeacherHanlder
 from ClientSocket import ClientSocket
+import constant
 
 class Server:
     def __init__(self):
@@ -25,7 +26,7 @@ class Server:
         print("Socket created")
 
         host = socket.gethostname()
-        port = 8888         # arbitrary non-privileged port
+        port = constant.PORT         # arbitrary non-privileged port
 
         try:
             soc.bind((host, port))
@@ -36,20 +37,28 @@ class Server:
         soc.listen(5)       # queue up to 5 requests
         print("Socket now listening")
 
-        # infinite loop- do not reset for every requests
-        while True:
-            cli_soc, address = soc.accept()
-            connection = ClientSocket(cli_soc)
-            
-            ip, port = str(address[0]), str(address[1])
-            print("Incoming connection -> " + ip + ":" + port)
-            try:
-                Thread(target=self.manage_incoming_connection, args=(connection, ip, port)).start()
-            except:
-                print("Thread did not start.")
-                traceback.print_exc()
-
-        soc.close()
+        try:
+            # infinite loop- do not reset for every requests
+            while True:
+                cli_soc, address = soc.accept()
+                connection = ClientSocket(cli_soc)
+                
+                ip, port = str(address[0]), str(address[1])
+                print("Incoming connection -> " + ip + ":" + port)
+                try:
+                    Thread(target=self.manage_incoming_connection, args=(connection, ip, port)).start()
+                except:
+                    print("Thread did not start.")
+                    traceback.print_exc()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            # Clean up.
+            for room_id in self.teacher_list:
+                self.teacher_list[room_id].socket.close()
+            for student_handler in self.student_list:
+                student_handler.socket.close()
+            soc.close()
 
     def manage_incoming_connection(self, connection, ip, port):
         '''Differentiate between Student or Teacher'''
@@ -67,7 +76,7 @@ class Server:
             # teacher
             teacher = room.teacher
             # response to teacher
-            connection.sendall_with_size("Create room successfully.")
+            connection.sendall_with_size(["room_id",str(room_count)])
             # teacher handler
             teacherHandler = TeacherHanlder(self,connection,teacher,room)
             self.teacher_list[room.id] = teacherHandler
@@ -88,16 +97,17 @@ class Server:
 
 
     def inactive_handler(self):
-        Timer(5.0,self.inactive_handler).start()
-        print("Clearing inactive users...")
+        Timer(1.0,self.inactive_handler).start()
 
         inactive_room = []
         for room_id in self.teacher_list:
             if not self.teacher_list[room_id].isAlive():
-                del self.teacher_list[room_id]
                 inactive_room.append(room_id)
 
+        for room_id in inactive_room:
+            del self.teacher_list[room_id]
         self.room_list = [room for room in self.room_list if room.id not in inactive_room]
+
 
         for student in self.student_list:
             if not student.isAlive():

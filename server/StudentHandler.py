@@ -1,15 +1,11 @@
-from Student import Student
 from threading import Thread
 import pickle
 import socket
 import sys
 import struct
 
-JOIN_ROOM = "join_room"
-LEAVE_ROOM = "leave_room"
-SEND_MSG = "send_message"
-REFRESH_ROOM_LIST = "refresh_room_list"
-REFRESH_MATERIAL = "refresh_material"
+from Student import Student
+import constant
 
 class StudentHandler(Thread):
     def __init__(self,server,socket,student):
@@ -35,20 +31,22 @@ class StudentHandler(Thread):
 
             command = decoded_input[0]
         
-            if room == None:
-                if command == JOIN_ROOM:
-                    pass
-                elif command == REFRESH_ROOM_LIST:
-                    pass
+            if self.teacher == None:
+                if command == constant.JOIN_ROOM:
+                    room_id = decoded_input[1]
+                    print(self.student.name,"join a room ->",room_id)
+                elif command == constant.REFRESH_ROOM_LIST:
+                    print(self.student.name,"refresh room list.")
                 else:
                     pass
             else:
-                if command == SEND_MSG:
-                    pass
-                elif command == LEAVE_ROOM:
-                    pass
-                elif command == REFRESH_MATERIAL:
-                    pass
+                if command == constant.SEND_MSG:
+                    msg = decoded_input[1]
+                    print(self.student.name,"send a msg ->",msg)
+                elif command == constant.LEAVE_ROOM:
+                    print(self.student.name,"leave a room.")
+                elif command == constant.REFRESH_MATERIAL:
+                    print(self.student.name,"refresh materail")
                 else:
                     pass
 

@@ -1,5 +1,7 @@
 from Teacher import Teacher
 from Room import Room
+from ClientSocket import ClientSocket
+import constant 
 
 import socket
 import sys
@@ -13,50 +15,38 @@ def main():
 
     try:
         soc.connect((host, port))
+        sender = ClientSocket(soc)
     except:
         print("Connection error")
         sys.exit()
     data = []
     data.append("Teacher")
     data.append(Room(0,"JavaScript",50,Teacher("John Smith"),"This is a javascript class."))
-    sendall_with_size(soc,data)
+    sender.sendall_with_size(data)
     
-    decoded_input = recv_with_size_and_decode(soc)
-    print(decoded_input)
+    is_room_created = sender.recv_with_size_and_decode()
+    print(is_room_created)
+
+    while True:
+        command = input()
+        command = str(command).strip().split(" ")
+        if command[0] == "start_live":
+            sender.sendall_with_size([constant.START_LIVE])
+        elif command[0] == "end_live":
+            sender.sendall_with_size([constant.END_LIVE])
+        elif command[0] == "add_mat":
+            material = command[1]
+            sender.sendall_with_size([constant.ADD_MATERIAL,material])
+        elif command[0] == "remove_mat":
+            material = command[1]
+            sender.sendall_with_size([constant.REMOVE_MATERIAL,material])
+        elif command[0] == "kick":
+            student_name = command[1]
+            sender.sendall_with_size([constant.KICK_STUDENT,student_name])
+        elif command[0] == "close_room":
+            sender.sendall_with_size([constant.CLOSE_ROOM])
 
     soc.close()
-
-def sendall_with_size(soc,data):
-    packet = pickle.dumps(data)
-    packet_len = struct.pack('>L', len(packet))
-    soc.sendall(packet_len + packet)
-
-def recv_with_size_and_decode(sock):
-        # Get buffer size by reading the first 4 bytes of a buffer
-        raw_buffer_size = recv_n(sock,4)
-        if(raw_buffer_size == None):
-            print("Error: buffer_size can't be None type")
-            sock.close()
-            return
-        # decode buffer from binary to integer by unpacking
-        buffer_size = struct.unpack('>L',raw_buffer_size)[0]
-
-        # get the data from buffer
-        client_input = recv_n(sock,buffer_size)
-        
-        decoded_input = pickle.loads(client_input)
-
-        return decoded_input
-        
-def recv_n(sock, n):
-    ''' recv n bytes or return None if EOF is hit '''
-    data = b''
-    while len(data) < n:
-        packet = sock.recv(n - len(data))
-        if not packet:
-            return None
-        data += packet
-    return data
 
 if __name__ == "__main__":
     main()

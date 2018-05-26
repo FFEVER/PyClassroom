@@ -38,5 +38,5 @@ class ClientSocket():
         size = struct.pack('>L',len(packet))
         self.socket.sendall(size + packet)
 
-    def close():
+    def close(self):
         self.socket.close()
