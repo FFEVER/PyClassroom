@@ -19,10 +19,10 @@ class TeacherFillInfo(QWidget):
         self.ui.create_button.clicked.connect(self.create)
 
     def clear_info(self):
-        name = self.ui.teacher_name_edit.setText("")
-        room_name = self.ui.room_name_edit.setText("")
-        description = self.ui.description_edit.setText("")
-        capacity = self.ui.capacity_edit.setText("")
+        self.ui.teacher_name_edit.setText("")
+        self.ui.room_name_edit.setText("")
+        self.ui.description_edit.setText("")
+        self.ui.capacity_edit.setText("")
 
     def create(self):
         name = self.ui.teacher_name_edit.text()

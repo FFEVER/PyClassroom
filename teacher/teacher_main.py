@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import *
 from teacher_main_ui import Ui_Form
 from chat_window import ChatWindow
 from validator import *
+from streamer_thread import StreamerThread
 
 class TeacherMain(QWidget):
     def __init__(self, info_window):
@@ -12,6 +13,8 @@ class TeacherMain(QWidget):
         self.info_window = info_window
         self.chat_window = ChatWindow()
         self.chat_window.hide()
+
+        self.streamer_thread = None
 
         self.ui = Ui_Form()
         self.ui.setupUi(self)
@@ -34,12 +37,18 @@ class TeacherMain(QWidget):
     def start_stop(self):
         self.playing = not self.playing
         if self.playing:
+            self.streamer_thread = StreamerThread()
+            self.streamer_thread.start()
+
             self.showMinimized()
             self.ui.start_button.setText("Stop streaming")
             self.chat_window.show()
             self.chat_window.setWindowState(self.chat_window.windowState() & ~Qt.WindowMinimized | Qt.WindowActive)
             self.chat_window.activateWindow()
         else:
+            self.streamer_thread.stop()
+            self.streamer_thread = None
+
             self.ui.start_button.setText("Start streaming")
             self.chat_window.hide()
 
@@ -64,6 +73,10 @@ class TeacherMain(QWidget):
 
     def exit_room(self):
         #TODO - close room
+        if self.streamer_thread != None:
+            self.streamer_thread.stop()
+            self.streamer_thread = None
+        self.playing = False
         self.info_window.clear_info()
         self.info_window.show()
         self.chat_window.clear_text()
