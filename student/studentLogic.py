@@ -11,8 +11,8 @@ class StudentLogic(QtWidgets.QMainWindow):
         self.ui = Ui_Form()
         self.ui.setupUi(self)
         self.ui.studentButton.clicked.connect(self.studentButtonOnClick) 
-        self.nextPage = StudentInput() 
 
+        self.nextPage = StudentInput() 
         self.setWindowTitle("Select Your Role")
 
 
