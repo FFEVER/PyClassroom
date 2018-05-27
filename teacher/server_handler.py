@@ -9,7 +9,7 @@ from Teacher import Teacher
 import constant
 
 
-class TeacherHanlder(Thread):
+class TeacherHandler(Thread):
 
     def __init__(self, server, receiver, teacher, room):
         Thread.__init__(self)
@@ -82,7 +82,6 @@ class TeacherHanlder(Thread):
             student_data_list.append(studentHandler.student)
         self.notify_all_student(
             constant.STUDENT_LIST_UPDATED, student_data_list)
-        self.notify_teacher(constant.STUDENT_LIST_UPDATED, student_data_list)
 
     def cmd_close_room(self):
         print(self.teacher.name, "closed a room.")
@@ -92,14 +91,11 @@ class TeacherHanlder(Thread):
         if len(self.student_list) >= self.room.max_student:
             studentHandler.teacher = None
             return studentHandler.notify_student(constant.JOIN_ROOM_FAIL, "Room is full.")
-        
+        studentHandler.notify_student(constant.JOIN_ROOM_SUCCESS, self.room)
         self.student_list.append(studentHandler)
         student_data_list = []
         for studentHandler in self.student_list:
             student_data_list.append(studentHandler.student)
-
-        studentHandler.notify_student(constant.JOIN_ROOM_SUCCESS, [self.room,student_data_list])
-
         self.notify_all_student(
             constant.STUDENT_LIST_UPDATED, student_data_list)
         self.notify_teacher(constant.STUDENT_LIST_UPDATED, student_data_list)

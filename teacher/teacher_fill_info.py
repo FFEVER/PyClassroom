@@ -5,6 +5,17 @@ from teacher_fill_info_ui import Ui_Form
 from teacher_main import TeacherMain
 from validator import *
 
+from Room import Room
+from Teacher import Teacher
+from Student import Student
+from ClientSocket import ClientSocket
+import constant
+import socket
+import struct
+import pickle
+
+
+
 class TeacherFillInfo(QWidget):
     def __init__(self):
         QWidget.__init__(self, None)
@@ -31,10 +42,69 @@ class TeacherFillInfo(QWidget):
         capacity = self.ui.capacity_edit.text()
 
         if is_valid_string(name) and is_valid_string(room_name) and is_valid_int(capacity):
+            room = Room("0", room_name, int(capacity), Teacher(name), description)
+            sender, room_id = self.create_sender(room)
+            receiver = self.create_receiver(room_id)
+
             self.main_window.set_full_capacity(int(capacity))
-            self.main_window.set_info("0", name, room_name, description)
+            self.main_window.set_info(room_id, name, room_name, description)
+            self.main_window.set_sender(sender)
+            self.main_window.set_receiver(receiver)
+            self.main_window.start_receiver_thread()
             self.main_window.show()
+
             self.hide()
+
+    def connect_to_server(self, socket, host, port):
+        try:
+            socket.connect((host, port))
+            return socket
+        except:
+            print("Connection error")
+            sys.exit()
+
+    def create_sender(self, room):
+        ''' if can connect to server this will return (sender,room_id) '''
+        soc = socket.socket()  # Create a socket object
+        host = socket.gethostname()  # Get local machine name
+        port = constant.PORT  # Reserve a port for your service.
+
+        soc = self.connect_to_server(soc, host, port)
+        sender = ClientSocket(soc)
+
+        data = []
+        data.append(constant.I_AM_TEACHER_SENDER)
+        data.append(room)
+        sender.sendall_with_size(data)
+
+        decoded_input = sender.recv_with_size_and_decode()
+        is_room_created = decoded_input[0]
+        room_id = decoded_input[1]
+        print(is_room_created, "with id", room_id)
+        return (sender, room_id)
+
+    def create_receiver(self, room_id):
+        ''' if can connect to server this will return receiver '''
+        soc = socket.socket()  # Create a socket object
+        host = socket.gethostname()  # Get local machine name
+        port = constant.PORT  # Reserve a port for your service.
+
+        soc = self.connect_to_server(soc, host, port)
+        receiver = ClientSocket(soc)
+
+        data = [constant.I_AM_TEACHER_RECEIVER, room_id]
+        receiver.sendall_with_size(data)
+
+        is_success = receiver.recv_with_size_and_decode()
+        print("create_receiver is ", is_success)
+
+        return receiver
+
+    def print_list(self, data_list):
+        print("[", end="")
+        for item in data_list:
+            print(item, end=",")
+        print("]")
 
 
 if __name__ == "__main__":

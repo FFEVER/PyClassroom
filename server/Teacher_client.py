@@ -69,7 +69,7 @@ def create_sender():
 
     data = []
     data.append(constant.I_AM_TEACHER_SENDER)
-    data.append(Room(0, "JavaScript", 10, Teacher(
+    data.append(Room(0, "JavaScript", 1, Teacher(
         "John Smith"), "This is a javascript class."))
     sender.sendall_with_size(data)
 
@@ -105,7 +105,7 @@ def receiver_handler(receiver):
             print("Server has down.")
             sys.exit(1)
             break
-        print(decoded_input)
+        # print(decoded_input)
         cmd = decoded_input[0]
         if cmd == constant.STUDENT_LIST_UPDATED:
             student_list = decoded_input[1]
