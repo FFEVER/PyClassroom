@@ -39,6 +39,7 @@ class TeacherMain(QWidget):
 
         self.sender = None
         self.receiver = None
+        self.receiver_thread_running = False
 
         self.ui.start_button.clicked.connect(self.start_stop)
         self.ui.material_button.clicked.connect(self.add_material)
@@ -57,12 +58,14 @@ class TeacherMain(QWidget):
 
     def start_receiver_thread(self):
         try:
-            Thread(target = self.receiver_handler, args=(self.receiver,)).start()
+            self.receiver_thread_running = True
+            self.receiver_thread = Thread(target = self.receiver_handler, args=(self.receiver,))
+            self.receiver_thread.start()
         except:
             traceback.print_exc()
 
     def receiver_handler(self, receiver):
-        while True:
+        while self.receiver_thread_running:
             decoded_input = receiver.recv_with_size_and_decode()
             if decoded_input == None:
                 print("Server has down.")
@@ -101,8 +104,10 @@ class TeacherMain(QWidget):
     def kick_selected(self):
         index = self.ui.student_list.currentRow()
         if index != -1:
+            student_id = self.students[index].id
             self.students.pop(index)
-            
+            self.sender.sendall_with_size([constant.KICK_STUDENT, student_id])
+
 
     def update_student_list(self):
         self.ui.student_list.clear()
@@ -117,6 +122,7 @@ class TeacherMain(QWidget):
             self.ui.material_edit.setText("")
 
     def end_connection(self):
+        self.receiver_thread_running = False
         self.sender.sendall_with_size([constant.CLOSE_ROOM])
         self.sender.close()
         self.receiver.close()
