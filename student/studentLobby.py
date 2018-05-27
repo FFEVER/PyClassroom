@@ -26,6 +26,9 @@ class StudentLobby(QtWidgets.QMainWindow):
         self.sender = None
         self.receiver = None
         self.student_id = None
+
+        self.nextPage = StudentMain()
+        
         
         self.ui.searchButton.clicked.connect(self.searchClicked) 
         self.ui.refreshButton.clicked.connect(self.refreshClicked) 
@@ -45,7 +48,6 @@ class StudentLobby(QtWidgets.QMainWindow):
         self.student_id = student_id 
     
     def createServerHandler(self):
-        
         Thread(target= self.receiver_handler, args=(self.receiver,)).start()
 
     def updateRoomList(self): 
@@ -147,8 +149,10 @@ class StudentLobby(QtWidgets.QMainWindow):
                 room = data[0]
                 student_list = data[1]
                 self.hide() 
-                 
-                self.nextPage = StudentMain(room,student_list, self)
+                self.nextPage.setRoom(room)
+                self.nextPage.setStudentList(student_list)
+                self.nextPage.setUI() 
+                
                 self.nextPage.show() 
                 print("Joined room: " , room)
 
@@ -158,7 +162,7 @@ class StudentLobby(QtWidgets.QMainWindow):
                 dialog = QtWidgets.QMessageBox()
                 dialog.setText(msg)
                 dialog.setWindowTitle("Unable to join")
-                dialog.exec_() 
+                dialog.exec(); 
 
                 print("Join room failed: ", msg)
             elif cmd == constant.KICK_STUDENT:
