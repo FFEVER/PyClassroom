@@ -5,6 +5,17 @@ from teacher_main_ui import Ui_Form
 from chat_window import ChatWindow
 from validator import *
 from streamer_thread import StreamerThread
+from threading import Thread
+
+from Room import Room
+from Teacher import Teacher
+from Student import Student
+from ClientSocket import ClientSocket
+import constant
+import socket
+import struct
+import pickle
+import traceback
 
 class TeacherMain(QWidget):
     def __init__(self, info_window):
@@ -20,19 +31,53 @@ class TeacherMain(QWidget):
         self.ui.setupUi(self)
         self.setWindowTitle("Teaching Lobby")
 
-        self.students = ["qwerty", "asdfgh", "zxcfvb", "][poi"]
+        self.students = []
 
         self.playing = False
         self.full_capacity = 0
         self.current_capacity = 0
 
+        self.sender = None
+        self.receiver = None
+
         self.ui.start_button.clicked.connect(self.start_stop)
         self.ui.material_button.clicked.connect(self.add_material)
-        self.ui.exit_button.clicked.connect(self.exit_room)
+        self.ui.exit_button.clicked.connect(self.end_connection)
         self.ui.kick_button.clicked.connect(self.kick_selected)
         self.ui.start_button.setText("Start streaming")
 
         self.update_student_list()
+
+
+    def set_sender(self, sender):
+        self.sender = sender
+
+    def set_receiver(self, rec):
+        self.receiver = rec
+
+    def start_receiver_thread(self):
+        try:
+            Thread(target = self.receiver_handler, args=(self.receiver,)).start()
+        except:
+            traceback.print_exc()
+
+    def receiver_handler(self, receiver):
+        while True:
+            decoded_input = receiver.recv_with_size_and_decode()
+            if decoded_input == None:
+                print("Server has down.")
+                self.exit_room()
+            print(decoded_input)
+            cmd = decoded_input[0]
+            if cmd == constant.STUDENT_LIST_UPDATED:
+                self.students = decoded_input[1]
+                self.update_student_list()
+            elif cmd == constant.MESSAGE_FROM_STUDENT:
+                data = decoded_input[1]
+                student = data[0]
+                msg = data[1]
+                # Please check if it is your own msg, so don't print it.
+                print(student, ": ", msg)
 
     def start_stop(self):
         self.playing = not self.playing
@@ -57,12 +102,12 @@ class TeacherMain(QWidget):
         index = self.ui.student_list.currentRow()
         if index != -1:
             self.students.pop(index)
-            self.update_student_list()
+            
 
     def update_student_list(self):
         self.ui.student_list.clear()
         for i in self.students:
-            self.ui.student_list.addItem(QListWidgetItem(i))
+            self.ui.student_list.addItem(QListWidgetItem(i.id + " " + i.name))
         self.set_current_capacity(len(self.students))
 
     def add_material(self):
@@ -71,8 +116,13 @@ class TeacherMain(QWidget):
             self.ui.material_browser.setText(self.ui.material_browser.toPlainText() + entered + "\n")
             self.ui.material_edit.setText("")
 
+    def end_connection(self):
+        self.sender.sendall_with_size([constant.CLOSE_ROOM])
+        self.sender.close()
+        self.receiver.close()
+        self.exit_room()
+
     def exit_room(self):
-        #TODO - close room
         if self.streamer_thread != None:
             self.streamer_thread.stop()
             self.streamer_thread = None
