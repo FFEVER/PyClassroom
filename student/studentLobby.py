@@ -45,6 +45,7 @@ class StudentLobby(QtWidgets.QMainWindow):
         self.student_id = student_id 
     
     def createServerHandler(self):
+        
         Thread(target= self.receiver_handler, args=(self.receiver,)).start()
 
     def updateRoomList(self): 
@@ -147,7 +148,7 @@ class StudentLobby(QtWidgets.QMainWindow):
                 student_list = data[1]
                 self.hide() 
                  
-                self.nextPage = StudentMain(room,student_list)
+                self.nextPage = StudentMain(room,student_list, self)
                 self.nextPage.show() 
                 print("Joined room: " , room)
 
