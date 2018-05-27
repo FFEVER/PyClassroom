@@ -26,11 +26,14 @@ class ClientSocket():
     def recv_n(self, n):
         ''' recv n bytes or return None if EOF is hit '''
         data = b''
-        while len(data) < n:
-            packet = self.socket.recv(n - len(data))
-            if not packet:
-                return None
-            data += packet
+        try:
+            while len(data) < n:
+                packet = self.socket.recv(n - len(data))
+                if not packet:
+                    return None
+                data += packet
+        except:
+            print("Connection has dropped.")
         return data
 
     def sendall_with_size(self,data):
