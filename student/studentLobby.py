@@ -60,6 +60,8 @@ class StudentLobby(QtWidgets.QMainWindow):
         self.allCourses = roomList
         print("self.allCourses: " , self.allCourses  )
 
+     
+
         
 
     def joinClicked(self): 
@@ -114,6 +116,7 @@ class StudentLobby(QtWidgets.QMainWindow):
             if cmd == constant.REFRESH_ROOM_LIST:
                 room_list = decoded_input[1]
                 self.setRoomList(room_list) 
+                self.updateRoomList() 
                 
                 #print_list(room_list)
             elif cmd == constant.STUDENT_LIST_UPDATED:
