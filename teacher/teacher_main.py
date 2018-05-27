@@ -18,6 +18,9 @@ import pickle
 import traceback
 
 class TeacherMain(QWidget):
+
+    chat_window_updater = pyqtSignal(str)
+
     def __init__(self, info_window):
         QWidget.__init__(self, None)
 
@@ -46,6 +49,8 @@ class TeacherMain(QWidget):
         self.ui.material_button.clicked.connect(self.add_material)
         self.ui.exit_button.clicked.connect(self.end_connection)
         self.ui.kick_button.clicked.connect(self.kick_selected)
+        self.chat_window_updater.connect(self.update_chat_window_text)
+
         self.ui.start_button.setText("Start streaming")
 
         self.update_student_list()
@@ -85,7 +90,7 @@ class TeacherMain(QWidget):
                     student = data[0]
                     msg = data[1]
                     msg = student.name + "(" + student.id + "):" + msg
-                    self.update_chat_window_text(msg)
+                    self.chat_window_updater.emit(msg)
                     # Please check if it is your own msg, so don't print it.
                     print(student, ": ", msg)
 
