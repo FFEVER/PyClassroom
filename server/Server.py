@@ -81,7 +81,7 @@ class Server:
             # teacher
             teacher = room.teacher
             # tell teacher his room id
-            socket.sendall_with_size(["room_created_successfully",room_id])
+            socket.sendall_with_size([constant.CREATE_ROOM_SUCCESS,room_id])
             # teacher handler
             teacherHandler = TeacherHanlder(self,socket,teacher,room)
             self.teacher_list[room_id] = teacherHandler

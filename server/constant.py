@@ -17,6 +17,9 @@ REMOVE_MATERIAL = "remove_mat"
 KICK_STUDENT = "kick_student"
 CLOSE_ROOM = "close_room"
 
+# Server -> Teacher
+CREATE_ROOM_SUCCESS = "room_created_successfully"
+
 # Server -> All
 STUDENT_LIST_UPDATED = "student_list_updated"
 MESSAGE_FROM_STUDENT = "message_from_student"
