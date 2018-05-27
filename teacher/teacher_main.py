@@ -32,6 +32,7 @@ class TeacherMain(QWidget):
         self.setWindowTitle("Teaching Lobby")
 
         self.students = []
+        self.materials = []
 
         self.playing = False
         self.full_capacity = 0
@@ -64,23 +65,29 @@ class TeacherMain(QWidget):
         except:
             traceback.print_exc()
 
+    @pyqtSlot(str)
+    def update_chat_window_text(self, value):
+        self.chat_window.add_text(value)
+
     def receiver_handler(self, receiver):
         while self.receiver_thread_running:
             decoded_input = receiver.recv_with_size_and_decode()
             if decoded_input == None:
                 print("Server has down.")
                 self.exit_room()
-            print(decoded_input)
             cmd = decoded_input[0]
             if cmd == constant.STUDENT_LIST_UPDATED:
                 self.students = decoded_input[1]
                 self.update_student_list()
             elif cmd == constant.MESSAGE_FROM_STUDENT:
-                data = decoded_input[1]
-                student = data[0]
-                msg = data[1]
-                # Please check if it is your own msg, so don't print it.
-                print(student, ": ", msg)
+                if self.playing:
+                    data = decoded_input[1]
+                    student = data[0]
+                    msg = data[1]
+                    msg = student.name + "(" + student.id + "):" + msg
+                    self.update_chat_window_text(msg)
+                    # Please check if it is your own msg, so don't print it.
+                    print(student, ": ", msg)
 
     def start_stop(self):
         self.playing = not self.playing
@@ -118,7 +125,9 @@ class TeacherMain(QWidget):
     def add_material(self):
         entered = self.ui.material_edit.text()
         if is_valid_string(entered):
+            self.materials.append(entered)
             self.ui.material_browser.setText(self.ui.material_browser.toPlainText() + entered + "\n")
+            self.sender.sendall_with_size([constant.ADD_MATERIAL, self.materials])
             self.ui.material_edit.setText("")
 
     def end_connection(self):
