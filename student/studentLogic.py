@@ -1,6 +1,6 @@
 import sys
 
-from PyQt5.QtCore import *
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 from UI.selectrole import Ui_Form 
 from studentInput import StudentInput

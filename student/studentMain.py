@@ -1,19 +1,15 @@
 import sys
 
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.uic import *
-
+from PyQt5 import QtCore, QtGui, QtWidgets
 from UI.mainpage import Ui_Form
 
-class StudentMain(QMainWindow):
+class StudentMain(QtWidgets.QMainWindow):
     def __init__(self, roomID):
         print("studentMain: ")
-        QMainWindow.__init__(self, None)
+        QtWidgets.QMainWindow.__init__(self, None) 
         self.ui = Ui_Form()
         self.ui.setupUi(self)
-
+        
 
         # sample list of data
         self.allData = [] 
@@ -40,7 +36,6 @@ class StudentMain(QMainWindow):
         # sample demonstration , showing the correct information of the selected course 
         # from the previous page 
 
-        #self.ui.testLabel.setText('aaa')
         for item in self.allData: 
             if item[0] == roomID: 
 
@@ -53,12 +48,8 @@ class StudentMain(QMainWindow):
                 self.ui.currentViewInfo.setText(item[4])
                 break
 
-
-
-
-
-
-
+        
+        
         
 
 
