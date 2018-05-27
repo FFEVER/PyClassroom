@@ -43,6 +43,9 @@ class StudentLobby(QtWidgets.QMainWindow):
 
     def setStudentId(self,student_id):
         self.student_id = student_id 
+    
+    def createServerHandler(self):
+        Thread(target= self.receiver_handler, args=(self.receiver,)).start()
 
     def updateRoomList(self): 
         self.model.clear() 

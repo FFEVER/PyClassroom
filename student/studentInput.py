@@ -42,6 +42,8 @@ class StudentInput(QtWidgets.QMainWindow):
         self.nextPage.setSender(sender)
         self.nextPage.setReceiver(receiver)
         self.nextPage.setStudentId(student_id)
+
+        self.nextPage.createServerHandler() 
          
         #open lobby 
         self.hide()
