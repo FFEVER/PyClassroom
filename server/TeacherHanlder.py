@@ -82,6 +82,7 @@ class TeacherHanlder(Thread):
             student_data_list.append(studentHandler.student)
         self.notify_all_student(
             constant.STUDENT_LIST_UPDATED, student_data_list)
+        self.notify_teacher(constant.STUDENT_LIST_UPDATED, student_data_list)
 
     def cmd_close_room(self):
         print(self.teacher.name, "closed a room.")
