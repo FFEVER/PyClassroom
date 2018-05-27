@@ -7,12 +7,13 @@ from PyQt5.uic import *
 
 from PyQt5 import QtWidgets
 
+
 from UI.mainpage import Ui_Form
 
 class StudentMain(QtWidgets.QMainWindow):
-    def __init__(self, room, student_list):
+    def __init__(self, room, student_list, parent):
         print("studentMain: ")
-        QtWidgets.QMainWindow.__init__(self, None)
+        QtWidgets.QMainWindow.__init__(self, parent)
         self.ui = Ui_Form()
         self.ui.setupUi(self)
 
