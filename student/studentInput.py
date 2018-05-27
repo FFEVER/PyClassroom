@@ -17,14 +17,16 @@ from threading import Thread
 
 
 
-class StudentInput(QtWidgets.QMainWindow): 
+class StudentInput(QtWidgets.QMainWindow):
+    onInputClosed = QtCore.pyqtSignal()
     def __init__(self):
         QtWidgets.QMainWindow.__init__(self, None) 
         self.ui = Ui_Form()
         self.ui.setupUi(self)
         self.ui.startButton.clicked.connect(self.startButtonOnClick)
         
-        self.nextPage = StudentLobby() 
+        self.nextPage = StudentLobby()
+        # self.nextPage.on_lobby_closed.connect(self.onLobbyClose)
 
         self.setWindowTitle("Enter Your Name!")
     
@@ -96,3 +98,9 @@ class StudentInput(QtWidgets.QMainWindow):
         print("create_receiver is ", is_success)
 
         return receiver
+
+    # @QtCore.pyqtSlot()
+    # def onLobbyClose(self):
+    #     print("Input Close")
+    #     self.onInputClosed.emit()
+    #     self.close()
