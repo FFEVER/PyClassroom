@@ -17,6 +17,7 @@ class StudentStream(QtWidgets.QMainWindow):
             data = server.recv(100000)
             if not data:
                 break
+            print(data)
             nparr = np.fromstring(data, np.uint8)
             self.image = cv2.imdecode(nparr, 1)
             height, width, byteValue = self.image.shape
@@ -38,6 +39,7 @@ class StudentStream(QtWidgets.QMainWindow):
         painter.begin(self.ui.streamWidget)
         painter.drawImage(self.ui.streamWidget.geometry(),  self.mQImage)
         painter.end()
+        self.update()
 
     def keyPressEvent(self, QKeyEvent):
         super(StudentStream, self).keyPressEvent(QKeyEvent)
