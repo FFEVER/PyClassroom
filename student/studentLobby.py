@@ -162,10 +162,7 @@ class StudentLobby(QtWidgets.QMainWindow):
                 msg = decoded_input[1]
                 
                 #popup dialog : can't join
-                dialog = QtWidgets.QMessageBox()
-                dialog.setText(msg)
-                dialog.setWindowTitle("Unable to join")
-                dialog.exec(); 
+                self.dialog = popUpDialog() 
                 self.dialog.setText(msg)
                 self.dialog.show()
                 
