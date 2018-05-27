@@ -10,23 +10,30 @@ class StudentLobby(QtWidgets.QMainWindow):
         QtWidgets.QMainWindow.__init__(self, None) 
         self.ui = Ui_Form()
         self.ui.setupUi(self)
+
+        
         self.ui.searchButton.clicked.connect(self.searchClicked) 
         self.ui.refreshButton.clicked.connect(self.refreshClicked) 
         self.ui.joinButton.clicked.connect(self.joinClicked) 
         self.model = QtGui.QStandardItemModel(self.ui.listView) 
 
-        self.allCourses = ["0001 Python : Doc V", "0003 Database : Suphamit C", "0002 Probability and Statistics : Chivalai T",
-        "0006 Mathematics 3 : Chaiwat N", "0004 C++ : Ukrit W", "0005 Operating Systems : Saran I"]
-        self.allCourses.sort() 
+        self.allCourses = None
 
+        
+    
+    def updateRoomList(self): 
         for course in self.allCourses: 
-            item = QtGui.QStandardItem(course) 
+            courseString = course.id + " " + course.name + " " + course.teacher.name 
+            item = QtGui.QStandardItem(courseString) 
             item.setCheckable(False) 
             self.model.appendRow(item) 
         
         self.ui.listView.setModel(self.model) 
         
-    
+        
+    def setRoomList(self, roomList): 
+        self.allCourses = roomList
+
     def joinClicked(self): 
         index = QtCore.QModelIndex()
         index = self.ui.listView.currentIndex() 
