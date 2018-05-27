@@ -2,6 +2,7 @@ import sys
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from UI.lobbystudent import Ui_Form
+from popUpDialog import popUpDialog
 from studentMain import StudentMain
 
 from Student import Student
@@ -198,6 +199,7 @@ class StudentLobby(QtWidgets.QMainWindow):
                 print("Joined room: ", room)
 
             elif cmd == constant.JOIN_ROOM_FAIL:
+                
                 msg = decoded_input[1]
                 self.join_room_failed.emit(msg)
                 print("Join room failed: ", msg)
