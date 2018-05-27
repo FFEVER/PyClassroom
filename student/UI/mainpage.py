@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainpage.ui'
 #
-# Created by: PyQt5 UI code generator 5.10
+# Created by: PyQt5 UI code generator 5.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -120,9 +120,6 @@ class Ui_Form(object):
         self.streamWidget = QtWidgets.QWidget(self.streamTab)
         self.streamWidget.setGeometry(QtCore.QRect(40, 40, 291, 251))
         self.streamWidget.setObjectName("streamWidget")
-        self.test_label = QtWidgets.QLabel(self.streamTab)
-        self.test_label.setGeometry(QtCore.QRect(200, -20, 131, 91))
-        self.test_label.setObjectName("test_label")
         icon2 = QtGui.QIcon()
         icon2.addPixmap(QtGui.QPixmap("eyeicon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.tabWidget.addTab(self.streamTab, icon2, "")
@@ -153,7 +150,16 @@ class Ui_Form(object):
         self.tabWidget.setTabToolTip(self.tabWidget.indexOf(self.materialsTab), _translate("Form", "Materials"))
         self.pushButton_4.setText(_translate("Form", "Leave Room"))
         self.pushButton_3.setText(_translate("Form", "send"))
-        self.test_label.setText(_translate("Form", "TextLabel"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.streamTab), _translate("Form", "Stream"))
         self.tabWidget.setTabToolTip(self.tabWidget.indexOf(self.streamTab), _translate("Form", "Watch Stream"))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    Form = QtWidgets.QWidget()
+    ui = Ui_Form()
+    ui.setupUi(Form)
+    Form.show()
+    sys.exit(app.exec_())
 
