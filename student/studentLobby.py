@@ -10,9 +10,6 @@ class StudentLobby(QtWidgets.QMainWindow):
         QtWidgets.QMainWindow.__init__(self, None) 
         self.ui = Ui_Form()
         self.ui.setupUi(self)
-
-       
-
         self.ui.searchButton.clicked.connect(self.searchClicked) 
         self.ui.refreshButton.clicked.connect(self.refreshClicked) 
         self.ui.joinButton.clicked.connect(self.joinClicked) 
@@ -33,7 +30,10 @@ class StudentLobby(QtWidgets.QMainWindow):
     def joinClicked(self): 
         index = QtCore.QModelIndex()
         index = self.ui.listView.currentIndex() 
-        
+
+        if index == -1:
+            return
+
         #selected course from the listView 
         self.selectedCourse = self.model.itemFromIndex(index).text()
         tosend = self.selectedCourse.split(' ')
