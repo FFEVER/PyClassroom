@@ -2,6 +2,7 @@ import sys
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from UI.lobbystudent import Ui_Form
+from popUpDialog import popUpDialog
 from studentMain import StudentMain
 
 from Student import Student
@@ -157,17 +158,25 @@ class StudentLobby(QtWidgets.QMainWindow):
                 print("Joined room: " , room)
 
             elif cmd == constant.JOIN_ROOM_FAIL:
+                
                 msg = decoded_input[1]
+                
                 #popup dialog : can't join
                 dialog = QtWidgets.QMessageBox()
                 dialog.setText(msg)
                 dialog.setWindowTitle("Unable to join")
                 dialog.exec(); 
+                self.dialog.setText(msg)
+                self.dialog.show()
+                
 
                 print("Join room failed: ", msg)
             elif cmd == constant.KICK_STUDENT:
                 print("You have been kicked")
        
 
-
-          
+if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv) 
+    w = StudentLobby() 
+    w.show()
+    sys.exit(app.exec_())
