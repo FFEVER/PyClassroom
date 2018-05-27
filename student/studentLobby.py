@@ -45,6 +45,7 @@ class StudentLobby(QtWidgets.QMainWindow):
         self.student_id = student_id 
 
     def updateRoomList(self): 
+        self.model.clear() 
         for course in self.allCourses: 
             courseString = course.id + " " + course.name + " " + course.teacher.name 
             item = QtGui.QStandardItem(courseString) 
@@ -54,8 +55,12 @@ class StudentLobby(QtWidgets.QMainWindow):
         self.ui.listView.setModel(self.model) 
         
         
-    def setRoomList(self, roomList): 
+    def setRoomList(self, roomList):
+        print("roomList: " , roomList)
         self.allCourses = roomList
+        print("self.allCourses: " , self.allCourses  )
+
+        
 
     def joinClicked(self): 
         index = QtCore.QModelIndex()
