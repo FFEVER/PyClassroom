@@ -93,7 +93,7 @@ class Server:
             student_id = str(uuid.uuid4())[:5] + str(self.student_count)
             student.set_id(student_id)
             # send room list to student and tell them their id
-            socket.sendall_with_size([student_id,[self.room_list]])
+            socket.sendall_with_size([student_id,self.room_list])
             # student handler
             studentHandler = StudentHandler(self,socket,student)
             self.student_list[student_id] = studentHandler
