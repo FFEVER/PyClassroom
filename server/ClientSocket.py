@@ -18,7 +18,7 @@ class ClientSocket():
         try:
             buffer_size = struct.unpack('>L',raw_buffer_size)[0]
         except struct.error:
-            return
+            return "struct error"
 
         # get the data from buffer
         client_input = self.recv_n(buffer_size)
