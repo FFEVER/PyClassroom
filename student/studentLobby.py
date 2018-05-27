@@ -50,7 +50,7 @@ class StudentLobby(QtWidgets.QMainWindow):
     def updateRoomList(self): 
         self.model.clear() 
         for course in self.allCourses: 
-            courseString = course.id + " " + course.name + " " + course.teacher.name 
+            courseString = course.id + " | " + course.name + " | " + course.teacher.name 
             item = QtGui.QStandardItem(courseString) 
             item.setCheckable(False) 
             self.model.appendRow(item) 
@@ -68,6 +68,7 @@ class StudentLobby(QtWidgets.QMainWindow):
         
 
     def joinClicked(self): 
+        
         index = QtCore.QModelIndex()
         index = self.ui.listView.currentIndex() 
 
@@ -76,7 +77,7 @@ class StudentLobby(QtWidgets.QMainWindow):
 
         #selected course from the listView 
         self.selectedCourse = self.model.itemFromIndex(index).text()
-        tosend = self.selectedCourse.split(' ')
+        tosend = self.selectedCourse.split(' | ')
 
         i = 0
         #avoiding empty key
@@ -88,10 +89,14 @@ class StudentLobby(QtWidgets.QMainWindow):
          
         #use tosend[i] to represent the Room ID 
         #and open StudentMain 
-        self.hide() 
-        print("tosend[i] = " + tosend[i]) 
-        self.nextPage = StudentMain(tosend[i]) 
-        self.nextPage.show() 
+        
+
+        choosed_room = None
+        for course in self.allCourses:
+            if course.id == tosend[i]:
+                choosed_room = course
+
+        self.sender.sendall_with_size([constant.JOIN_ROOM, tosend[i] ])
 
         
     def searchClicked(self): 
@@ -136,10 +141,24 @@ class StudentLobby(QtWidgets.QMainWindow):
                 materials = decoded_input[1]
                 print("Materials updated: ",materials)
             elif cmd == constant.JOIN_ROOM_SUCCESS:
-                room = decoded_input[1]
+
+                data = decoded_input[1]
+                room = data[0]
+                student_list = data[1]
+                self.hide() 
+                 
+                self.nextPage = StudentMain(room,student_list)
+                self.nextPage.show() 
                 print("Joined room: " , room)
+
             elif cmd == constant.JOIN_ROOM_FAIL:
                 msg = decoded_input[1]
+                #popup dialog : can't join
+                dialog = QtWidgets.QMessageBox()
+                dialog.setText(msg)
+                dialog.setWindowTitle("Unable to join")
+                dialog.exec_() 
+
                 print("Join room failed: ", msg)
             elif cmd == constant.KICK_STUDENT:
                 print("You have been kicked")
