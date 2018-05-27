@@ -38,6 +38,10 @@ class StudentInput(QtWidgets.QMainWindow):
         
         self.nextPage.setRoomList(room_list)
         self.nextPage.updateRoomList()
+
+        self.nextPage.setSender(sender)
+        self.nextPage.setReceiver(receiver)
+        self.nextPage.setStudentId(student_id)
          
         #open lobby 
         self.hide()

@@ -4,6 +4,17 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from UI.lobbystudent import Ui_Form
 from studentMain import StudentMain
 
+from Student import Student
+from ClientSocket import ClientSocket
+import constant
+
+import socket
+import sys
+import struct
+import pickle
+import traceback
+from threading import Thread
+
 
 class StudentLobby(QtWidgets.QMainWindow): 
     def __init__(self): 
@@ -11,6 +22,10 @@ class StudentLobby(QtWidgets.QMainWindow):
         self.ui = Ui_Form()
         self.ui.setupUi(self)
 
+        
+        self.sender = None
+        self.receiver = None
+        self.student_id = None
         
         self.ui.searchButton.clicked.connect(self.searchClicked) 
         self.ui.refreshButton.clicked.connect(self.refreshClicked) 
@@ -20,7 +35,15 @@ class StudentLobby(QtWidgets.QMainWindow):
         self.allCourses = None
 
         
-    
+    def setSender(self,sender):
+        self.sender = sender 
+
+    def setReceiver(self,receiver):
+        self.receiver = receiver 
+
+    def setStudentId(self,student_id):
+        self.student_id = student_id 
+
     def updateRoomList(self): 
         for course in self.allCourses: 
             courseString = course.id + " " + course.name + " " + course.teacher.name 
@@ -59,13 +82,6 @@ class StudentLobby(QtWidgets.QMainWindow):
         print("tosend[i] = " + tosend[i]) 
         self.nextPage = StudentMain(tosend[i]) 
         self.nextPage.show() 
-        
-
-
-
-
-        
-
 
         
     def searchClicked(self): 
@@ -78,9 +94,44 @@ class StudentLobby(QtWidgets.QMainWindow):
             
         
     def refreshClicked(self): 
-        #show all courses available 
-        for row in range(self.model.rowCount()): 
-            self.ui.listView.setRowHidden(row,False) 
+        self.updateRoomList() 
+        self.sender.sendall_with_size([constant.REFRESH_ROOM_LIST])
+    
+
+    def receiver_handler(self, receiver):
+        while True:
+            decoded_input = self.receiver.recv_with_size_and_decode()
+            if decoded_input == None:
+                print("Server has down.")
+                break
+            print(decoded_input)
+            cmd = decoded_input[0]
+            if cmd == constant.REFRESH_ROOM_LIST:
+                room_list = decoded_input[1]
+                self.setRoomList(room_list) 
+                
+                #print_list(room_list)
+            elif cmd == constant.STUDENT_LIST_UPDATED:
+                student_list = decoded_input[1]
+                #print_list(student_list)
+            elif cmd == constant.MESSAGE_FROM_STUDENT:
+                data = decoded_input[1]
+                student = data[0]
+                msg = data[1]
+                # Please check if it is your own msg, so don't print it.
+                print(student,": ",msg)
+
+            elif cmd == constant.REFRESH_MATERIAL:
+                materials = decoded_input[1]
+                print("Materials updated: ",materials)
+            elif cmd == constant.JOIN_ROOM_SUCCESS:
+                room = decoded_input[1]
+                print("Joined room: " , room)
+            elif cmd == constant.JOIN_ROOM_FAIL:
+                msg = decoded_input[1]
+                print("Join room failed: ", msg)
+            elif cmd == constant.KICK_STUDENT:
+                print("You have been kicked")
        
 
 
