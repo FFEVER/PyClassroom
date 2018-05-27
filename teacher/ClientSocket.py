@@ -14,7 +14,11 @@ class ClientSocket():
             self.close()
             return None
         # decode buffer from binary to integer by unpacking
-        buffer_size = struct.unpack('>L',raw_buffer_size)[0]
+        
+        try:
+            buffer_size = struct.unpack('>L',raw_buffer_size)[0]
+        except struct.error:
+            return
 
         # get the data from buffer
         client_input = self.recv_n(buffer_size)
@@ -33,7 +37,8 @@ class ClientSocket():
                     return None
                 data += packet
         except:
-            print("Connection has dropped.")
+            # print("Connection has dropped.")
+            pass
         return data
 
     def sendall_with_size(self,data):
