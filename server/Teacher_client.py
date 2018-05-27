@@ -105,7 +105,7 @@ def receiver_handler(receiver):
             print("Server has down.")
             sys.exit(1)
             break
-        print(decoded_input)
+        # print(decoded_input)
         cmd = decoded_input[0]
         if cmd == constant.STUDENT_LIST_UPDATED:
             student_list = decoded_input[1]
