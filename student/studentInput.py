@@ -36,14 +36,17 @@ class StudentInput(QtWidgets.QMainWindow):
 
         sender, student_id, room_list = self.create_sender(Student(self.inputName))
         receiver = self.create_receiver(student_id)
-        video_receiver = self.create_video_sender(student_id)
-        
+        video_receiver = self.create_video_receiver(student_id)
+        sound_receiver = self.create_sound_receiver(student_id)
+
 
         self.nextPage.setRoomList(room_list)
         self.nextPage.updateRoomList()
 
         self.nextPage.setSender(sender)
         self.nextPage.setReceiver(receiver)
+        self.nextPage.setVideoReceiver(video_receiver)
+        self.nextPage.setSoundReceiver(sound_receiver)
         self.nextPage.setStudentId(student_id)
 
         self.nextPage.createServerHandler()
@@ -97,7 +100,7 @@ class StudentInput(QtWidgets.QMainWindow):
 
         return receiver
 
-    def create_video_sender(self, student_id):
+    def create_video_receiver(self, student_id):
         ''' if can connect to server this will return receiver '''
         soc = socket.socket()  # Create a socket object
         host = socket.gethostname()  # Get local machine name
@@ -114,7 +117,7 @@ class StudentInput(QtWidgets.QMainWindow):
 
         return video_sender
 
-    def create_sound_sender(self, student_id):
+    def create_sound_receiver(self, student_id):
         ''' if can connect to server this will return receiver '''
         soc = socket.socket()  # Create a socket object
         host = socket.gethostname()  # Get local machine name

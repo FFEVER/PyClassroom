@@ -24,6 +24,8 @@ class StudentLobby(QtWidgets.QMainWindow):
     student_list_updated = QtCore.pyqtSignal(list)
     room_closed = QtCore.pyqtSignal(str)
     refresh_materials = QtCore.pyqtSignal(list)
+    live_start = QtCore.pyqtSignal()
+    live_end = QtCore.pyqtSignal()
 
     on_lobby_closed = QtCore.pyqtSignal()
 
@@ -34,6 +36,8 @@ class StudentLobby(QtWidgets.QMainWindow):
 
         self.sender = None
         self.receiver = None
+        self.video_receiver = None
+        self.sound_receiver = None
         self.student_id = None
 
         self.nextPage = StudentMain()
@@ -51,6 +55,8 @@ class StudentLobby(QtWidgets.QMainWindow):
         self.student_list_updated.connect(self.onStudentListUpdated)
         self.room_closed.connect(self.onRoomClosed)
         self.refresh_materials.connect(self.onMaterialRefresh)
+        self.live_start.connect(self.onLiveStart)
+        self.live_end.connect(self.onLiveEnd)
 
         self.model = QtGui.QStandardItemModel(self.ui.listView)
 
@@ -63,6 +69,12 @@ class StudentLobby(QtWidgets.QMainWindow):
 
     def setReceiver(self, receiver):
         self.receiver = receiver
+    
+    def setVideoReceiver(self,video_receiver):
+        self.video_receiver = video_receiver
+    
+    def setSoundReceiver(self,sound_receiver):
+        self.sound_receiver = sound_receiver
 
     def setStudentId(self, student_id):
         self.student_id = student_id
@@ -176,10 +188,17 @@ class StudentLobby(QtWidgets.QMainWindow):
     def onMaterialRefresh(self, materials_list):
         self.nextPage.addMaterial(materials_list[len(materials_list)-1])
 
+    @QtCore.pyqtSlot()
+    def onLiveStart(self):
+        pass
+
+    @QtCore.pyqtSlot()
+    def onLiveEnd(self):
+        pass
+
     # # replaced method, don't change its name
     def closeEvent(self, event):
         self.receiver_thread_running = False
-
         self.sender.close()
         self.receiver.close()
         event.accept()
@@ -247,8 +266,10 @@ class StudentLobby(QtWidgets.QMainWindow):
 
                 elif cmd == constant.START_LIVE:
                     print("teacer has started live")
+                    self.live_start.emit()
 
                 elif cmd == constant.END_LIVE:
                     print("teacher has ended live")
+                    self.live_end.emit()
 
         print("Receiver END")
