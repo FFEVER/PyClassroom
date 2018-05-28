@@ -29,6 +29,7 @@ class StudentMain(QtWidgets.QMainWindow):
         pal.setColor(self.list_container.backgroundRole(), Qt.white)
         self.list_container.setPalette(pal)
         self.list_container.setLayout(box_layout)
+        self.ui.leave_button.clicked.connect(self.close)
 
         self.ui.scroll_area.setWidget(self.list_container)
         self.ui.scroll_area.verticalScrollBar().rangeChanged.connect(self.scroll_to_material_bottom)
