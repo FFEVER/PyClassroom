@@ -162,13 +162,15 @@ class StudentLobby(QtWidgets.QMainWindow):
         QtWidgets.QMessageBox.critical(self, "", string)
         self.nextPage.hide()
         self.show()
-        self.nextPage.resetState()
+        self.nextPage = StudentMain()
+        self.nextPage.onCloseButtonClicked.connect(self.onExitRoom)
 
     @QtCore.pyqtSlot()
     def onExitRoom(self):
         self.is_in_room = False
         self.sender.sendall_with_size([constant.LEAVE_ROOM])
         self.show()
+        self.nextPage.hide()
         self.nextPage = StudentMain()
         self.nextPage.onCloseButtonClicked.connect(self.onExitRoom)
 
@@ -181,6 +183,10 @@ class StudentLobby(QtWidgets.QMainWindow):
         self.is_in_room = False
         QtWidgets.QMessageBox.critical(self, "Room closed", msg)
         self.show()
+        self.nextPage.hide()
+        if self.nextPage.stream_handler == None:
+            print("Live now -> closing videoHandler")
+            self.nextPage.stopStreamThread()
         self.nextPage = StudentMain()
         self.nextPage.onCloseButtonClicked.connect(self.onExitRoom)
 
