@@ -81,8 +81,9 @@ class ClientSocket():
 
     def send_sound(self,sound):
         if byteorder == 'big':
-            snd_data.byteswap()
+            sound.byteswap()
         self.socket.send(sound)
+
     def receive_sound(self,chunk_size):
         data = self.socket.recv(chunk_size)
         return data

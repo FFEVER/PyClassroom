@@ -23,7 +23,6 @@ class StreamHandler(Thread):
             if not data:
                 break
             try:
-                print(len(data))
                 self.parent.set_stream_string(data)
             except:
                 pass

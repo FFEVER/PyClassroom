@@ -91,6 +91,7 @@ class StudentMain(QtWidgets.QMainWindow):
         self.stream_handler = StreamHandler(self,video_receiver)
         self.sound_stream_handler = SoundStreamHandler(self,sound_receiver)
         self.stream_handler.start()
+        self.sound_stream_handler.start()
 
     def stopStreamThread(self):
         self.stream_handler.stop()
@@ -113,7 +114,6 @@ class StudentMain(QtWidgets.QMainWindow):
     def set_stream_string(self, data):
         nparr = np.fromstring(data, np.uint8)
         image = cv2.imdecode(nparr, 1)
-        print(image.shape[0], image.shape[1])
         image = cv2.resize(image, (self.stream_width, self.stream_height))
 
         rgbImage = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)

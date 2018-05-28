@@ -27,10 +27,10 @@ class SoundStreamHandler(Thread):
         pa = pyaudio.PyAudio()
         stream = pa.open(format=FORMAT,channels=1,rate=RATE,output=True)
         while self.is_running:
-            sound = self.sound_receiver.recv_sound(CHUNK_SIZE)
+            sound = self.sound_receiver.receive_sound(CHUNK_SIZE)
             if not sound:
                 break
-            stream.write(data)
+            stream.write(sound)
 
         print("Student sound stream end")
 
