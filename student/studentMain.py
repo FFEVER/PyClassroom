@@ -43,6 +43,9 @@ class StudentMain(QtWidgets.QMainWindow):
 
         self.ui.cover_label.setText("Teacher is not currently streaming.")
         self.ui.cover_label.setStyleSheet("background:rgb(200,200,200);")
+
+        self.stream_width = self.ui.stream_label.size().width()
+        self.stream_height = self.ui.stream_label.size().height()
         #self.hide_cover()
 
     def setUI(self):
@@ -104,6 +107,8 @@ class StudentMain(QtWidgets.QMainWindow):
     def set_stream_string(self, data):
         nparr = np.fromstring(data, np.uint8)
         image = cv2.imdecode(nparr, 1)
+        print(image.shape[0], image.shape[1])
+        image = cv2.resize(image, (self.stream_width, self.stream_height))
 
         rgbImage = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         convertToQtFormat = QImage(rgbImage.data, rgbImage.shape[1], rgbImage.shape[0], QImage.Format_RGB888)

@@ -32,7 +32,7 @@
     <enum>QTabWidget::Triangular</enum>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>2</number>
    </property>
    <property name="elideMode">
     <enum>Qt::ElideRight</enum>
@@ -240,9 +240,21 @@
       <rect>
        <x>20</x>
        <y>40</y>
-       <width>331</width>
-       <height>261</height>
+       <width>320</width>
+       <height>240</height>
       </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>320</width>
+       <height>240</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>320</width>
+       <height>240</height>
+      </size>
      </property>
      <property name="text">
       <string/>
@@ -259,7 +271,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>24</pointsize>
+       <pointsize>14</pointsize>
        <weight>75</weight>
        <bold>true</bold>
       </font>
