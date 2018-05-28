@@ -16,7 +16,6 @@ class StreamerThread(Thread):
     def run(self):
         self.streaming = True
         cap = cv2.VideoCapture(0)
-        #Thread(target = self.send_to_server).start()
 
         while cap.isOpened() and self.streaming:
             ret, frame = cap.read()
