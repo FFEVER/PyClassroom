@@ -70,7 +70,7 @@ class TeacherHanlder(Thread):
     def cmd_end_live(self):
         print(self.teacher.name, "end a live.")
         self.notify_all_student(constant.END_LIVE,None)
-        self.video_receiver_handler.stop()
+        self.video_handler.stop()
         self.sound_handler.stop()
 
     def cmd_added_material(self, materials):
