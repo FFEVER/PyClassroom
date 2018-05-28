@@ -48,7 +48,7 @@ class ClientSocket():
         self.socket.sendall(size + packet)
 
     def send_video_frame(self, frame):
-        packet = pickle.dumps(data)
+        packet = pickle.dumps(frame)
         size = struct.pack('L', len(packet))
         self.socket.sendall(size + packet)
 
@@ -56,20 +56,28 @@ class ClientSocket():
         data = b""
         payload_size = struct.calcsize("L")
 
-        while len(data) < payload_size:
-            data += self.socket.recv(4096)
-        packed_msg_size = data[:payload_size]
-        data = data[payload_size:]
-        msg_size = struct.unpack("L", packed_msg_size)[0]
-        while len(data) < msg_size:
-            data += self.socket.recv(4096)
-        frame_data = data[:msg_size]
-        data = data[msg_size:]
+        try:
+            while len(data) < payload_size:
+                data += self.socket.recv(4096)
+            packed_msg_size = data[:payload_size]
+            data = data[payload_size:]
+            msg_size = struct.unpack("L", packed_msg_size)[0]
+            while len(data) < msg_size:
+                data += self.socket.recv(4096)
+            frame_data = data[:msg_size]
+            data = data[msg_size:]
 
-        frame = pickle.loads(frame_data)
-        print(frame)
-
-        return frame
+            frame = pickle.loads(frame_data)
+            print(frame)
+            return frame
+        except ConnectionResetError:
+            return None
+        except ConnectionAbortedError:
+            return None
+        except ConnectionRefusedError:
+            return None
+        except ConnectionError:
+            return None
 
     def close(self):
         self.socket.close()
