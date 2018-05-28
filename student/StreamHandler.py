@@ -16,6 +16,7 @@ class StreamHandler(Thread):
         self.is_running = True
 
     def run(self):
+        print("StreamHandler running")
         while self.is_running:
             # print("frame run")
             try:
