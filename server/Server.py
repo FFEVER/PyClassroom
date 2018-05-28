@@ -70,7 +70,9 @@ class Server:
         decoded_input = socket.recv_with_size_and_decode()
         print(decoded_input)
 
-        if decoded_input[0] == constant.I_AM_TEACHER_SENDER:
+        cmd = decoded_input[0]
+
+        if cmd == constant.I_AM_TEACHER_SENDER:
             # room
             room = decoded_input[1]
             self.room_count += 1
@@ -87,7 +89,7 @@ class Server:
             self.teacher_list[room_id] = teacherHandler
             teacherHandler.start()
 
-        elif decoded_input[0] == constant.I_AM_STUDENT_SENDER:
+        elif cmd == constant.I_AM_STUDENT_SENDER:
             student = decoded_input[1]
             self.student_count += 1
             student_id = str(uuid.uuid4())[:5] + str(self.student_count)
@@ -99,15 +101,36 @@ class Server:
             self.student_list[student_id] = studentHandler
             studentHandler.start()
 
-        elif decoded_input[0] == constant.I_AM_TEACHER_RECEIVER:
+        elif cmd == constant.I_AM_TEACHER_RECEIVER:
             room_id = decoded_input[1]
             socket.sendall_with_size(constant.SUCCESS)
             self.teacher_list[room_id].set_sender(socket)
 
-        elif decoded_input[0] == constant.I_AM_STUDENT_RECEIVER:
+        elif cmd == constant.I_AM_STUDENT_RECEIVER:
             student_id = decoded_input[1]
             socket.sendall_with_size(constant.SUCCESS)
             self.student_list[student_id].set_sender(socket)
+
+        elif cmd == constant.I_AM_TEACHER_VIDEO_SENDER:
+            room_id = decoded_input[1]
+            socket.sendall_with_size(constant.SUCCESS)
+            self.teacher_list[room_id].set_video_receiver(socket)
+        
+        elif cmd == constant.I_AM_TEACHER_SOUND_SENDER:
+            room_id = decoded_input[1]
+            socket.sendall_with_size(constant.SUCCESS)
+            self.teacher_list[room_id].set_sound_receiver(socket)
+        
+        elif cmd == constant.I_AM_STUDENT_VIDEO_RECEIVER:
+            student_id = decoded_input[1]
+            socket.sendall_with_size(constant.SUCCESS)
+            self.student_list[student_id].set_video_sender(socket)
+
+
+        elif cmd == constant.I_AM_STUDENT_SOUND_RECEIVER:
+            student_id = decoded_input[1]
+            socket.sendall_with_size(constant.SUCCESS)
+            self.student_list[student_id].set_sound_sender(socket)
 
         else:
             socket.sendall_with_size("Error: You are not teacher or student.")

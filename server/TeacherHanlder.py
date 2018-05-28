@@ -5,6 +5,8 @@ import sys
 import struct
 
 from ClientSocket import ClientSocket
+from VideoHandler import VideoHandler
+from SoundHandler import SoundHandler
 from Teacher import Teacher
 import constant
 
@@ -16,8 +18,14 @@ class TeacherHanlder(Thread):
         self.alive = True  # use for server to remove this from the teacher_list
         self.server = server
         self.teacher = teacher
+
         self.receiver = receiver
         self.sender = None
+        self.video_receiver = None
+        self.sound_receiver = None
+        self.video_handler = None
+        self.sound_handler = None
+
         self.room = room
         self.student_list = []  # list of studentHandler
 
@@ -53,9 +61,17 @@ class TeacherHanlder(Thread):
 
     def cmd_start_live(self):
         print(self.teacher.name, "starting a live.")
+        self.notify_all_student(constant.START_LIVE,None)
+        self.video_handler = VideoHandler(self.student_list,self.video_receiver)
+        self.sound_handler = SoundHandler(self,student_list,self.sound_receiver)
+        self.video_handler.start()
+        self.sound_handler.start()
 
     def cmd_end_live(self):
         print(self.teacher.name, "end a live.")
+        self.notify_all_student(constant.END_LIVE,None)
+        self.video_receiver_handler.stop()
+        self.sound_handler.stop()
 
     def cmd_added_material(self, materials):
         print(self.teacher.name, "added a materail ->", materials)
@@ -123,6 +139,12 @@ class TeacherHanlder(Thread):
 
     def set_sender(self, sender):
         self.sender = sender
+
+    def set_video_receiver(self,video_receiver):
+        self.video_receiver = video_receiver
+
+    def set_sound_receiver(self,sound_receiver):
+        self.sound_receiver = sound_receiver
 
     def disconnected(self):
         ''' Clean up after teacher disconnected'''

@@ -15,6 +15,8 @@ class StudentHandler(Thread):
         self.student = student
         self.receiver = receiver
         self.sender = None
+        self.video_sender = None
+        self.sound_sender = None
         self.teacher = None # Teacher Handler
 
     def run(self):
@@ -77,8 +79,20 @@ class StudentHandler(Thread):
         if self.sender != None:
             self.sender.sendall_with_size([cmd,data])
 
+    def send_frame_to_student(self,frame):
+        self.video_sender.sendall_with_size(frame)
+
+    def send_sound_to_student(self,sound):
+        self.sound_sender.sendall_with_size(sound)
+
     def set_sender(self, sender):
         self.sender = sender
+
+    def set_video_sender(self,video_sender):
+        self.video_sender = video_sender
+
+    def set_sound_sender(self,sound_sender):
+        self.sound_sender = sound_sender    
 
     def disconnected(self):
         if self.teacher != None:
