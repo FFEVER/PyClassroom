@@ -69,7 +69,7 @@ def create_sender():
 
     data = []
     data.append(constant.I_AM_TEACHER_SENDER)
-    data.append(Room(0, "JavaScript", 1, Teacher(
+    data.append(Room(0, "JavaScript", 2, Teacher(
         "John Smith"), "This is a javascript class."))
     sender.sendall_with_size(data)
 
