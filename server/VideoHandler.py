@@ -5,7 +5,6 @@ import sys
 import struct
 
 from ClientSocket import ClientSocket
-from Teacher import Teacher
 import constant
 
 
@@ -18,16 +17,20 @@ class VideoHandler(Thread):
 
     def run(self):
         while self.is_running:
-            print("frame run")
-            self.video_receiver.recv_video_frame()
+            # print("frame run")
+            frame = self.video_receiver.recv_video_frame()
             # if frame == None:
             #     continue
             # print(len(frame))
-            # self.send_frame_to_all_student(frame)
+            self.send_frame_to_all_student(frame)
 
     def send_frame_to_all_student(self,frame):
         for studentHandler in self.student_list:
             studentHandler.send_frame_to_student(frame)
+
+    def update_student_list(self,student_list):
+        self.student_list = student_list
+        print("Current student in VideoHandler: ",len(self.student_list))
 
 
     def stop(self):

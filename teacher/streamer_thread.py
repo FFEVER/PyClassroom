@@ -20,12 +20,12 @@ class StreamerThread(Thread):
         while cap.isOpened() and self.streaming:
             ret, frame = cap.read()
             img_string = cv2.imencode('.jpg', frame)[1].tostring()
-            #send(img_stirng)
             cv2.imshow('Streaming', frame)
-            self.video_sender.send_video_frame(frame)
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+            self.video_sender.send_video_frame(img_string)
+            cv2.waitKey(1)
 
         cap.release()
         cv2.destroyAllWindows()
+        print("Streamer ended")
+
         

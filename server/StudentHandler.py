@@ -5,6 +5,7 @@ import sys
 import struct
 
 from Student import Student
+from ClientSocket import ClientSocket
 import constant
 
 class StudentHandler(Thread):
@@ -20,11 +21,6 @@ class StudentHandler(Thread):
         self.teacher = None # Teacher Handler
 
     def run(self):
-        '''#TODO: run() -> Student handler
-        [ ] refresh room list
-        [ ] select room (create new thread, this thread wait)
-        [ ] close connection when down
-        '''
         print("Student thread:", self.student)
         while True:
             if self.sender == None:
@@ -80,10 +76,10 @@ class StudentHandler(Thread):
             self.sender.sendall_with_size([cmd,data])
 
     def send_frame_to_student(self,frame):
-        self.video_sender.sendall_with_size(frame)
+        self.video_sender.send_video_frame(frame)
 
     def send_sound_to_student(self,sound):
-        self.sound_sender.sendall_with_size(sound)
+        self.sound_sender.send_sound(sound)
 
     def set_sender(self, sender):
         self.sender = sender

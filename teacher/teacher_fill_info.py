@@ -14,8 +14,6 @@ import socket
 import struct
 import pickle
 
-
-
 class TeacherFillInfo(QWidget):
     def __init__(self):
         QWidget.__init__(self, None)
@@ -52,6 +50,8 @@ class TeacherFillInfo(QWidget):
             self.main_window.set_info(room_id, name, room_name, description)
             self.main_window.set_sender(sender)
             self.main_window.set_receiver(receiver)
+            self.main_window.set_video_sender(video_sender)
+            self.main_window.set_sound_sender(sound_sender)
             self.main_window.start_receiver_thread()
             self.main_window.show()
 
