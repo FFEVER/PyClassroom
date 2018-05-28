@@ -26,6 +26,7 @@ class StudentLobby(QtWidgets.QMainWindow):
     refresh_materials = QtCore.pyqtSignal(list)
     live_start = QtCore.pyqtSignal()
     live_end = QtCore.pyqtSignal()
+    msg_receive = QtCore.pyqtSignal(str)
 
     on_lobby_closed = QtCore.pyqtSignal()
 
@@ -57,6 +58,8 @@ class StudentLobby(QtWidgets.QMainWindow):
         self.refresh_materials.connect(self.onMaterialRefresh)
         self.live_start.connect(self.onLiveStart)
         self.live_end.connect(self.onLiveEnd)
+        self.msg_receive(self.onMessageReceive)
+        self.nextPage.onSendTextButtonClicked.connect(self.onMessageSend)
 
         self.model = QtGui.QStandardItemModel(self.ui.listView)
 
@@ -203,6 +206,14 @@ class StudentLobby(QtWidgets.QMainWindow):
     def onLiveEnd(self):
         self.nextPage.stopStreamThread()
 
+    @QtCore.pyqtSlot(str)
+    def onMessageReceive(self,msg):
+        self.nextPage.update_message_box(msg)
+
+    @QtCore.pyqtSlot(str)
+    def onMessageSend(self,msg):
+        self.sender.sendall_with_size([constant.SEND_MSG,msg])
+
     # # replaced method, don't change its name
     def closeEvent(self, event):
         self.receiver_thread_running = False
@@ -251,7 +262,9 @@ class StudentLobby(QtWidgets.QMainWindow):
                     student = data[0]
                     msg = data[1]
                     # Please check if it is your own msg, so don't print it.
-                    print(student, ": ", msg)
+                    full_message = "[" + student.id + "]" + student.name + ": " + msg
+                    print(full_message)
+                    self.msg_receive.emit(msg)
 
                 elif cmd == constant.STUDENT_LIST_UPDATED:
                     student_list = decoded_input[1]

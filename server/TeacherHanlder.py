@@ -162,7 +162,6 @@ class TeacherHanlder(Thread):
         # tell every student that teacher has disconnected
         for student in self.student_list:
             student.teacher = None
-            student.notify_student(constant.CLOSE_ROOM,
-                                   "The room has been closed.")
+            student.notify_student(constant.CLOSE_ROOM,"The room has been closed.")
         self.sender.close()
         self.receiver.close()

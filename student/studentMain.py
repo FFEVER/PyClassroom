@@ -14,6 +14,8 @@ from StreamHandler import StreamHandler
 
 class StudentMain(QtWidgets.QMainWindow):
     onCloseButtonClicked = QtCore.pyqtSignal()
+    onSendTextButtonClicked = QtCore.pyqtSignal(str)
+
     def __init__(self):
         print("studentMain: ")
         QtWidgets.QMainWindow.__init__(self, None)
@@ -34,6 +36,7 @@ class StudentMain(QtWidgets.QMainWindow):
         self.list_container.setPalette(pal)
         self.list_container.setLayout(box_layout)
         self.ui.leave_button.clicked.connect(self.close)
+        self.ui.send_button.clicked.connect(self.sendMessage)
 
         self.ui.scroll_area.setWidget(self.list_container)
         self.ui.scroll_area.verticalScrollBar().rangeChanged.connect(self.scroll_to_material_bottom)
@@ -51,6 +54,11 @@ class StudentMain(QtWidgets.QMainWindow):
         label.setStyleSheet("QLabel { background:rgb(200,200,200);}")
         label.setFixedHeight(50)
         self.list_container.layout().addWidget(label)
+
+    def sendMessage(self):
+        text = self.ui.chat_edit.text()
+        if text != "":
+            self.onSendTextButtonClicked.emit(text)
 
 
     def setRoom(self, room):
@@ -94,6 +102,9 @@ class StudentMain(QtWidgets.QMainWindow):
         rgbImage = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         convertToQtFormat = QImage(rgbImage.data, rgbImage.shape[1], rgbImage.shape[0], QImage.Format_RGB888)
         self.ui.stream_label.setPixmap(QPixmap.fromImage(convertToQtFormat))
+
+    def update_message_box(self,msg):
+        self.ui.chat_browser.setText(self.ui.chat_browser.toPlainText() + msg + "\n")
 
     def hide_cover(self):
         self.ui.cover_label.hide()
