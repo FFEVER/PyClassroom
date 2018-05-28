@@ -11,16 +11,19 @@ import constant
 class StreamHandler(Thread):
     def __init__(self,parent,video_receiver):
         Thread.__init__(self)
+        self.parent = parent
         self.video_receiver = video_receiver
         self.is_running = True
 
     def run(self):
         while self.is_running:
             # print("frame run")
-            self.video_receiver.recv_video_frame()
-            # if frame == None:
-            #     continue
-            print(len(frame))
+            try:
+                data = self.video_receiver.recv_video_frame()
+                self.parent.set_stream_string(data)
+            except:
+                pass
+        print("Student stream end")
 
 
     def stop(self):

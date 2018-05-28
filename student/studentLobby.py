@@ -212,7 +212,7 @@ class StudentLobby(QtWidgets.QMainWindow):
             print(decoded_input)
             cmd = decoded_input[0]
 
-            if self.is_in_room:
+            if not self.is_in_room:
                 if cmd == constant.REFRESH_ROOM_LIST:
                     room_list = decoded_input[1]
                     self.setRoomList(room_list)

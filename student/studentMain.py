@@ -1,4 +1,6 @@
 import sys
+import numpy as np
+import cv2
 
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
@@ -71,6 +73,7 @@ class StudentMain(QtWidgets.QMainWindow):
 
     def stopStreamThread(self):
         self.stream_handler.stop()
+        print("stop stream")
     
     # overrided method, don't change its name
     def closeEvent(self,event):
@@ -82,6 +85,13 @@ class StudentMain(QtWidgets.QMainWindow):
         self.ui.scroll_area.verticalScrollBar().setValue(maxi)
     
 
+    def set_stream_string(self, data):
+        nparr = np.fromstring(data, np.uint8)
+        image = cv2.imdecode(nparr, 1)
+
+        rgbImage = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        convertToQtFormat = QImage(rgbImage.data, rgbImage.shape[1], rgbImage.shape[0], QImage.Format_RGB888)
+        self.ui.stream_label.setPixmap(QPixmap.fromImage(convertToQtFormat))
 
         
 

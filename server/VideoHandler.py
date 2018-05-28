@@ -18,7 +18,7 @@ class VideoHandler(Thread):
     def run(self):
         while self.is_running:
             # print("frame run")
-            self.video_receiver.recv_video_frame()
+            frame = self.video_receiver.recv_video_frame()
             # if frame == None:
             #     continue
             print(len(frame))
