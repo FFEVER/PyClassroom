@@ -58,7 +58,7 @@ class StudentLobby(QtWidgets.QMainWindow):
         self.refresh_materials.connect(self.onMaterialRefresh)
         self.live_start.connect(self.onLiveStart)
         self.live_end.connect(self.onLiveEnd)
-        self.msg_receive(self.onMessageReceive)
+        self.msg_receive.connect(self.onMessageReceive)
         self.nextPage.onSendTextButtonClicked.connect(self.onMessageSend)
 
         self.model = QtGui.QStandardItemModel(self.ui.listView)
@@ -167,6 +167,7 @@ class StudentLobby(QtWidgets.QMainWindow):
         self.show()
         self.nextPage = StudentMain()
         self.nextPage.onCloseButtonClicked.connect(self.onExitRoom)
+        self.nextPage.onSendTextButtonClicked.connect(self.onMessageSend)
 
     @QtCore.pyqtSlot()
     def onExitRoom(self):
@@ -176,6 +177,7 @@ class StudentLobby(QtWidgets.QMainWindow):
         self.nextPage.hide()
         self.nextPage = StudentMain()
         self.nextPage.onCloseButtonClicked.connect(self.onExitRoom)
+        self.nextPage.onSendTextButtonClicked.connect(self.onMessageSend)
 
     @QtCore.pyqtSlot(list)
     def onStudentListUpdated(self, student_list):
@@ -192,6 +194,7 @@ class StudentLobby(QtWidgets.QMainWindow):
             self.nextPage.stopStreamThread()
         self.nextPage = StudentMain()
         self.nextPage.onCloseButtonClicked.connect(self.onExitRoom)
+        self.nextPage.onSendTextButtonClicked.connect(self.onMessageSend)
 
     @QtCore.pyqtSlot(list)
     def onMaterialRefresh(self, materials_list):
