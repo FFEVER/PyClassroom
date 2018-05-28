@@ -217,8 +217,9 @@ class StudentLobby(QtWidgets.QMainWindow):
                 print("Server has down.")
                 break
             print(decoded_input)
-            cmd = decoded_input[0]
 
+            cmd = decoded_input[0]
+            print(self.is_in_room, cmd)
             if not self.is_in_room:
                 if cmd == constant.REFRESH_ROOM_LIST:
                     room_list = decoded_input[1]

@@ -3,13 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="f1de57f2-5c5b-4a13-bca9-1f4808799547" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/ClientSocket.py" afterPath="$PROJECT_DIR$/server/ClientSocket.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/VideoHandler.py" afterPath="$PROJECT_DIR$/server/VideoHandler.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/student/ClientSocket.py" afterPath="$PROJECT_DIR$/student/ClientSocket.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/student/StreamHandler.py" afterPath="$PROJECT_DIR$/student/StreamHandler.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/student/studentLobby.py" afterPath="$PROJECT_DIR$/student/studentLobby.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/student/studentMain.py" afterPath="$PROJECT_DIR$/student/studentMain.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/teacher/ClientSocket.py" afterPath="$PROJECT_DIR$/teacher/ClientSocket.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -20,11 +14,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="teacher_fill_info.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="teacher_fill_info.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/teacher/teacher_fill_info.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="34">
-              <caret line="43" column="54" lean-forward="true" selection-start-line="43" selection-start-column="54" selection-end-line="43" selection-end-column="54" />
+            <state relative-caret-position="221">
+              <caret line="54" column="52" lean-forward="true" selection-start-line="54" selection-start-column="52" selection-end-line="54" selection-end-column="52" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -47,8 +41,8 @@
       <file leaf-file-name="studentLogic.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/student/studentLogic.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-16">
-              <caret line="8" column="23" lean-forward="true" selection-start-line="8" selection-start-column="23" selection-end-line="8" selection-end-column="23" />
+            <state relative-caret-position="171">
+              <caret line="19" column="36" lean-forward="true" selection-start-line="19" selection-start-column="36" selection-end-line="19" selection-end-column="36" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -59,8 +53,8 @@
       <file leaf-file-name="studentMain.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/student/studentMain.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="136">
-              <caret line="65" column="42" lean-forward="true" selection-start-line="65" selection-start-column="42" selection-end-line="65" selection-end-column="42" />
+            <state relative-caret-position="115">
+              <caret line="69" column="39" lean-forward="false" selection-start-line="69" selection-start-column="39" selection-end-line="69" selection-end-column="39" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -71,8 +65,8 @@
       <file leaf-file-name="studentLobby.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/student/studentLobby.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="516">
-              <caret line="216" column="48" lean-forward="true" selection-start-line="216" selection-start-column="48" selection-end-line="216" selection-end-column="48" />
+            <state relative-caret-position="183">
+              <caret line="198" column="35" lean-forward="true" selection-start-line="198" selection-start-column="35" selection-end-line="198" selection-end-column="35" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -92,11 +86,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="StreamHandler.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="StreamHandler.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/student/StreamHandler.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="205">
-              <caret line="25" column="33" lean-forward="false" selection-start-line="25" selection-start-column="33" selection-end-line="25" selection-end-column="33" />
+            <state relative-caret-position="273">
+              <caret line="23" column="19" lean-forward="true" selection-start-line="23" selection-start-column="19" selection-end-line="23" selection-end-column="19" />
               <folding>
                 <element signature="e#0#28#0" expanded="true" />
               </folding>
@@ -132,16 +126,16 @@
       <list>
         <option value="$PROJECT_DIR$/server/TeacherHanlder.py" />
         <option value="$PROJECT_DIR$/teacher/teacher_fill_info.py" />
-        <option value="$PROJECT_DIR$/student/studentLobby.py" />
         <option value="$PROJECT_DIR$/server/VideoHandler.py" />
         <option value="$PROJECT_DIR$/student/StreamHandler.py" />
         <option value="$PROJECT_DIR$/student/studentMain.py" />
         <option value="$PROJECT_DIR$/student/ClientSocket.py" />
+        <option value="$PROJECT_DIR$/student/studentLobby.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="676" />
+    <option name="x" value="407" />
     <option name="width" value="697" />
     <option name="height" value="735" />
   </component>
@@ -309,7 +303,7 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#0#28#0" expanded="true" />
-            <marker date="1527516665562" expanded="true" signature="609:647" ph="..." />
+            <marker date="1527520469254" expanded="true" signature="611:649" ph="..." />
           </folding>
         </state>
       </provider>
@@ -319,7 +313,7 @@
         <state relative-caret-position="1224">
           <caret line="72" column="26" lean-forward="false" selection-start-line="72" selection-start-column="26" selection-end-line="72" selection-end-column="26" />
           <folding>
-            <element signature="e#0#28#0" expanded="true" />
+            <element signature="e#0#28#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -349,7 +343,7 @@
         <state relative-caret-position="1224">
           <caret line="72" column="26" lean-forward="false" selection-start-line="72" selection-start-column="26" selection-end-line="72" selection-end-column="26" />
           <folding>
-            <element signature="e#0#28#0" expanded="true" />
+            <element signature="e#0#28#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -379,17 +373,7 @@
         <state relative-caret-position="115">
           <caret line="113" column="48" lean-forward="false" selection-start-line="113" selection-start-column="42" selection-end-line="113" selection-end-column="48" />
           <folding>
-            <element signature="e#0#13#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/student/studentLobby.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="516">
-          <caret line="216" column="48" lean-forward="true" selection-start-line="216" selection-start-column="48" selection-end-line="216" selection-end-column="48" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
+            <element signature="e#0#13#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -400,17 +384,7 @@
           <caret line="20" column="20" lean-forward="false" selection-start-line="20" selection-start-column="20" selection-end-line="20" selection-end-column="20" />
           <folding>
             <element signature="e#0#28#0" expanded="true" />
-            <marker date="1527516665562" expanded="true" signature="609:647" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/student/studentLogic.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-16">
-          <caret line="8" column="23" lean-forward="true" selection-start-line="8" selection-start-column="23" selection-end-line="8" selection-end-column="23" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
+            <marker date="1527520469254" expanded="true" signature="611:649" ph="..." />
           </folding>
         </state>
       </provider>
@@ -419,26 +393,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="153">
           <caret line="123" column="40" lean-forward="true" selection-start-line="123" selection-start-column="40" selection-end-line="123" selection-end-column="40" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/student/StreamHandler.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="205">
-          <caret line="25" column="33" lean-forward="false" selection-start-line="25" selection-start-column="33" selection-end-line="25" selection-end-column="33" />
-          <folding>
-            <element signature="e#0#28#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/student/studentMain.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="65" column="42" lean-forward="true" selection-start-line="65" selection-start-column="42" selection-end-line="65" selection-end-column="42" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>
@@ -471,12 +425,52 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/teacher/teacher_fill_info.py">
+    <entry file="file://$PROJECT_DIR$/student/studentLogic.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="43" column="54" lean-forward="true" selection-start-line="43" selection-start-column="54" selection-end-line="43" selection-end-column="54" />
+        <state relative-caret-position="171">
+          <caret line="19" column="36" lean-forward="true" selection-start-line="19" selection-start-column="36" selection-end-line="19" selection-end-column="36" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/teacher/teacher_fill_info.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="221">
+          <caret line="54" column="52" lean-forward="true" selection-start-line="54" selection-start-column="52" selection-end-line="54" selection-end-column="52" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/student/studentLobby.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="183">
+          <caret line="198" column="35" lean-forward="true" selection-start-line="198" selection-start-column="35" selection-end-line="198" selection-end-column="35" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/student/studentMain.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="115">
+          <caret line="69" column="39" lean-forward="false" selection-start-line="69" selection-start-column="39" selection-end-line="69" selection-end-column="39" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/student/StreamHandler.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="273">
+          <caret line="23" column="19" lean-forward="true" selection-start-line="23" selection-start-column="19" selection-end-line="23" selection-end-column="19" />
+          <folding>
+            <element signature="e#0#28#0" expanded="true" />
           </folding>
         </state>
       </provider>
