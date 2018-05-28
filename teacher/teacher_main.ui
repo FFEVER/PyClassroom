@@ -22,10 +22,17 @@
      <height>431</height>
     </rect>
    </property>
+   <property name="tabShape">
+    <enum>QTabWidget::Triangular</enum>
+   </property>
    <property name="currentIndex">
     <number>0</number>
    </property>
    <widget class="QWidget" name="tab">
+    <attribute name="icon">
+     <iconset>
+      <normaloff>homeicon.svg</normaloff>homeicon.svg</iconset>
+    </attribute>
     <attribute name="title">
      <string>Main</string>
     </attribute>
@@ -42,13 +49,13 @@
       <string>Description:</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
      </property>
     </widget>
     <widget class="QLabel" name="label_2">
      <property name="geometry">
       <rect>
-       <x>40</x>
+       <x>20</x>
        <y>90</y>
        <width>51</width>
        <height>16</height>
@@ -58,13 +65,13 @@
       <string>Teacher:</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
      </property>
     </widget>
     <widget class="QLabel" name="label_3">
      <property name="geometry">
       <rect>
-       <x>30</x>
+       <x>20</x>
        <y>150</y>
        <width>61</width>
        <height>16</height>
@@ -74,13 +81,13 @@
       <string>Room name:</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
      </property>
     </widget>
     <widget class="QLabel" name="label">
      <property name="geometry">
       <rect>
-       <x>40</x>
+       <x>20</x>
        <y>30</y>
        <width>51</width>
        <height>16</height>
@@ -90,7 +97,7 @@
       <string>Room ID:</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
      </property>
     </widget>
     <widget class="Line" name="line">
@@ -190,7 +197,7 @@
     <widget class="QLabel" name="label_5">
      <property name="geometry">
       <rect>
-       <x>40</x>
+       <x>20</x>
        <y>340</y>
        <width>51</width>
        <height>16</height>
@@ -200,7 +207,7 @@
       <string>Capacity:</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
      </property>
     </widget>
     <widget class="QLabel" name="capacity_label">
@@ -218,6 +225,10 @@
     </widget>
    </widget>
    <widget class="QWidget" name="tab_2">
+    <attribute name="icon">
+     <iconset>
+      <normaloff>bookicon.png</normaloff>bookicon.png</iconset>
+    </attribute>
     <attribute name="title">
      <string>Material</string>
     </attribute>
@@ -269,6 +280,10 @@
     </widget>
    </widget>
    <widget class="QWidget" name="tab_3">
+    <attribute name="icon">
+     <iconset>
+      <normaloff>eyeicon.png</normaloff>eyeicon.png</iconset>
+    </attribute>
     <attribute name="title">
      <string>Viewer</string>
     </attribute>

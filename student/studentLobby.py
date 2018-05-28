@@ -61,11 +61,18 @@ class StudentLobby(QtWidgets.QMainWindow):
         self.msg_receive.connect(self.onMessageReceive)
         self.nextPage.onSendTextButtonClicked.connect(self.onMessageSend)
 
-        self.model = QtGui.QStandardItemModel(self.ui.listView)
+        self.ui.table.verticalHeader().setVisible(False)
+        self.ui.table.setColumnWidth(0, 50)
+        self.ui.table.setColumnWidth(1, 189)
+        self.ui.table.setColumnWidth(2, 150)
+        self.ui.table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+
+        #self.model = QtGui.QStandardItemModel(self.ui.listView)
 
         self.receiver_thread_running = True
 
         self.allCourses = None
+        self.shownCourses = None
 
     def setSender(self, sender):
         self.sender = sender
@@ -88,60 +95,38 @@ class StudentLobby(QtWidgets.QMainWindow):
         Thread(target=self.receiver_handler, args=(self.receiver,)).start()
 
     def updateRoomList(self):
-        self.model.clear()
-        for course in self.allCourses:
-            courseString = course.id + " | " + course.name + " | " + course.teacher.name
-            item = QtGui.QStandardItem(courseString)
-            item.setCheckable(False)
-            self.model.appendRow(item)
-
-        self.ui.listView.setModel(self.model)
+        self.ui.table.setRowCount(0)
+        for i in range(len(self.shownCourses)):
+            self.ui.table.insertRow(i)
+            self.ui.table.setItem(i, 0, QtWidgets.QTableWidgetItem(self.shownCourses[i].id))
+            self.ui.table.setItem(i, 1, QtWidgets.QTableWidgetItem(self.shownCourses[i].name))
+            self.ui.table.setItem(i, 2, QtWidgets.QTableWidgetItem(self.shownCourses[i].teacher.name))
+            #self.model.appendRow(item)
+        #self.ui.listView.setModel(self.model)
 
     def setRoomList(self, roomList):
         print("roomList: ", roomList)
         self.allCourses = roomList
+        self.shownCourses = roomList
+        print("self.shownCourse: ", self.shownCourses)
         print("self.allCourses: ", self.allCourses)
 
     def joinClicked(self):
 
-        index = QtCore.QModelIndex()
-        index = self.ui.listView.currentIndex()
+        index = self.ui.table.currentRow()
 
         if index == -1:
             return
 
-        # selected course from the listView
-        self.selectedCourse = self.model.itemFromIndex(index).text()
-        tosend = self.selectedCourse.split(' | ')
+        room_id = self.shownCourses[index].id
 
-        i = 0
-        # avoiding empty key
-        while True:
-
-            if not tosend[i] == '':
-                break
-            i += 1
-
-        # use tosend[i] to represent the Room ID
-        # and open StudentMain
-
-        choosed_room = None
-        for course in self.allCourses:
-            if course.id == tosend[i]:
-                choosed_room = course
-
-        self.sender.sendall_with_size([constant.JOIN_ROOM, tosend[i]])
+        self.sender.sendall_with_size([constant.JOIN_ROOM, room_id])
 
     def searchClicked(self):
-        filter_text = str(self.ui.searchBox.text()).lower()
-        for row in range(self.model.rowCount()):
-            if filter_text in str(self.model.item(row).text()).lower():
-                self.ui.listView.setRowHidden(row, False)
-            else:
-                self.ui.listView.setRowHidden(row, True)
+        self.filterCourses()
+        self.updateRoomList()
 
     def refreshClicked(self):
-        self.updateRoomList()
         self.sender.sendall_with_size([constant.REFRESH_ROOM_LIST])
 
     @QtCore.pyqtSlot(list)
@@ -202,12 +187,14 @@ class StudentLobby(QtWidgets.QMainWindow):
 
     @QtCore.pyqtSlot()
     def onLiveStart(self):
-        print("on live starte")
+        print("on live start")
         self.nextPage.startStreamThread(self.video_receiver)
+        self.nextPage.hide_cover()
 
     @QtCore.pyqtSlot()
     def onLiveEnd(self):
         self.nextPage.stopStreamThread()
+        self.nextPage.show_cover()
 
     @QtCore.pyqtSlot(str)
     def onMessageReceive(self,msg):
@@ -267,7 +254,7 @@ class StudentLobby(QtWidgets.QMainWindow):
                     # Please check if it is your own msg, so don't print it.
                     full_message = "[" + student.id + "]" + student.name + ": " + msg
                     print(full_message)
-                    self.msg_receive.emit(msg)
+                    self.msg_receive.emit(full_message)
 
                 elif cmd == constant.STUDENT_LIST_UPDATED:
                     student_list = decoded_input[1]
@@ -296,3 +283,19 @@ class StudentLobby(QtWidgets.QMainWindow):
                     self.live_end.emit()
 
         print("Receiver END")
+
+    def filterCourses(self):
+        self.shownCourses = []
+        filter_text = str(self.ui.searchBox.text()).lower()
+        if self.ui.filter.currentIndex() == 0:
+            for row in range(len(self.allCourses)):
+                row_id = self.allCourses[row].id.lower()
+                if filter_text in row_id:
+                    self.shownCourses.append(self.allCourses[row])
+        else:
+            for row in range(len(self.allCourses)):
+                row_id = self.allCourses[row].name.lower()
+                if filter_text in row_id:
+                    self.shownCourses.append(self.allCourses[row])
+
+

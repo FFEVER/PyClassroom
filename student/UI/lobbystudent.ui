@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>30</x>
@@ -26,7 +26,7 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="QComboBox" name="comboBox">
+       <widget class="QComboBox" name="filter">
         <item>
          <property name="text">
           <string>Search By ID</string>
@@ -66,10 +66,29 @@
      </widget>
     </item>
     <item>
-     <widget class="QListView" name="listView"/>
-    </item>
-    <item>
      <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QTableWidget" name="table">
+        <property name="columnCount">
+         <number>3</number>
+        </property>
+        <column>
+         <property name="text">
+          <string>ID</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Course Name</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Teacher</string>
+         </property>
+        </column>
+       </widget>
+      </item>
       <item>
        <widget class="QPushButton" name="joinButton">
         <property name="text">

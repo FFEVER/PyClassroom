@@ -41,6 +41,10 @@ class StudentMain(QtWidgets.QMainWindow):
         self.ui.scroll_area.setWidget(self.list_container)
         self.ui.scroll_area.verticalScrollBar().rangeChanged.connect(self.scroll_to_material_bottom)
 
+        self.ui.cover_label.setText("Teacher is not currently streaming.")
+        self.ui.cover_label.setStyleSheet("background:rgb(200,200,200);")
+        #self.hide_cover()
+
     def setUI(self):
         self.ui.roomIDinfo.setText(self.room.id)
         self.ui.courseNameInfo.setText(self.room.name)
@@ -59,6 +63,8 @@ class StudentMain(QtWidgets.QMainWindow):
         text = self.ui.chat_edit.text()
         if text != "":
             self.onSendTextButtonClicked.emit(text)
+
+        self.ui.chat_edit.setText("")
 
 
     def setRoom(self, room):
