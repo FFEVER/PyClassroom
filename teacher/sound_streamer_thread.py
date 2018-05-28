@@ -35,7 +35,7 @@ class SoundStreamerThread(Thread):
 
         while self.streaming:
             snd_data = stream.read(CHUNK_SIZE)
-            self.sound_sender.send_sound(sound)
+            self.sound_sender.send_sound(snd_data)
 
         print("Sound Streamer ended")
 

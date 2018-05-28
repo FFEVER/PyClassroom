@@ -43,6 +43,13 @@ class StudentMain(QtWidgets.QMainWindow):
         self.ui.scroll_area.setWidget(self.list_container)
         self.ui.scroll_area.verticalScrollBar().rangeChanged.connect(self.scroll_to_material_bottom)
 
+        self.ui.cover_label.setText("Teacher is not currently streaming.")
+        self.ui.cover_label.setStyleSheet("background:rgb(200,200,200);")
+
+        self.stream_width = self.ui.stream_label.size().width()
+        self.stream_height = self.ui.stream_label.size().height()
+        #self.hide_cover()
+
     def setUI(self):
         self.ui.roomIDinfo.setText(self.room.id)
         self.ui.courseNameInfo.setText(self.room.name)
@@ -61,6 +68,8 @@ class StudentMain(QtWidgets.QMainWindow):
         text = self.ui.chat_edit.text()
         if text != "":
             self.onSendTextButtonClicked.emit(text)
+
+        self.ui.chat_edit.setText("")
 
 
     def setRoom(self, room):
@@ -82,6 +91,7 @@ class StudentMain(QtWidgets.QMainWindow):
         self.stream_handler = StreamHandler(self,video_receiver)
         self.sound_stream_handler = SoundStreamHandler(self,sound_receiver)
         self.stream_handler.start()
+        self.sound_stream_handler.start()
 
     def stopStreamThread(self):
         self.stream_handler.stop()
@@ -104,6 +114,7 @@ class StudentMain(QtWidgets.QMainWindow):
     def set_stream_string(self, data):
         nparr = np.fromstring(data, np.uint8)
         image = cv2.imdecode(nparr, 1)
+        image = cv2.resize(image, (self.stream_width, self.stream_height))
 
         rgbImage = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         convertToQtFormat = QImage(rgbImage.data, rgbImage.shape[1], rgbImage.shape[0], QImage.Format_RGB888)

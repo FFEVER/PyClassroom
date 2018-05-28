@@ -69,8 +69,11 @@ class TeacherMain(QWidget):
 
         self.chat_window_updater.connect(self.update_chat_window_text)
 
-        self.ui.start_button.setText("Start streaming")
-
+        if self.playing:
+            self.ui.start_button.setText("Start streaming")
+        else:
+            self.ui.start_button.setText("Stop streaming")
+            
         self.update_student_list()
 
 
