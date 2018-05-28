@@ -246,7 +246,6 @@ class StudentLobby(QtWidgets.QMainWindow):
                     continue
 
             else:
-
                 if cmd == constant.MESSAGE_FROM_STUDENT:
                     data = decoded_input[1]
                     student = data[0]

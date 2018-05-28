@@ -125,6 +125,7 @@ class TeacherHanlder(Thread):
         if self.video_handler != None and self.sound_handler != None:
             print("Enter while live")
             studentHandler.notify_student(constant.START_LIVE,None)
+            self.video_handler.update_student_list(self.student_list)
 
     def remove_student_handler(self, studentHandler):
         self.student_list.remove(studentHandler)
@@ -134,6 +135,10 @@ class TeacherHanlder(Thread):
         self.notify_all_student(
             constant.STUDENT_LIST_UPDATED, student_data_list)
         self.notify_teacher(constant.STUDENT_LIST_UPDATED, student_data_list)
+
+        if self.video_handler != None and self.sound_handler != None:
+            print("Leave while live")
+            self.video_handler.update_student_list(self.student_list)
 
     def notify_all_student(self, cmd, data):
         for student in self.student_list:

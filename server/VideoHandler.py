@@ -28,6 +28,10 @@ class VideoHandler(Thread):
         for studentHandler in self.student_list:
             studentHandler.send_frame_to_student(frame)
 
+    def update_student_list(self,student_list):
+        self.student_list = student_list
+        print("Current student in VideoHandler: ",len(self.student_list))
+
 
     def stop(self):
         self.is_running = False
