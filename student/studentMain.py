@@ -63,10 +63,10 @@ class StudentMain(QtWidgets.QMainWindow):
         self.ui.currentViewInfo.setText(str(len(self.student_list)) + "/" + str(self.room.max_student))
     
     # overrided method, don't change its name
-    # def closeEvent(self,event):
-    #     print("Close event")
-    #     #self.onCloseButtonClicked.emit()
-    #     event.accept()
+    def closeEvent(self,event):
+        print("Close event")
+        self.onCloseButtonClicked.emit()
+        event.accept()
 
     def scroll_to_material_bottom(self, min, maxi):
         self.ui.scroll_area.verticalScrollBar().setValue(maxi)
