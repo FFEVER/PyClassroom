@@ -68,6 +68,7 @@ class ClientSocket():
             data = data[msg_size:]
 
             frame = pickle.loads(frame_data)
+            print("Receieved from server")
             return frame
         except ConnectionResetError:
             return None

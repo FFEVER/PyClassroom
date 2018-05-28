@@ -184,7 +184,7 @@ class StudentLobby(QtWidgets.QMainWindow):
         QtWidgets.QMessageBox.critical(self, "Room closed", msg)
         self.show()
         self.nextPage.hide()
-        if self.nextPage.stream_handler == None:
+        if self.nextPage.stream_handler != None:
             print("Live now -> closing videoHandler")
             self.nextPage.stopStreamThread()
         self.nextPage = StudentMain()
