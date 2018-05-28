@@ -21,6 +21,7 @@ class StreamHandler(Thread):
             # print("frame run")
             try:
                 data = self.video_receiver.recv_video_frame()
+                print(len(data))
                 self.parent.set_stream_string(data)
             except:
                 pass
