@@ -26,7 +26,7 @@ class StudentInput(QtWidgets.QMainWindow):
         self.ui.startButton.clicked.connect(self.startButtonOnClick)
         
         self.nextPage = StudentLobby()
-        # self.nextPage.on_lobby_closed.connect(self.onLobbyClose)
+        self.nextPage.on_lobby_closed.connect(self.onLobbyClose)
 
         self.setWindowTitle("Enter Your Name!")
     
@@ -99,8 +99,9 @@ class StudentInput(QtWidgets.QMainWindow):
 
         return receiver
 
-    # @QtCore.pyqtSlot()
-    # def onLobbyClose(self):
-    #     print("Input Close")
-    #     self.onInputClosed.emit()
-    #     self.close()
+    @QtCore.pyqtSlot()
+    def onLobbyClose(self):
+        pass
+        #print("Input Close")
+        #self.onInputClosed.emit()
+        #self.close()

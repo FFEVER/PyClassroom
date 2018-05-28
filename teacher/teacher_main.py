@@ -151,7 +151,6 @@ class TeacherMain(QWidget):
             label.setStyleSheet("QLabel { background:rgb(200,200,200);}")
             label.setFixedHeight(50)
             self.list_container.layout().addWidget(label)
-            self.ui.scroll_area.ensureWidgetVisible(label, 0, 50)
 
             #self.ui.material_browser.setText(self.ui.material_browser.toPlainText() + entered + "\n")
             self.sender.sendall_with_size([constant.ADD_MATERIAL, self.materials])
@@ -195,3 +194,6 @@ class TeacherMain(QWidget):
         self.ui.teacher_name_label.setText(name)
         self.ui.room_name_label.setText(room_name)
         self.ui.description_label.setText(description)
+
+    def closeEvent(self, event):
+        self.end_connection()

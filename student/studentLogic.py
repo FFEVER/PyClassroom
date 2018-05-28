@@ -14,7 +14,7 @@ class StudentLogic(QtWidgets.QMainWindow):
 
         self.nextPage = StudentInput() 
         self.setWindowTitle("Select Your Role")
-        # self.nextPage.onInputClosed.connect(self.onStudentInputClosed)
+#        self.nextPage.onInputClosed.connect(self.onStudentInputClosed)
 
 
     def studentButtonOnClick(self): 

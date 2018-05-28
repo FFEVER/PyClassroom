@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainpage.ui'
 #
-# Created by: PyQt5 UI code generator 5.10.1
+# Created by: PyQt5 UI code generator 5.10
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -79,18 +79,14 @@ class Ui_Form(object):
         self.materialsTab.setObjectName("materialsTab")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.materialsTab)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
-        self.label_6 = QtWidgets.QLabel(self.materialsTab)
-        self.label_6.setObjectName("label_6")
-        self.verticalLayout_2.addWidget(self.label_6)
-        self.textEdit = QtWidgets.QTextEdit(self.materialsTab)
-        self.textEdit.setObjectName("textEdit")
-        self.verticalLayout_2.addWidget(self.textEdit)
-        self.pushButton_2 = QtWidgets.QPushButton(self.materialsTab)
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.verticalLayout_2.addWidget(self.pushButton_2)
-        self.pushButton = QtWidgets.QPushButton(self.materialsTab)
-        self.pushButton.setObjectName("pushButton")
-        self.verticalLayout_2.addWidget(self.pushButton)
+        self.scroll_area = QtWidgets.QScrollArea(self.materialsTab)
+        self.scroll_area.setWidgetResizable(True)
+        self.scroll_area.setObjectName("scroll_area")
+        self.scrollAreaWidgetContents = QtWidgets.QWidget()
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 545, 298))
+        self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
+        self.scroll_area.setWidget(self.scrollAreaWidgetContents)
+        self.verticalLayout_2.addWidget(self.scroll_area)
         icon1 = QtGui.QIcon()
         icon1.addPixmap(QtGui.QPixmap("bookicon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.tabWidget.addTab(self.materialsTab, icon1, "")
@@ -125,7 +121,7 @@ class Ui_Form(object):
         self.tabWidget.addTab(self.streamTab, icon2, "")
 
         self.retranslateUi(Form)
-        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
     def retranslateUi(self, Form):
@@ -143,23 +139,10 @@ class Ui_Form(object):
         self.currentViewInfo.setText(_translate("Form", "-"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.mainTab), _translate("Form", "Main"))
         self.tabWidget.setTabToolTip(self.tabWidget.indexOf(self.mainTab), _translate("Form", "Main Page"))
-        self.label_6.setText(_translate("Form", "Post something! "))
-        self.pushButton_2.setText(_translate("Form", "Attach a file .. "))
-        self.pushButton.setText(_translate("Form", "Post"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.materialsTab), _translate("Form", "Materials"))
         self.tabWidget.setTabToolTip(self.tabWidget.indexOf(self.materialsTab), _translate("Form", "Materials"))
         self.pushButton_4.setText(_translate("Form", "Leave Room"))
         self.pushButton_3.setText(_translate("Form", "send"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.streamTab), _translate("Form", "Stream"))
         self.tabWidget.setTabToolTip(self.tabWidget.indexOf(self.streamTab), _translate("Form", "Watch Stream"))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    Form = QtWidgets.QWidget()
-    ui = Ui_Form()
-    ui.setupUi(Form)
-    Form.show()
-    sys.exit(app.exec_())
 

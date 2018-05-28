@@ -50,6 +50,8 @@ class StudentLobby(QtWidgets.QMainWindow):
 
         self.model = QtGui.QStandardItemModel(self.ui.listView)
 
+        self.receiver_thread_running = True
+
         self.allCourses = None
 
     def setSender(self, sender):
@@ -62,6 +64,8 @@ class StudentLobby(QtWidgets.QMainWindow):
         self.student_id = student_id
 
     def createServerHandler(self):
+        self.receiver_thread_running = True
+
         Thread(target=self.receiver_handler, args=(self.receiver,)).start()
 
     def updateRoomList(self):
@@ -155,14 +159,20 @@ class StudentLobby(QtWidgets.QMainWindow):
         self.nextPage.updateViewInfo(student_list)
 
     # # replaced method, don't change its name
-    # def closeEvent(self, event):
-    #     print("Close lobby event")
-    #     self.on_lobby_closed.emit()
-    #     event.accept()
+    def closeEvent(self, event):
+        print("Close lobby event")
+        self.receiver_thread_running = False
+        #self.sender.socket.shutdown(socket.SHUT_WR)
+        self.sender.close()
+        self.receiver.close()
+        #self.receiver.socket.shutdown(socket.SHUT_WR)
+        self.nextPage.close()
+        #self.on_lobby_closed.emit()
+        event.accept()
         
 
     def receiver_handler(self, receiver):
-        while True:
+        while self.receiver_thread_running:
             decoded_input = self.receiver.recv_with_size_and_decode()
             if decoded_input == None:
                 print("Server has down.")
@@ -207,3 +217,4 @@ class StudentLobby(QtWidgets.QMainWindow):
             elif cmd == constant.KICK_STUDENT:
                 print("You have been kicked")
                 self.kicked.emit("You have been kicked from the room.")
+        print("Receiver END")
