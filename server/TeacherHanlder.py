@@ -72,6 +72,8 @@ class TeacherHanlder(Thread):
         self.notify_all_student(constant.END_LIVE,None)
         self.video_handler.stop()
         self.sound_handler.stop()
+        self.video_handler = None
+        self.sound_handler = None
 
     def cmd_added_material(self, materials):
         print(self.teacher.name, "added a materail ->", materials)
@@ -119,6 +121,9 @@ class TeacherHanlder(Thread):
         self.notify_all_student(
             constant.STUDENT_LIST_UPDATED, student_data_list)
         self.notify_teacher(constant.STUDENT_LIST_UPDATED, student_data_list)
+
+        if self.video_handler != None and self.sound_handler != None:
+            self.notify_all_student(constant.START_LIVE,None)
 
     def remove_student_handler(self, studentHandler):
         self.student_list.remove(studentHandler)
