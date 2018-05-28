@@ -22,9 +22,10 @@ class StudentLobby(QtWidgets.QMainWindow):
     kicked = QtCore.pyqtSignal(str)
     join_room_failed = QtCore.pyqtSignal(str)
     student_list_updated = QtCore.pyqtSignal(list)
-    
-    on_lobby_closed = QtCore.pyqtSignal()
+    room_closed = QtCore.pyqtSignal(str)
+    refresh_materials = QtCore.pyqtSignal(list)
 
+    on_lobby_closed = QtCore.pyqtSignal()
 
     def __init__(self):
         QtWidgets.QMainWindow.__init__(self, None)
@@ -47,6 +48,8 @@ class StudentLobby(QtWidgets.QMainWindow):
         self.kicked.connect(self.onKicked)
         self.nextPage.onCloseButtonClicked.connect(self.onExitRoom)
         self.student_list_updated.connect(self.onStudentListUpdated)
+        self.room_closed.connect(self.onRoomClosed)
+        self.refresh_materials.connect(self.onMaterialRefresh)
 
         self.model = QtGui.QStandardItemModel(self.ui.listView)
 
@@ -148,28 +151,33 @@ class StudentLobby(QtWidgets.QMainWindow):
 
     @QtCore.pyqtSlot()
     def onExitRoom(self):
-        print("On Exit room")
         self.sender.sendall_with_size([constant.LEAVE_ROOM])
         self.show()
         self.nextPage = StudentMain()
         self.nextPage.onCloseButtonClicked.connect(self.onExitRoom)
 
     @QtCore.pyqtSlot(list)
-    def onStudentListUpdated(self,student_list):
+    def onStudentListUpdated(self, student_list):
         self.nextPage.updateViewInfo(student_list)
+
+    @QtCore.pyqtSlot(str)
+    def onRoomClosed(self, msg):
+        QtWidgets.QMessageBox.critical(self, "Room closed", msg)
+        self.show()
+        self.nextPage = StudentMain()
+        self.nextPage.onCloseButtonClicked.connect(self.onExitRoom)
+
+    @QtCore.pyqtSlot(list)
+    def onMaterialRefresh(self, materials_list):
+        self.nextPage.addMaterial(materials_list[len(materials_list)-1])
 
     # # replaced method, don't change its name
     def closeEvent(self, event):
-        print("Close lobby event")
         self.receiver_thread_running = False
-        #self.sender.socket.shutdown(socket.SHUT_WR)
+        
         self.sender.close()
         self.receiver.close()
-        #self.receiver.socket.shutdown(socket.SHUT_WR)
-        self.nextPage.close()
-        #self.on_lobby_closed.emit()
         event.accept()
-        
 
     def receiver_handler(self, receiver):
         while self.receiver_thread_running:
@@ -184,7 +192,6 @@ class StudentLobby(QtWidgets.QMainWindow):
                 self.setRoomList(room_list)
                 self.updateRoomList()
 
-                
             elif cmd == constant.STUDENT_LIST_UPDATED:
                 student_list = decoded_input[1]
                 self.student_list_updated.emit(student_list)
@@ -199,6 +206,7 @@ class StudentLobby(QtWidgets.QMainWindow):
             elif cmd == constant.REFRESH_MATERIAL:
                 materials = decoded_input[1]
                 print("Materials updated: ", materials)
+                self.refresh_materials.emit(materials)
 
             elif cmd == constant.JOIN_ROOM_SUCCESS:
 
@@ -209,7 +217,7 @@ class StudentLobby(QtWidgets.QMainWindow):
                 print("Joined room: ", room)
 
             elif cmd == constant.JOIN_ROOM_FAIL:
-                
+
                 msg = decoded_input[1]
                 self.join_room_failed.emit(msg)
                 print("Join room failed: ", msg)
@@ -217,4 +225,10 @@ class StudentLobby(QtWidgets.QMainWindow):
             elif cmd == constant.KICK_STUDENT:
                 print("You have been kicked")
                 self.kicked.emit("You have been kicked from the room.")
+
+            elif cmd == constant.CLOSE_ROOM:
+                print("Room has been closed")
+                msg = decoded_input[1]
+                self.room_closed.emit(msg)
+
         print("Receiver END")
