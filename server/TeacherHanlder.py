@@ -123,7 +123,7 @@ class TeacherHanlder(Thread):
         self.notify_teacher(constant.STUDENT_LIST_UPDATED, student_data_list)
 
         if self.video_handler != None and self.sound_handler != None:
-            self.notify_all_student(constant.START_LIVE,None)
+            studentHandler.notify_student(constant.START_LIVE,None)
 
     def remove_student_handler(self, studentHandler):
         self.student_list.remove(studentHandler)
