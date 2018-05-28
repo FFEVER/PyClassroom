@@ -8,10 +8,9 @@ from ClientSocket import ClientSocket
 import constant
 
 
-class VideoHandler(Thread):
-    def __init__(self,student_list,video_receiver):
+class StreamHandler(Thread):
+    def __init__(self,parent,video_receiver):
         Thread.__init__(self)
-        self.student_list = student_list
         self.video_receiver = video_receiver
         self.is_running = True
 
@@ -22,11 +21,6 @@ class VideoHandler(Thread):
             # if frame == None:
             #     continue
             print(len(frame))
-            self.send_frame_to_all_student(frame)
-
-    def send_frame_to_all_student(self,frame):
-        for studentHandler in self.student_list:
-            studentHandler.send_frame_to_student(frame)
 
 
     def stop(self):

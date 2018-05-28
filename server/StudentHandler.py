@@ -80,7 +80,7 @@ class StudentHandler(Thread):
             self.sender.sendall_with_size([cmd,data])
 
     def send_frame_to_student(self,frame):
-        self.video_sender.sendall_with_size(frame)
+        self.video_sender.send_video_frame(frame)
 
     def send_sound_to_student(self,sound):
         self.sound_sender.sendall_with_size(sound)

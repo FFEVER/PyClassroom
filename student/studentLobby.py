@@ -24,6 +24,8 @@ class StudentLobby(QtWidgets.QMainWindow):
     student_list_updated = QtCore.pyqtSignal(list)
     room_closed = QtCore.pyqtSignal(str)
     refresh_materials = QtCore.pyqtSignal(list)
+    live_start = QtCore.pyqtSignal()
+    live_end = QtCore.pyqtSignal()
 
     on_lobby_closed = QtCore.pyqtSignal()
 
@@ -34,9 +36,12 @@ class StudentLobby(QtWidgets.QMainWindow):
 
         self.sender = None
         self.receiver = None
+        self.video_receiver = None
+        self.sound_receiver = None
         self.student_id = None
 
         self.nextPage = StudentMain()
+        self.is_in_room = False
 
         self.ui.searchButton.clicked.connect(self.searchClicked)
         self.ui.refreshButton.clicked.connect(self.refreshClicked)
@@ -50,6 +55,8 @@ class StudentLobby(QtWidgets.QMainWindow):
         self.student_list_updated.connect(self.onStudentListUpdated)
         self.room_closed.connect(self.onRoomClosed)
         self.refresh_materials.connect(self.onMaterialRefresh)
+        self.live_start.connect(self.onLiveStart)
+        self.live_end.connect(self.onLiveEnd)
 
         self.model = QtGui.QStandardItemModel(self.ui.listView)
 
@@ -62,6 +69,12 @@ class StudentLobby(QtWidgets.QMainWindow):
 
     def setReceiver(self, receiver):
         self.receiver = receiver
+    
+    def setVideoReceiver(self,video_receiver):
+        self.video_receiver = video_receiver
+    
+    def setSoundReceiver(self,sound_receiver):
+        self.sound_receiver = sound_receiver
 
     def setStudentId(self, student_id):
         self.student_id = student_id
@@ -130,6 +143,7 @@ class StudentLobby(QtWidgets.QMainWindow):
 
     @QtCore.pyqtSlot(list)
     def onJoinRoomSuccess(self, data_list):
+        self.is_in_room = True
         room = data_list[0]
         student_list = data_list[1]
         self.nextPage.setRoom(room)
@@ -144,6 +158,7 @@ class StudentLobby(QtWidgets.QMainWindow):
 
     @QtCore.pyqtSlot(str)
     def onKicked(self, string):
+        self.is_in_room = False
         QtWidgets.QMessageBox.critical(self, "", string)
         self.nextPage.hide()
         self.show()
@@ -151,6 +166,7 @@ class StudentLobby(QtWidgets.QMainWindow):
 
     @QtCore.pyqtSlot()
     def onExitRoom(self):
+        self.is_in_room = False
         self.sender.sendall_with_size([constant.LEAVE_ROOM])
         self.show()
         self.nextPage = StudentMain()
@@ -162,6 +178,7 @@ class StudentLobby(QtWidgets.QMainWindow):
 
     @QtCore.pyqtSlot(str)
     def onRoomClosed(self, msg):
+        self.is_in_room = False
         QtWidgets.QMessageBox.critical(self, "Room closed", msg)
         self.show()
         self.nextPage = StudentMain()
@@ -171,10 +188,17 @@ class StudentLobby(QtWidgets.QMainWindow):
     def onMaterialRefresh(self, materials_list):
         self.nextPage.addMaterial(materials_list[len(materials_list)-1])
 
+    @QtCore.pyqtSlot()
+    def onLiveStart(self):
+        pass
+
+    @QtCore.pyqtSlot()
+    def onLiveEnd(self):
+        pass
+
     # # replaced method, don't change its name
     def closeEvent(self, event):
         self.receiver_thread_running = False
-        
         self.sender.close()
         self.receiver.close()
         event.accept()
@@ -187,48 +211,65 @@ class StudentLobby(QtWidgets.QMainWindow):
                 break
             print(decoded_input)
             cmd = decoded_input[0]
-            if cmd == constant.REFRESH_ROOM_LIST:
-                room_list = decoded_input[1]
-                self.setRoomList(room_list)
-                self.updateRoomList()
 
-            elif cmd == constant.STUDENT_LIST_UPDATED:
-                student_list = decoded_input[1]
-                self.student_list_updated.emit(student_list)
+            if self.is_in_room:
+                if cmd == constant.REFRESH_ROOM_LIST:
+                    room_list = decoded_input[1]
+                    self.setRoomList(room_list)
+                    self.updateRoomList()
 
-            elif cmd == constant.MESSAGE_FROM_STUDENT:
-                data = decoded_input[1]
-                student = data[0]
-                msg = data[1]
-                # Please check if it is your own msg, so don't print it.
-                print(student, ": ", msg)
+                elif cmd == constant.STUDENT_LIST_UPDATED:
+                    student_list = decoded_input[1]
+                    self.student_list_updated.emit(student_list)
 
-            elif cmd == constant.REFRESH_MATERIAL:
-                materials = decoded_input[1]
-                print("Materials updated: ", materials)
-                self.refresh_materials.emit(materials)
+                elif cmd == constant.JOIN_ROOM_SUCCESS:
+                    data = decoded_input[1]
+                    room = data[0]
+                    student_list = data[1]
+                    self.join_room_success.emit(data)
+                    print("Joined room: ", room)
 
-            elif cmd == constant.JOIN_ROOM_SUCCESS:
+                elif cmd == constant.JOIN_ROOM_FAIL:
+                    msg = decoded_input[1]
+                    self.join_room_failed.emit(msg)
+                    print("Join room failed: ", msg)
 
-                data = decoded_input[1]
-                room = data[0]
-                student_list = data[1]
-                self.join_room_success.emit(data)
-                print("Joined room: ", room)
+                else:
+                    continue
 
-            elif cmd == constant.JOIN_ROOM_FAIL:
+            else:
 
-                msg = decoded_input[1]
-                self.join_room_failed.emit(msg)
-                print("Join room failed: ", msg)
+                if cmd == constant.MESSAGE_FROM_STUDENT:
+                    data = decoded_input[1]
+                    student = data[0]
+                    msg = data[1]
+                    # Please check if it is your own msg, so don't print it.
+                    print(student, ": ", msg)
 
-            elif cmd == constant.KICK_STUDENT:
-                print("You have been kicked")
-                self.kicked.emit("You have been kicked from the room.")
+                elif cmd == constant.STUDENT_LIST_UPDATED:
+                    student_list = decoded_input[1]
+                    self.student_list_updated.emit(student_list)
 
-            elif cmd == constant.CLOSE_ROOM:
-                print("Room has been closed")
-                msg = decoded_input[1]
-                self.room_closed.emit(msg)
+                elif cmd == constant.REFRESH_MATERIAL:
+                    materials = decoded_input[1]
+                    print("Materials updated: ", materials)
+                    self.refresh_materials.emit(materials)
+
+                elif cmd == constant.KICK_STUDENT:
+                    print("You have been kicked")
+                    self.kicked.emit("You have been kicked from the room.")
+
+                elif cmd == constant.CLOSE_ROOM:
+                    print("Room has been closed")
+                    msg = decoded_input[1]
+                    self.room_closed.emit(msg)
+
+                elif cmd == constant.START_LIVE:
+                    print("teacer has started live")
+                    self.live_start.emit()
+
+                elif cmd == constant.END_LIVE:
+                    print("teacher has ended live")
+                    self.live_end.emit()
 
         print("Receiver END")
