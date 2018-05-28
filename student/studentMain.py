@@ -73,6 +73,7 @@ class StudentMain(QtWidgets.QMainWindow):
 
     def stopStreamThread(self):
         self.stream_handler.stop()
+        self.stream_handler = None
         print("stop stream")
     
     # overrided method, don't change its name

@@ -21,7 +21,7 @@ class VideoHandler(Thread):
             frame = self.video_receiver.recv_video_frame()
             # if frame == None:
             #     continue
-            print(len(frame))
+            # print(len(frame))
             self.send_frame_to_all_student(frame)
 
     def send_frame_to_all_student(self,frame):
