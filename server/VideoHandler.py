@@ -18,12 +18,12 @@ class VideoHandler(Thread):
 
     def run(self):
         while self.is_running:
-            print("frame run")
+            # print("frame run")
             self.video_receiver.recv_video_frame()
             # if frame == None:
             #     continue
-            # print(len(frame))
-            # self.send_frame_to_all_student(frame)
+            print(len(frame))
+            self.send_frame_to_all_student(frame)
 
     def send_frame_to_all_student(self,frame):
         for studentHandler in self.student_list:

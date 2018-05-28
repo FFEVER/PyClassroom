@@ -53,7 +53,6 @@ class ClientSocket():
         self.socket.sendall(size + packet)
 
     def recv_video_frame(self):
-        print("hello")
         data = b""
         payload_size = struct.calcsize("L")
 
@@ -68,7 +67,6 @@ class ClientSocket():
         data = data[msg_size:]
 
         frame = pickle.loads(frame_data)
-        print(frame)
 
         return frame
 
