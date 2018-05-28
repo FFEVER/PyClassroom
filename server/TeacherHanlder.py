@@ -63,7 +63,7 @@ class TeacherHanlder(Thread):
         print(self.teacher.name, "starting a live.")
         self.notify_all_student(constant.START_LIVE,None)
         self.video_handler = VideoHandler(self.student_list,self.video_receiver)
-        self.sound_handler = SoundHandler(self,student_list,self.sound_receiver)
+        self.sound_handler = SoundHandler(self.student_list,self.sound_receiver)
         self.video_handler.start()
         self.sound_handler.start()
 

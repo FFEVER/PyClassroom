@@ -44,6 +44,8 @@ class TeacherMain(QWidget):
 
         self.sender = None
         self.receiver = None
+        self.video_sender = None
+        self.sound_sender = None
         self.receiver_thread_running = False
 
         box_layout = QVBoxLayout()
@@ -75,6 +77,12 @@ class TeacherMain(QWidget):
 
     def set_receiver(self, rec):
         self.receiver = rec
+
+    def set_video_sender(self,video_sender):
+        self.video_sender =  video_sender
+
+    def set_sound_sender(self,sound_sender):
+        self.sound_sender = sound_sender
 
     def start_receiver_thread(self):
         try:
@@ -111,7 +119,8 @@ class TeacherMain(QWidget):
     def start_stop(self):
         self.playing = not self.playing
         if self.playing:
-            self.streamer_thread = StreamerThread()
+            self.sender.sendall_with_size([constant.START_LIVE,None])
+            self.streamer_thread = StreamerThread(self.video_sender)
             self.streamer_thread.start()
 
             self.showMinimized()
@@ -120,6 +129,7 @@ class TeacherMain(QWidget):
             self.chat_window.setWindowState(self.chat_window.windowState() & ~Qt.WindowMinimized | Qt.WindowActive)
             self.chat_window.activateWindow()
         else:
+            self.sender.sendall_with_size([constant.END_LIVE,None])
             self.streamer_thread.stop()
             self.streamer_thread = None
 

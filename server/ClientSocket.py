@@ -3,8 +3,9 @@ import sys
 import pickle
 import struct
 
+
 class ClientSocket():
-    def __init__(self,socket):
+    def __init__(self, socket):
         self.socket = socket
 
     def recv_with_size_and_decode(self):
@@ -14,19 +15,19 @@ class ClientSocket():
             self.close()
             return None
         # decode buffer from binary to integer by unpacking
-        
+
         try:
-            buffer_size = struct.unpack('>L',raw_buffer_size)[0]
+            buffer_size = struct.unpack('>L', raw_buffer_size)[0]
         except struct.error:
             return "struct error"
 
         # get the data from buffer
         client_input = self.recv_n(buffer_size)
-        
+
         decoded_input = pickle.loads(client_input)
 
         return decoded_input
-        
+
     def recv_n(self, n):
         ''' recv n bytes or return None if EOF is hit '''
         data = b''
@@ -41,10 +42,35 @@ class ClientSocket():
             pass
         return data
 
-    def sendall_with_size(self,data):
+    def sendall_with_size(self, data):
         packet = pickle.dumps(data)
-        size = struct.pack('>L',len(packet))
+        size = struct.pack('>L', len(packet))
         self.socket.sendall(size + packet)
+
+    def send_video_frame(self, frame):
+        packet = pickle.dumps(data)
+        size = struct.pack('L', len(packet))
+        self.socket.sendall(size + packet)
+
+    def recv_video_frame(self):
+        print("hello")
+        data = b""
+        payload_size = struct.calcsize("L")
+
+        while len(data) < payload_size:
+            data += self.socket.recv(4096)
+        packed_msg_size = data[:payload_size]
+        data = data[payload_size:]
+        msg_size = struct.unpack("L", packed_msg_size)[0]
+        while len(data) < msg_size:
+            data += self.socket.recv(4096)
+        frame_data = data[:msg_size]
+        data = data[msg_size:]
+
+        frame = pickle.loads(frame_data)
+        print(frame)
+
+        return frame
 
     def close(self):
         self.socket.close()

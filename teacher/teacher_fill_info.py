@@ -45,6 +45,8 @@ class TeacherFillInfo(QWidget):
             room = Room("0", room_name, int(capacity), Teacher(name), description)
             sender, room_id = self.create_sender(room)
             receiver = self.create_receiver(room_id)
+            video_sender = self.create_video_sender(room_id)
+            sound_sender = self.create_sound_sender(room_id)
 
             self.main_window.set_full_capacity(int(capacity))
             self.main_window.set_info(room_id, name, room_name, description)
@@ -100,11 +102,40 @@ class TeacherFillInfo(QWidget):
 
         return receiver
 
-    def print_list(self, data_list):
-        print("[", end="")
-        for item in data_list:
-            print(item, end=",")
-        print("]")
+
+    def create_video_sender(self, room_id):
+        ''' if can connect to server this will return receiver '''
+        soc = socket.socket()  # Create a socket object
+        host = socket.gethostname()  # Get local machine name
+        port = constant.PORT  # Reserve a port for your service.
+
+        soc = self.connect_to_server(soc, host, port)
+        video_sender = ClientSocket(soc)
+
+        data = [constant.I_AM_TEACHER_VIDEO_SENDER, room_id]
+        video_sender.sendall_with_size(data)
+
+        is_success = video_sender.recv_with_size_and_decode()
+        print("create_video_sender is ", is_success)
+
+        return video_sender
+
+    def create_sound_sender(self, room_id):
+        ''' if can connect to server this will return receiver '''
+        soc = socket.socket()  # Create a socket object
+        host = socket.gethostname()  # Get local machine name
+        port = constant.PORT  # Reserve a port for your service.
+
+        soc = self.connect_to_server(soc, host, port)
+        sound_sender = ClientSocket(soc)
+
+        data = [constant.I_AM_TEACHER_SOUND_SENDER, room_id]
+        sound_sender.sendall_with_size(data)
+
+        is_success = sound_sender.recv_with_size_and_decode()
+        print("create_sound_sender is ", is_success)
+
+        return sound_sender
 
 
 if __name__ == "__main__":

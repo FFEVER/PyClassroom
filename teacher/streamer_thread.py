@@ -2,9 +2,10 @@ import cv2
 from threading import Thread
 
 class StreamerThread(Thread):
-    def __init__(self):
+    def __init__(self,video_sender):
         super().__init__()
         self.streaming = False
+        self.video_sender = video_sender
 
     def toggle(self):
         self.streaming = not self.streaming
@@ -21,6 +22,7 @@ class StreamerThread(Thread):
             img_string = cv2.imencode('.jpg', frame)[1].tostring()
             #send(img_stirng)
             cv2.imshow('Streaming', frame)
+            self.video_sender.send_video_frame(frame)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
