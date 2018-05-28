@@ -203,7 +203,7 @@ class StudentLobby(QtWidgets.QMainWindow):
     @QtCore.pyqtSlot()
     def onLiveStart(self):
         print("on live starte")
-        self.nextPage.startStreamThread(self.video_receiver)
+        self.nextPage.startStreamThread(self.video_receiver,self.sound_receiver)
 
     @QtCore.pyqtSlot()
     def onLiveEnd(self):

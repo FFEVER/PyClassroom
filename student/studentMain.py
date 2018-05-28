@@ -11,6 +11,7 @@ from PyQt5 import QtWidgets,QtCore
 
 from UI.mainpage import Ui_Form
 from StreamHandler import StreamHandler
+from SoundStreamHandler import SoundStreamHandler
 
 class StudentMain(QtWidgets.QMainWindow):
     onCloseButtonClicked = QtCore.pyqtSignal()
@@ -26,6 +27,7 @@ class StudentMain(QtWidgets.QMainWindow):
         self.student_list = None
 
         self.stream_handler = None
+        self.sound_stream_handler = None
 
         box_layout = QVBoxLayout()
         box_layout.setSpacing(10)
@@ -75,13 +77,17 @@ class StudentMain(QtWidgets.QMainWindow):
         self.student_list = student_list
         self.ui.currentViewInfo.setText(str(len(self.student_list)) + "/" + str(self.room.max_student))
 
-    def startStreamThread(self,video_receiver):
+    def startStreamThread(self,video_receiver,sound_receiver):
         print("start stream thread")
         self.stream_handler = StreamHandler(self,video_receiver)
+        self.sound_stream_handler = SoundStreamHandler(self,sound_receiver)
         self.stream_handler.start()
 
     def stopStreamThread(self):
         self.stream_handler.stop()
+        self.sound_stream_handler.stop()
+
+        self.sound_stream_handler = None
         self.stream_handler = None
         print("stop stream")
     

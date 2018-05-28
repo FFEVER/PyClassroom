@@ -20,9 +20,8 @@ class StreamHandler(Thread):
         while self.is_running:
             # print("frame run")
             data = self.video_receiver.recv_video_frame()
-            if data == None:
-                print("None")
-                continue
+            if not data:
+                break
             try:
                 print(len(data))
                 self.parent.set_stream_string(data)

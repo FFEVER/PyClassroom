@@ -7,17 +7,20 @@ import struct
 from ClientSocket import ClientSocket
 import constant
 
+CHUNK_SIZE = 1024
 
-class VideoHandler(Thread):
+class SoundHandler(Thread):
     def __init__(self,student_list,sound_receiver):
         Thread.__init__(self)
         self.student_list = student_list
-        self.video_receiver = sound_receiver
+        self.sound_receiver = sound_receiver
         self.is_running = True
 
     def run(self):
         while self.is_running:
-            sound = self.video_receiver.recv_video_frame()
+            sound = self.sound_receiver.receive_sound(CHUNK_SIZE)
+            if not sound:
+                break
             self.send_sound_to_all_student(sound)
 
     def send_sound_to_all_student(self,sound):
