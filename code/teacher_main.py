@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
-from teacher_main_ui import Ui_Form
+from UI.teacher_main_ui import Ui_Form
 from chat_window import ChatWindow
 from validator import *
 from streamer_thread import StreamerThread
@@ -73,7 +73,7 @@ class TeacherMain(QWidget):
             self.ui.start_button.setText("Start streaming")
         else:
             self.ui.start_button.setText("Stop streaming")
-            
+
         self.update_student_list()
 
 

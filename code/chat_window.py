@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
-from chat_window_ui import Ui_Form
+from UI.chat_window_ui import Ui_Form
 
 class ChatWindow(QWidget):
     def __init__(self):
