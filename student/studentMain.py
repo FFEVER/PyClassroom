@@ -68,6 +68,7 @@ class StudentMain(QtWidgets.QMainWindow):
         self.ui.currentViewInfo.setText(str(len(self.student_list)) + "/" + str(self.room.max_student))
 
     def startStreamThread(self,video_receiver):
+        print("start stream thread")
         self.stream_handler = StreamHandler(self,video_receiver)
         self.stream_handler.start()
 
