@@ -7,8 +7,8 @@ from PyQt5.uic import *
 
 from PyQt5 import QtWidgets,QtCore
 
-
 from UI.mainpage import Ui_Form
+from StreamHandler import StreamHandler
 
 class StudentMain(QtWidgets.QMainWindow):
     onCloseButtonClicked = QtCore.pyqtSignal()
@@ -20,6 +20,8 @@ class StudentMain(QtWidgets.QMainWindow):
 
         self.room = None 
         self.student_list = None
+
+        self.stream_handler = None
 
         box_layout = QVBoxLayout()
         box_layout.setSpacing(10)
@@ -62,6 +64,13 @@ class StudentMain(QtWidgets.QMainWindow):
     def updateViewInfo(self,student_list):
         self.student_list = student_list
         self.ui.currentViewInfo.setText(str(len(self.student_list)) + "/" + str(self.room.max_student))
+
+    def startStreamThread(self,video_receiver):
+        self.stream_handler = StreamHandler(self,video_receiver)
+        self.stream_handler.start()
+
+    def stopStreamThread(self):
+        self.stream_handler.stop()
     
     # overrided method, don't change its name
     def closeEvent(self,event):

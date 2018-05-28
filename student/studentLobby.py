@@ -190,11 +190,11 @@ class StudentLobby(QtWidgets.QMainWindow):
 
     @QtCore.pyqtSlot()
     def onLiveStart(self):
-        pass
+        self.nextPage.startStreamThread(self.video_receiver)
 
     @QtCore.pyqtSlot()
     def onLiveEnd(self):
-        pass
+        self.nextPage.stopStreamThread()
 
     # # replaced method, don't change its name
     def closeEvent(self, event):
