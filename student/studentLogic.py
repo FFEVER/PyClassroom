@@ -5,7 +5,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from UI.selectrole import Ui_Form 
 from studentInput import StudentInput
 
-class StudentLogic(QtWidgets.QMainWindow): 
+class StudentLogic(QtWidgets.QMainWindow):
     def __init__(self):
         QtWidgets.QMainWindow.__init__(self, None) 
         self.ui = Ui_Form()
@@ -14,13 +14,19 @@ class StudentLogic(QtWidgets.QMainWindow):
 
         self.nextPage = StudentInput() 
         self.setWindowTitle("Select Your Role")
+#        self.nextPage.onInputClosed.connect(self.onStudentInputClosed)
 
 
     def studentButtonOnClick(self): 
         self.hide() 
 
         #open studentInput window
-        self.nextPage.show() 
+        self.nextPage.show()
+
+    # @QtCore.pyqtSlot()
+    # def onStudentInputClosed(self):
+    #     print("Exit App")
+    #     self.close()
         
          
 
@@ -29,6 +35,7 @@ if __name__ == "__main__":
     w = StudentLogic() 
     w.show()
     sys.exit(app.exec_())
+    print("Exit")
 
 
 
