@@ -1,6 +1,7 @@
 import sys
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
 from teacher_main_ui import Ui_Form
 from chat_window import ChatWindow
 from validator import *
@@ -45,10 +46,23 @@ class TeacherMain(QWidget):
         self.receiver = None
         self.receiver_thread_running = False
 
+        box_layout = QVBoxLayout()
+        box_layout.setSpacing(10)
+        box_layout.setAlignment(Qt.AlignTop)
+        self.list_container = QWidget()
+        pal = self.list_container.palette()
+        pal.setColor(self.list_container.backgroundRole(), Qt.white)
+        self.list_container.setPalette(pal)
+        self.list_container.setLayout(box_layout)
+
         self.ui.start_button.clicked.connect(self.start_stop)
         self.ui.material_button.clicked.connect(self.add_material)
         self.ui.exit_button.clicked.connect(self.end_connection)
         self.ui.kick_button.clicked.connect(self.kick_selected)
+
+        self.ui.scroll_area.setWidget(self.list_container)
+        self.ui.scroll_area.verticalScrollBar().rangeChanged.connect(self.scroll_to_material_bottom)
+
         self.chat_window_updater.connect(self.update_chat_window_text)
 
         self.ui.start_button.setText("Start streaming")
@@ -131,9 +145,20 @@ class TeacherMain(QWidget):
         entered = self.ui.material_edit.text()
         if is_valid_string(entered):
             self.materials.append(entered)
-            self.ui.material_browser.setText(self.ui.material_browser.toPlainText() + entered + "\n")
+
+            label = QLabel(entered)
+            label.setMargin(10)
+            label.setStyleSheet("QLabel { background:rgb(200,200,200);}")
+            label.setFixedHeight(50)
+            self.list_container.layout().addWidget(label)
+            self.ui.scroll_area.ensureWidgetVisible(label, 0, 50)
+
+            #self.ui.material_browser.setText(self.ui.material_browser.toPlainText() + entered + "\n")
             self.sender.sendall_with_size([constant.ADD_MATERIAL, self.materials])
             self.ui.material_edit.setText("")
+
+    def scroll_to_material_bottom(self, min, maxi):
+        self.ui.scroll_area.verticalScrollBar().setValue(maxi)
 
     def end_connection(self):
         self.receiver_thread_running = False

@@ -244,15 +244,28 @@
       <string>Post</string>
      </property>
     </widget>
-    <widget class="QTextBrowser" name="material_browser">
+    <widget class="QScrollArea" name="scroll_area">
      <property name="geometry">
       <rect>
        <x>40</x>
        <y>50</y>
-       <width>501</width>
+       <width>491</width>
        <height>241</height>
       </rect>
      </property>
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>489</width>
+        <height>239</height>
+       </rect>
+      </property>
+     </widget>
     </widget>
    </widget>
    <widget class="QWidget" name="tab_3">
