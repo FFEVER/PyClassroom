@@ -2,6 +2,7 @@ import socket
 import sys
 import pickle
 import struct
+from sys import byteorder
 
 
 class ClientSocket():
@@ -77,6 +78,14 @@ class ClientSocket():
             return None
         except ConnectionError:
             return None
+
+    def send_sound(self,sound):
+        if byteorder == 'big':
+            snd_data.byteswap()
+        self.socket.send(sound)
+    def receive_sound(self,chunk_size):
+        data = self.socket.recv(chunk_size)
+        return data
 
     def close(self):
         self.socket.close()

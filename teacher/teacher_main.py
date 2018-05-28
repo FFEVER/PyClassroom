@@ -6,6 +6,7 @@ from teacher_main_ui import Ui_Form
 from chat_window import ChatWindow
 from validator import *
 from streamer_thread import StreamerThread
+from sound_streamer_thread import SoundStreamerThread
 from threading import Thread
 
 from Room import Room
@@ -30,6 +31,7 @@ class TeacherMain(QWidget):
         self.chat_window.hide()
 
         self.streamer_thread = None
+        self.sound_streamer_thread = None
 
         self.ui = Ui_Form()
         self.ui.setupUi(self)
@@ -121,7 +123,9 @@ class TeacherMain(QWidget):
         if self.playing:
             self.sender.sendall_with_size([constant.START_LIVE,None])
             self.streamer_thread = StreamerThread(self.video_sender)
+            self.sound_streamer_thread = SoundStreamerThread(self.sound_sender)
             self.streamer_thread.start()
+            self.sound_streamer_thread.start()
 
             self.showMinimized()
             self.ui.start_button.setText("Stop streaming")
@@ -131,7 +135,10 @@ class TeacherMain(QWidget):
         else:
             self.sender.sendall_with_size([constant.END_LIVE,None])
             self.streamer_thread.stop()
+            self.sound_streamer_thread.stop()
+
             self.streamer_thread = None
+            self.sound_streamer_thread = None
 
             self.ui.start_button.setText("Start streaming")
             self.chat_window.hide()
