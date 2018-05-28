@@ -95,6 +95,12 @@ class StudentMain(QtWidgets.QMainWindow):
         convertToQtFormat = QImage(rgbImage.data, rgbImage.shape[1], rgbImage.shape[0], QImage.Format_RGB888)
         self.ui.stream_label.setPixmap(QPixmap.fromImage(convertToQtFormat))
 
+    def hide_cover(self):
+        self.ui.cover_label.hide()
+
+    def show_cover(self):
+        self.ui.cover_label.show()
+
         
 
 
