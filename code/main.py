@@ -14,28 +14,19 @@ class SelectRole(QtWidgets.QMainWindow):
         self.ui.studentButton.clicked.connect(self.studentButtonOnClick)
         self.ui.teacherButton.clicked.connect(self.teacherButtonOnClick)
 
-        self.nextPage = StudentInput()
+        self.studentPage = StudentInput()
         self.teacherPage = TeacherFillInfo()
 
         self.setWindowTitle("Select Your Role")
-#        self.nextPage.onInputClosed.connect(self.onStudentInputClosed)
 
 
     def studentButtonOnClick(self): 
         self.hide() 
-
-        #open studentInput window
-        self.nextPage.show()
+        self.studentPage.show()
 
     def teacherButtonOnClick(self):
         self.hide()
         self.teacherPage.show()
-
-    # @QtCore.pyqtSlot()
-    # def onStudentInputClosed(self):
-    #     print("Exit App")
-    #     self.close()
-        
          
 
 if __name__ == "__main__":
