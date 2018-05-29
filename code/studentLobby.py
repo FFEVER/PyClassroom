@@ -288,12 +288,12 @@ class StudentLobby(QtWidgets.QMainWindow):
         if self.ui.filter.currentIndex() == 0:
             for row in range(len(self.allCourses)):
                 row_id = self.allCourses[row].id.lower()
-                if filter_text in row_id:
+                if filter_text == row_id:
                     self.shownCourses.append(self.allCourses[row])
         else:
             for row in range(len(self.allCourses)):
-                row_id = self.allCourses[row].name.lower()
-                if filter_text in row_id:
+                row_name = self.allCourses[row].name.lower()
+                if filter_text in row_name:
                     self.shownCourses.append(self.allCourses[row])
 
 
