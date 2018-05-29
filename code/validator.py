@@ -3,8 +3,8 @@ def is_valid_string(s):
 
 def is_valid_int(s):
     try:
-        int(s)
-        return True
+        s = int(s)
+        return s > 0
     except ValueError:
         return False
     

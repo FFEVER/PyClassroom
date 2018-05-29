@@ -14,6 +14,7 @@ import struct
 import pickle
 import traceback
 from threading import Thread
+from validator import *
 
 
 class StudentInput(QtWidgets.QMainWindow):
@@ -33,6 +34,9 @@ class StudentInput(QtWidgets.QMainWindow):
     def startButtonOnClick(self):
         # save input name
         self.inputName = self.ui.inputBox.text()
+
+        if not is_valid_string(self.inputName):
+            return
 
         sender, student_id, room_list = self.create_sender(Student(self.inputName))
         receiver = self.create_receiver(student_id)

@@ -31,7 +31,7 @@ class SelectRole(QtWidgets.QMainWindow):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv) 
-    w = StudentLogic() 
+    w = SelectRole() 
     w.show()
     sys.exit(app.exec_())
     print("Exit")
