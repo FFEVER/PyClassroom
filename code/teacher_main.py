@@ -69,11 +69,6 @@ class TeacherMain(QWidget):
 
         self.chat_window_updater.connect(self.update_chat_window_text)
 
-        if self.playing:
-            self.ui.start_button.setText("Start streaming")
-        else:
-            self.ui.start_button.setText("Stop streaming")
-
         self.update_student_list()
 
 
@@ -217,3 +212,10 @@ class TeacherMain(QWidget):
 
     def closeEvent(self, event):
         self.end_connection()
+
+    def show(self):
+        if self.playing:
+            self.ui.start_button.setText("Stop streaming")
+        else:
+            self.ui.start_button.setText("Start streaming")
+        QWidget.show(self)
