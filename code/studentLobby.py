@@ -2,7 +2,6 @@ import sys
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from UI.lobbystudent import Ui_Form
-from popUpDialog import popUpDialog
 from studentMain import StudentMain
 
 from Student import Student
