@@ -1,0 +1,44 @@
+<html>
+<head>
+<title>Room.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #999999; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(0,0,128); font-weight: bold; }
+.s1 { color: rgb(0,0,0); }
+.s2 { color: rgb(0,128,128); font-weight: bold; }
+</style>
+</head>
+<BODY BGCOLOR="#ffffff">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+Room.py</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">from </span><span class="s1">Teacher </span><span class="s0">import </span><span class="s1">Teacher 
+<a name="l2"><span class="ln">2    </span></a></span><span class="s0">from </span><span class="s1">Student </span><span class="s0">import </span><span class="s1">Student 
+<a name="l3"><span class="ln">3    </span></a> 
+<a name="l4"><span class="ln">4    </span></a> 
+<a name="l5"><span class="ln">5    </span></a></span><span class="s0">class </span><span class="s1">Room(): 
+<a name="l6"><span class="ln">6    </span></a>    </span><span class="s0">def </span><span class="s1">__init__(self,id,name,max_student,teacher,description): 
+<a name="l7"><span class="ln">7    </span></a>        self.id = id 
+<a name="l8"><span class="ln">8    </span></a>        self.name = name 
+<a name="l9"><span class="ln">9    </span></a>        self.max_student = max_student 
+<a name="l10"><span class="ln">10   </span></a>        self.teacher = teacher 
+<a name="l11"><span class="ln">11   </span></a>        self.description = description 
+<a name="l12"><span class="ln">12   </span></a>        self.materials = [] 
+<a name="l13"><span class="ln">13   </span></a> 
+<a name="l14"><span class="ln">14   </span></a>    </span><span class="s0">def </span><span class="s1">set_id(self, id): 
+<a name="l15"><span class="ln">15   </span></a>        self.id = id 
+<a name="l16"><span class="ln">16   </span></a> 
+<a name="l17"><span class="ln">17   </span></a>    </span><span class="s0">def </span><span class="s1">add_material(self,material): 
+<a name="l18"><span class="ln">18   </span></a>        self.materials.append(material) 
+<a name="l19"><span class="ln">19   </span></a> 
+<a name="l20"><span class="ln">20   </span></a>    </span><span class="s0">def </span><span class="s1">set_materials(self,materials): 
+<a name="l21"><span class="ln">21   </span></a>        self.materials = materials 
+<a name="l22"><span class="ln">22   </span></a> 
+<a name="l23"><span class="ln">23   </span></a>    </span><span class="s0">def </span><span class="s1">__str__(self): 
+<a name="l24"><span class="ln">24   </span></a>        </span><span class="s0">return </span><span class="s1">str(self.id) + </span><span class="s2">&quot; &quot; </span><span class="s1">+ self.name + </span><span class="s2">&quot; &quot; </span><span class="s1">+ self.description</span></pre>
+</body>
+</html>

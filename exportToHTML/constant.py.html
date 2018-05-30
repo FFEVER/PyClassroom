@@ -1,0 +1,61 @@
+<html>
+<head>
+<title>constant.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #999999; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(128,128,128); font-style: italic; }
+.s1 { color: rgb(0,0,0); }
+.s2 { color: rgb(0,0,255); }
+.s3 { color: rgb(0,128,128); font-weight: bold; }
+</style>
+</head>
+<BODY BGCOLOR="#ffffff">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+constant.py</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0"># Network Info</span><span class="s1"> 
+<a name="l2"><span class="ln">2    </span></a>PORT = </span><span class="s2">8888</span><span class="s1"> 
+<a name="l3"><span class="ln">3    </span></a> 
+<a name="l4"><span class="ln">4    </span></a></span><span class="s0"># Identifier</span><span class="s1"> 
+<a name="l5"><span class="ln">5    </span></a>I_AM_STUDENT_SENDER = </span><span class="s3">&quot;i_am_student_sender&quot;</span><span class="s1"> 
+<a name="l6"><span class="ln">6    </span></a>I_AM_TEACHER_SENDER = </span><span class="s3">&quot;i_am_teacher_sender&quot;</span><span class="s1"> 
+<a name="l7"><span class="ln">7    </span></a>I_AM_STUDENT_RECEIVER = </span><span class="s3">&quot;i_am_student_receiver&quot;</span><span class="s1"> 
+<a name="l8"><span class="ln">8    </span></a>I_AM_TEACHER_RECEIVER = </span><span class="s3">&quot;i_am_teacher_receiver&quot;</span><span class="s1"> 
+<a name="l9"><span class="ln">9    </span></a>I_AM_TEACHER_VIDEO_SENDER = </span><span class="s3">&quot;i_am_video_sender&quot;</span><span class="s1"> 
+<a name="l10"><span class="ln">10   </span></a>I_AM_TEACHER_SOUND_SENDER = </span><span class="s3">&quot;i_am_sound_sender&quot;</span><span class="s1"> 
+<a name="l11"><span class="ln">11   </span></a>I_AM_STUDENT_VIDEO_RECEIVER = </span><span class="s3">&quot;i_am_video_receiver&quot;</span><span class="s1"> 
+<a name="l12"><span class="ln">12   </span></a>I_AM_STUDENT_SOUND_RECEIVER = </span><span class="s3">&quot;i_am_sound_receiver&quot;</span><span class="s1"> 
+<a name="l13"><span class="ln">13   </span></a>SUCCESS = </span><span class="s3">&quot;success&quot;</span><span class="s1"> 
+<a name="l14"><span class="ln">14   </span></a>FAIL = </span><span class="s3">&quot;fail&quot;</span><span class="s1"> 
+<a name="l15"><span class="ln">15   </span></a> 
+<a name="l16"><span class="ln">16   </span></a></span><span class="s0"># Teacher commands</span><span class="s1"> 
+<a name="l17"><span class="ln">17   </span></a>START_LIVE = </span><span class="s3">&quot;start_live&quot;</span><span class="s1"> 
+<a name="l18"><span class="ln">18   </span></a>END_LIVE = </span><span class="s3">&quot;end_live&quot;</span><span class="s1"> 
+<a name="l19"><span class="ln">19   </span></a>ADD_MATERIAL = </span><span class="s3">&quot;add_material&quot;</span><span class="s1"> 
+<a name="l20"><span class="ln">20   </span></a>REMOVE_MATERIAL = </span><span class="s3">&quot;remove_mat&quot;</span><span class="s1"> 
+<a name="l21"><span class="ln">21   </span></a>KICK_STUDENT = </span><span class="s3">&quot;kick_student&quot;</span><span class="s1"> 
+<a name="l22"><span class="ln">22   </span></a>CLOSE_ROOM = </span><span class="s3">&quot;close_room&quot;</span><span class="s1"> 
+<a name="l23"><span class="ln">23   </span></a> 
+<a name="l24"><span class="ln">24   </span></a></span><span class="s0"># Server -&gt; Teacher</span><span class="s1"> 
+<a name="l25"><span class="ln">25   </span></a>CREATE_ROOM_SUCCESS = </span><span class="s3">&quot;room_created_successfully&quot;</span><span class="s1"> 
+<a name="l26"><span class="ln">26   </span></a> 
+<a name="l27"><span class="ln">27   </span></a></span><span class="s0"># Server -&gt; All</span><span class="s1"> 
+<a name="l28"><span class="ln">28   </span></a>STUDENT_LIST_UPDATED = </span><span class="s3">&quot;student_list_updated&quot;</span><span class="s1"> 
+<a name="l29"><span class="ln">29   </span></a>MESSAGE_FROM_STUDENT = </span><span class="s3">&quot;message_from_student&quot;</span><span class="s1"> 
+<a name="l30"><span class="ln">30   </span></a> 
+<a name="l31"><span class="ln">31   </span></a></span><span class="s0"># Server -&gt; Student</span><span class="s1"> 
+<a name="l32"><span class="ln">32   </span></a>JOIN_ROOM_SUCCESS = </span><span class="s3">&quot;join_room_success&quot;</span><span class="s1"> 
+<a name="l33"><span class="ln">33   </span></a>JOIN_ROOM_FAIL = </span><span class="s3">&quot;join_room_failed&quot;</span><span class="s1"> 
+<a name="l34"><span class="ln">34   </span></a> 
+<a name="l35"><span class="ln">35   </span></a></span><span class="s0"># Student commands</span><span class="s1"> 
+<a name="l36"><span class="ln">36   </span></a>JOIN_ROOM = </span><span class="s3">&quot;join_room&quot;</span><span class="s1"> 
+<a name="l37"><span class="ln">37   </span></a>LEAVE_ROOM = </span><span class="s3">&quot;leave_room&quot;</span><span class="s1"> 
+<a name="l38"><span class="ln">38   </span></a>SEND_MSG = </span><span class="s3">&quot;send_message&quot;</span><span class="s1"> 
+<a name="l39"><span class="ln">39   </span></a>REFRESH_ROOM_LIST = </span><span class="s3">&quot;refresh_room_list&quot;</span><span class="s1"> 
+<a name="l40"><span class="ln">40   </span></a>REFRESH_MATERIAL = </span><span class="s3">&quot;refresh_material&quot;</span></pre>
+</body>
+</html>

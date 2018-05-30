@@ -1,0 +1,58 @@
+<html>
+<head>
+<title>VideoHandler.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #999999; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(0,0,128); font-weight: bold; }
+.s1 { color: rgb(0,0,0); }
+.s2 { color: rgb(128,128,128); font-style: italic; }
+.s3 { color: rgb(0,128,128); font-weight: bold; }
+</style>
+</head>
+<BODY BGCOLOR="#ffffff">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+VideoHandler.py</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">from </span><span class="s1">threading </span><span class="s0">import </span><span class="s1">Thread 
+<a name="l2"><span class="ln">2    </span></a></span><span class="s0">import </span><span class="s1">pickle 
+<a name="l3"><span class="ln">3    </span></a></span><span class="s0">import </span><span class="s1">socket 
+<a name="l4"><span class="ln">4    </span></a></span><span class="s0">import </span><span class="s1">sys 
+<a name="l5"><span class="ln">5    </span></a></span><span class="s0">import </span><span class="s1">struct 
+<a name="l6"><span class="ln">6    </span></a> 
+<a name="l7"><span class="ln">7    </span></a></span><span class="s0">from </span><span class="s1">ClientSocket </span><span class="s0">import </span><span class="s1">ClientSocket 
+<a name="l8"><span class="ln">8    </span></a></span><span class="s0">import </span><span class="s1">constant 
+<a name="l9"><span class="ln">9    </span></a> 
+<a name="l10"><span class="ln">10   </span></a> 
+<a name="l11"><span class="ln">11   </span></a></span><span class="s0">class </span><span class="s1">VideoHandler(Thread): 
+<a name="l12"><span class="ln">12   </span></a>    </span><span class="s0">def </span><span class="s1">__init__(self,student_list,video_receiver): 
+<a name="l13"><span class="ln">13   </span></a>        Thread.__init__(self) 
+<a name="l14"><span class="ln">14   </span></a>        self.student_list = student_list 
+<a name="l15"><span class="ln">15   </span></a>        self.video_receiver = video_receiver 
+<a name="l16"><span class="ln">16   </span></a>        self.is_running = </span><span class="s0">True</span><span class="s1"> 
+<a name="l17"><span class="ln">17   </span></a> 
+<a name="l18"><span class="ln">18   </span></a>    </span><span class="s0">def </span><span class="s1">run(self): 
+<a name="l19"><span class="ln">19   </span></a>        </span><span class="s0">while </span><span class="s1">self.is_running: 
+<a name="l20"><span class="ln">20   </span></a>            </span><span class="s2"># print(&quot;frame run&quot;)</span><span class="s1"> 
+<a name="l21"><span class="ln">21   </span></a>            frame = self.video_receiver.recv_video_frame() 
+<a name="l22"><span class="ln">22   </span></a>            </span><span class="s2"># if frame == None:</span><span class="s1"> 
+<a name="l23"><span class="ln">23   </span></a>            </span><span class="s2">#     continue</span><span class="s1"> 
+<a name="l24"><span class="ln">24   </span></a>            </span><span class="s2"># print(len(frame))</span><span class="s1"> 
+<a name="l25"><span class="ln">25   </span></a>            self.send_frame_to_all_student(frame) 
+<a name="l26"><span class="ln">26   </span></a> 
+<a name="l27"><span class="ln">27   </span></a>    </span><span class="s0">def </span><span class="s1">send_frame_to_all_student(self,frame): 
+<a name="l28"><span class="ln">28   </span></a>        </span><span class="s0">for </span><span class="s1">studentHandler </span><span class="s0">in </span><span class="s1">self.student_list: 
+<a name="l29"><span class="ln">29   </span></a>            studentHandler.send_frame_to_student(frame) 
+<a name="l30"><span class="ln">30   </span></a> 
+<a name="l31"><span class="ln">31   </span></a>    </span><span class="s0">def </span><span class="s1">update_student_list(self,student_list): 
+<a name="l32"><span class="ln">32   </span></a>        self.student_list = student_list 
+<a name="l33"><span class="ln">33   </span></a>        print(</span><span class="s3">&quot;Current student in VideoHandler: &quot;</span><span class="s1">,len(self.student_list)) 
+<a name="l34"><span class="ln">34   </span></a> 
+<a name="l35"><span class="ln">35   </span></a> 
+<a name="l36"><span class="ln">36   </span></a>    </span><span class="s0">def </span><span class="s1">stop(self): 
+<a name="l37"><span class="ln">37   </span></a>        self.is_running = </span><span class="s0">False</span></pre>
+</body>
+</html>

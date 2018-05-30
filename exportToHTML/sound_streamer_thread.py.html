@@ -1,0 +1,64 @@
+<html>
+<head>
+<title>sound_streamer_thread.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #999999; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(0,0,128); font-weight: bold; }
+.s1 { color: rgb(0,0,0); }
+.s2 { color: rgb(0,0,255); }
+.s3 { color: rgb(0,128,128); font-weight: bold; }
+</style>
+</head>
+<BODY BGCOLOR="#ffffff">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+sound_streamer_thread.py</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">from </span><span class="s1">threading </span><span class="s0">import </span><span class="s1">Thread 
+<a name="l2"><span class="ln">2    </span></a> 
+<a name="l3"><span class="ln">3    </span></a></span><span class="s0">from </span><span class="s1">sys </span><span class="s0">import </span><span class="s1">byteorder 
+<a name="l4"><span class="ln">4    </span></a></span><span class="s0">from </span><span class="s1">array </span><span class="s0">import </span><span class="s1">array 
+<a name="l5"><span class="ln">5    </span></a></span><span class="s0">from </span><span class="s1">struct </span><span class="s0">import </span><span class="s1">pack 
+<a name="l6"><span class="ln">6    </span></a> 
+<a name="l7"><span class="ln">7    </span></a></span><span class="s0">import </span><span class="s1">pyaudio 
+<a name="l8"><span class="ln">8    </span></a></span><span class="s0">import </span><span class="s1">wave 
+<a name="l9"><span class="ln">9    </span></a></span><span class="s0">from </span><span class="s1">threading </span><span class="s0">import </span><span class="s1">Thread 
+<a name="l10"><span class="ln">10   </span></a> 
+<a name="l11"><span class="ln">11   </span></a>THRESHOLD = </span><span class="s2">500</span><span class="s1"> 
+<a name="l12"><span class="ln">12   </span></a>CHUNK_SIZE = </span><span class="s2">1024</span><span class="s1"> 
+<a name="l13"><span class="ln">13   </span></a>FORMAT = pyaudio.paInt16 
+<a name="l14"><span class="ln">14   </span></a>RATE = </span><span class="s2">44100</span><span class="s1"> 
+<a name="l15"><span class="ln">15   </span></a> 
+<a name="l16"><span class="ln">16   </span></a></span><span class="s0">class </span><span class="s1">SoundStreamerThread(Thread): 
+<a name="l17"><span class="ln">17   </span></a>    </span><span class="s0">def </span><span class="s1">__init__(self,sound_sender): 
+<a name="l18"><span class="ln">18   </span></a>        super().__init__() 
+<a name="l19"><span class="ln">19   </span></a>        self.streaming = </span><span class="s0">False</span><span class="s1"> 
+<a name="l20"><span class="ln">20   </span></a>        self.sound_sender = sound_sender 
+<a name="l21"><span class="ln">21   </span></a> 
+<a name="l22"><span class="ln">22   </span></a>    </span><span class="s0">def </span><span class="s1">toggle(self): 
+<a name="l23"><span class="ln">23   </span></a>        self.streaming = </span><span class="s0">not </span><span class="s1">self.streaming 
+<a name="l24"><span class="ln">24   </span></a> 
+<a name="l25"><span class="ln">25   </span></a>    </span><span class="s0">def </span><span class="s1">stop(self): 
+<a name="l26"><span class="ln">26   </span></a>        self.streaming = </span><span class="s0">False</span><span class="s1"> 
+<a name="l27"><span class="ln">27   </span></a> 
+<a name="l28"><span class="ln">28   </span></a>    </span><span class="s0">def </span><span class="s1">run(self): 
+<a name="l29"><span class="ln">29   </span></a>        self.streaming = </span><span class="s0">True</span><span class="s1"> 
+<a name="l30"><span class="ln">30   </span></a> 
+<a name="l31"><span class="ln">31   </span></a>        p = pyaudio.PyAudio() 
+<a name="l32"><span class="ln">32   </span></a>        stream = p.open(format=FORMAT, channels=</span><span class="s2">1</span><span class="s1">, rate=RATE, 
+<a name="l33"><span class="ln">33   </span></a>                            input=</span><span class="s0">True</span><span class="s1">, output=</span><span class="s0">True</span><span class="s1">, 
+<a name="l34"><span class="ln">34   </span></a>                            frames_per_buffer=CHUNK_SIZE) 
+<a name="l35"><span class="ln">35   </span></a> 
+<a name="l36"><span class="ln">36   </span></a>        </span><span class="s0">while </span><span class="s1">self.streaming: 
+<a name="l37"><span class="ln">37   </span></a>            snd_data = stream.read(CHUNK_SIZE) 
+<a name="l38"><span class="ln">38   </span></a>            self.sound_sender.send_sound(snd_data) 
+<a name="l39"><span class="ln">39   </span></a> 
+<a name="l40"><span class="ln">40   </span></a>        print(</span><span class="s3">&quot;Sound Streamer ended&quot;</span><span class="s1">) 
+<a name="l41"><span class="ln">41   </span></a> 
+<a name="l42"><span class="ln">42   </span></a>         
+<a name="l43"><span class="ln">43   </span></a></span></pre>
+</body>
+</html>

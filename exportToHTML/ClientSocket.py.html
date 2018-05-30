@@ -1,0 +1,116 @@
+<html>
+<head>
+<title>ClientSocket.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #999999; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(0,0,128); font-weight: bold; }
+.s1 { color: rgb(0,0,0); }
+.s2 { color: rgb(128,128,128); font-style: italic; }
+.s3 { color: rgb(0,0,255); }
+.s4 { color: rgb(0,128,128); font-weight: bold; }
+.s5 { color: rgb(0,128,0); font-weight: bold; }
+</style>
+</head>
+<BODY BGCOLOR="#ffffff">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+ClientSocket.py</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">import </span><span class="s1">socket 
+<a name="l2"><span class="ln">2    </span></a></span><span class="s0">import </span><span class="s1">sys 
+<a name="l3"><span class="ln">3    </span></a></span><span class="s0">import </span><span class="s1">pickle 
+<a name="l4"><span class="ln">4    </span></a></span><span class="s0">import </span><span class="s1">struct 
+<a name="l5"><span class="ln">5    </span></a></span><span class="s0">from </span><span class="s1">sys </span><span class="s0">import </span><span class="s1">byteorder 
+<a name="l6"><span class="ln">6    </span></a> 
+<a name="l7"><span class="ln">7    </span></a> 
+<a name="l8"><span class="ln">8    </span></a></span><span class="s0">class </span><span class="s1">ClientSocket(): 
+<a name="l9"><span class="ln">9    </span></a>    </span><span class="s0">def </span><span class="s1">__init__(self, socket): 
+<a name="l10"><span class="ln">10   </span></a>        self.socket = socket 
+<a name="l11"><span class="ln">11   </span></a> 
+<a name="l12"><span class="ln">12   </span></a>    </span><span class="s0">def </span><span class="s1">recv_with_size_and_decode(self): 
+<a name="l13"><span class="ln">13   </span></a>        </span><span class="s2"># Get buffer size by reading the first 4 bytes of a buffer</span><span class="s1"> 
+<a name="l14"><span class="ln">14   </span></a>        raw_buffer_size = self.recv_n(</span><span class="s3">4</span><span class="s1">) 
+<a name="l15"><span class="ln">15   </span></a>        </span><span class="s0">if</span><span class="s1">(raw_buffer_size == </span><span class="s0">None</span><span class="s1">): 
+<a name="l16"><span class="ln">16   </span></a>            self.close() 
+<a name="l17"><span class="ln">17   </span></a>            </span><span class="s0">return None</span><span class="s1"> 
+<a name="l18"><span class="ln">18   </span></a>        </span><span class="s2"># decode buffer from binary to integer by unpacking</span><span class="s1"> 
+<a name="l19"><span class="ln">19   </span></a> 
+<a name="l20"><span class="ln">20   </span></a>        </span><span class="s0">try</span><span class="s1">: 
+<a name="l21"><span class="ln">21   </span></a>            buffer_size = struct.unpack(</span><span class="s4">'&gt;L'</span><span class="s1">, raw_buffer_size)[</span><span class="s3">0</span><span class="s1">] 
+<a name="l22"><span class="ln">22   </span></a>        </span><span class="s0">except </span><span class="s1">struct.error: 
+<a name="l23"><span class="ln">23   </span></a>            </span><span class="s0">return </span><span class="s4">&quot;struct error&quot;</span><span class="s1"> 
+<a name="l24"><span class="ln">24   </span></a> 
+<a name="l25"><span class="ln">25   </span></a>        </span><span class="s2"># get the data from buffer</span><span class="s1"> 
+<a name="l26"><span class="ln">26   </span></a>        client_input = self.recv_n(buffer_size) 
+<a name="l27"><span class="ln">27   </span></a> 
+<a name="l28"><span class="ln">28   </span></a>        decoded_input = pickle.loads(client_input) 
+<a name="l29"><span class="ln">29   </span></a> 
+<a name="l30"><span class="ln">30   </span></a>        </span><span class="s0">return </span><span class="s1">decoded_input 
+<a name="l31"><span class="ln">31   </span></a> 
+<a name="l32"><span class="ln">32   </span></a>    </span><span class="s0">def </span><span class="s1">recv_n(self, n): 
+<a name="l33"><span class="ln">33   </span></a>        </span><span class="s2">''' recv n bytes or return None if EOF is hit '''</span><span class="s1"> 
+<a name="l34"><span class="ln">34   </span></a>        data = </span><span class="s5">b''</span><span class="s1"> 
+<a name="l35"><span class="ln">35   </span></a>        </span><span class="s0">try</span><span class="s1">: 
+<a name="l36"><span class="ln">36   </span></a>            </span><span class="s0">while </span><span class="s1">len(data) &lt; n: 
+<a name="l37"><span class="ln">37   </span></a>                packet = self.socket.recv(n - len(data)) 
+<a name="l38"><span class="ln">38   </span></a>                </span><span class="s0">if not </span><span class="s1">packet: 
+<a name="l39"><span class="ln">39   </span></a>                    </span><span class="s0">return None</span><span class="s1"> 
+<a name="l40"><span class="ln">40   </span></a>                data += packet 
+<a name="l41"><span class="ln">41   </span></a>        </span><span class="s0">except</span><span class="s1">: 
+<a name="l42"><span class="ln">42   </span></a>            </span><span class="s2"># print(&quot;Connection has dropped.&quot;)</span><span class="s1"> 
+<a name="l43"><span class="ln">43   </span></a>            </span><span class="s0">pass</span><span class="s1"> 
+<a name="l44"><span class="ln">44   </span></a>        </span><span class="s0">return </span><span class="s1">data 
+<a name="l45"><span class="ln">45   </span></a> 
+<a name="l46"><span class="ln">46   </span></a>    </span><span class="s0">def </span><span class="s1">sendall_with_size(self, data): 
+<a name="l47"><span class="ln">47   </span></a>        packet = pickle.dumps(data) 
+<a name="l48"><span class="ln">48   </span></a>        size = struct.pack(</span><span class="s4">'&gt;L'</span><span class="s1">, len(packet)) 
+<a name="l49"><span class="ln">49   </span></a>        self.socket.sendall(size + packet) 
+<a name="l50"><span class="ln">50   </span></a> 
+<a name="l51"><span class="ln">51   </span></a>    </span><span class="s0">def </span><span class="s1">send_video_frame(self, frame): 
+<a name="l52"><span class="ln">52   </span></a>        packet = pickle.dumps(frame) 
+<a name="l53"><span class="ln">53   </span></a>        size = struct.pack(</span><span class="s4">'L'</span><span class="s1">, len(packet)) 
+<a name="l54"><span class="ln">54   </span></a>        self.socket.sendall(size + packet) 
+<a name="l55"><span class="ln">55   </span></a> 
+<a name="l56"><span class="ln">56   </span></a>    </span><span class="s0">def </span><span class="s1">recv_video_frame(self): 
+<a name="l57"><span class="ln">57   </span></a>        data = </span><span class="s5">b&quot;&quot;</span><span class="s1"> 
+<a name="l58"><span class="ln">58   </span></a>        payload_size = struct.calcsize(</span><span class="s4">&quot;L&quot;</span><span class="s1">) 
+<a name="l59"><span class="ln">59   </span></a> 
+<a name="l60"><span class="ln">60   </span></a>        </span><span class="s0">try</span><span class="s1">: 
+<a name="l61"><span class="ln">61   </span></a>            </span><span class="s0">while </span><span class="s1">len(data) &lt; payload_size: 
+<a name="l62"><span class="ln">62   </span></a>                data += self.socket.recv(</span><span class="s3">4096</span><span class="s1">) 
+<a name="l63"><span class="ln">63   </span></a>            packed_msg_size = data[:payload_size] 
+<a name="l64"><span class="ln">64   </span></a>            data = data[payload_size:] 
+<a name="l65"><span class="ln">65   </span></a>            msg_size = struct.unpack(</span><span class="s4">&quot;L&quot;</span><span class="s1">, packed_msg_size)[</span><span class="s3">0</span><span class="s1">] 
+<a name="l66"><span class="ln">66   </span></a>            </span><span class="s0">while </span><span class="s1">len(data) &lt; msg_size: 
+<a name="l67"><span class="ln">67   </span></a>                data += self.socket.recv(</span><span class="s3">4096</span><span class="s1">) 
+<a name="l68"><span class="ln">68   </span></a>            frame_data = data[:msg_size] 
+<a name="l69"><span class="ln">69   </span></a>            data = data[msg_size:] 
+<a name="l70"><span class="ln">70   </span></a> 
+<a name="l71"><span class="ln">71   </span></a>            frame = pickle.loads(frame_data) 
+<a name="l72"><span class="ln">72   </span></a>            </span><span class="s0">return </span><span class="s1">frame 
+<a name="l73"><span class="ln">73   </span></a>        </span><span class="s0">except </span><span class="s1">ConnectionResetError: 
+<a name="l74"><span class="ln">74   </span></a>            </span><span class="s0">return None</span><span class="s1"> 
+<a name="l75"><span class="ln">75   </span></a>        </span><span class="s0">except </span><span class="s1">ConnectionAbortedError: 
+<a name="l76"><span class="ln">76   </span></a>            </span><span class="s0">return None</span><span class="s1"> 
+<a name="l77"><span class="ln">77   </span></a>        </span><span class="s0">except </span><span class="s1">ConnectionRefusedError: 
+<a name="l78"><span class="ln">78   </span></a>            </span><span class="s0">return None</span><span class="s1"> 
+<a name="l79"><span class="ln">79   </span></a>        </span><span class="s0">except </span><span class="s1">ConnectionError: 
+<a name="l80"><span class="ln">80   </span></a>            </span><span class="s0">return None</span><span class="s1"> 
+<a name="l81"><span class="ln">81   </span></a> 
+<a name="l82"><span class="ln">82   </span></a>    </span><span class="s0">def </span><span class="s1">send_sound(self,sound): 
+<a name="l83"><span class="ln">83   </span></a>        </span><span class="s0">if </span><span class="s1">byteorder == </span><span class="s4">'big'</span><span class="s1">: 
+<a name="l84"><span class="ln">84   </span></a>            sound.byteswap() 
+<a name="l85"><span class="ln">85   </span></a>        self.socket.send(sound) 
+<a name="l86"><span class="ln">86   </span></a> 
+<a name="l87"><span class="ln">87   </span></a>    </span><span class="s0">def </span><span class="s1">receive_sound(self,chunk_size): 
+<a name="l88"><span class="ln">88   </span></a>        data = self.socket.recv(chunk_size) 
+<a name="l89"><span class="ln">89   </span></a>        </span><span class="s0">return </span><span class="s1">data 
+<a name="l90"><span class="ln">90   </span></a> 
+<a name="l91"><span class="ln">91   </span></a>    </span><span class="s0">def </span><span class="s1">close(self): 
+<a name="l92"><span class="ln">92   </span></a>        self.socket.close() 
+<a name="l93"><span class="ln">93   </span></a></span></pre>
+</body>
+</html>

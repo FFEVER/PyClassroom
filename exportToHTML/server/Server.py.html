@@ -1,0 +1,185 @@
+<html>
+<head>
+<title>Server.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #999999; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(0,0,128); font-weight: bold; }
+.s1 { color: rgb(0,0,0); }
+.s2 { color: rgb(128,128,128); font-style: italic; }
+.s3 { color: rgb(0,0,255); }
+.s4 { color: rgb(0,128,128); font-weight: bold; }
+</style>
+</head>
+<BODY BGCOLOR="#ffffff">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+Server.py</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">import </span><span class="s1">socket 
+<a name="l2"><span class="ln">2    </span></a></span><span class="s0">import </span><span class="s1">sys 
+<a name="l3"><span class="ln">3    </span></a></span><span class="s0">import </span><span class="s1">traceback 
+<a name="l4"><span class="ln">4    </span></a></span><span class="s0">from </span><span class="s1">threading </span><span class="s0">import </span><span class="s1">Thread, Timer 
+<a name="l5"><span class="ln">5    </span></a></span><span class="s0">import </span><span class="s1">pickle 
+<a name="l6"><span class="ln">6    </span></a></span><span class="s0">import </span><span class="s1">struct 
+<a name="l7"><span class="ln">7    </span></a></span><span class="s0">import </span><span class="s1">uuid 
+<a name="l8"><span class="ln">8    </span></a> 
+<a name="l9"><span class="ln">9    </span></a></span><span class="s0">from </span><span class="s1">StudentHandler </span><span class="s0">import </span><span class="s1">StudentHandler 
+<a name="l10"><span class="ln">10   </span></a></span><span class="s0">from </span><span class="s1">TeacherHanlder </span><span class="s0">import </span><span class="s1">TeacherHanlder 
+<a name="l11"><span class="ln">11   </span></a></span><span class="s0">from </span><span class="s1">ClientSocket </span><span class="s0">import </span><span class="s1">ClientSocket 
+<a name="l12"><span class="ln">12   </span></a></span><span class="s0">import </span><span class="s1">constant 
+<a name="l13"><span class="ln">13   </span></a> 
+<a name="l14"><span class="ln">14   </span></a></span><span class="s0">class </span><span class="s1">Server: 
+<a name="l15"><span class="ln">15   </span></a>    </span><span class="s0">def </span><span class="s1">__init__(self): 
+<a name="l16"><span class="ln">16   </span></a>        self.room_list = []     </span><span class="s2"># list of room</span><span class="s1"> 
+<a name="l17"><span class="ln">17   </span></a>        self.teacher_list = {}  </span><span class="s2"># dict of teacher handler -&gt; {room_id : teacherHandler}</span><span class="s1"> 
+<a name="l18"><span class="ln">18   </span></a>        self.student_list = {}  </span><span class="s2"># dict of student handler -&gt; {student_id : studentHandler}</span><span class="s1"> 
+<a name="l19"><span class="ln">19   </span></a>        self.room_count = </span><span class="s3">0</span><span class="s1"> 
+<a name="l20"><span class="ln">20   </span></a>        self.student_count = </span><span class="s3">0</span><span class="s1"> 
+<a name="l21"><span class="ln">21   </span></a> 
+<a name="l22"><span class="ln">22   </span></a>    </span><span class="s0">def </span><span class="s1">start_server(self): 
+<a name="l23"><span class="ln">23   </span></a>        self.inactive_handler() 
+<a name="l24"><span class="ln">24   </span></a> 
+<a name="l25"><span class="ln">25   </span></a>        soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
+<a name="l26"><span class="ln">26   </span></a>         
+<a name="l27"><span class="ln">27   </span></a>        soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, </span><span class="s3">1</span><span class="s1">)   </span><span class="s2"># SO_REUSEADDR flag tells the kernel to reuse a local socket in TIME_WAIT state, without waiting for its natural timeout to expire</span><span class="s1"> 
+<a name="l28"><span class="ln">28   </span></a>        print(</span><span class="s4">&quot;Socket created&quot;</span><span class="s1">) 
+<a name="l29"><span class="ln">29   </span></a> 
+<a name="l30"><span class="ln">30   </span></a>        host = socket.gethostname() 
+<a name="l31"><span class="ln">31   </span></a>        port = constant.PORT         </span><span class="s2"># arbitrary non-privileged port</span><span class="s1"> 
+<a name="l32"><span class="ln">32   </span></a> 
+<a name="l33"><span class="ln">33   </span></a>        </span><span class="s0">try</span><span class="s1">: 
+<a name="l34"><span class="ln">34   </span></a>            soc.bind((host, port)) 
+<a name="l35"><span class="ln">35   </span></a>        </span><span class="s0">except</span><span class="s1">: 
+<a name="l36"><span class="ln">36   </span></a>            print(</span><span class="s4">&quot;Bind failed. Error : &quot; </span><span class="s1">+ str(sys.exc_info())) 
+<a name="l37"><span class="ln">37   </span></a>            sys.exit() 
+<a name="l38"><span class="ln">38   </span></a> 
+<a name="l39"><span class="ln">39   </span></a>        soc.listen(</span><span class="s3">5</span><span class="s1">)       </span><span class="s2"># queue up to 5 requests</span><span class="s1"> 
+<a name="l40"><span class="ln">40   </span></a>        print(</span><span class="s4">&quot;Socket now listening&quot;</span><span class="s1">) 
+<a name="l41"><span class="ln">41   </span></a> 
+<a name="l42"><span class="ln">42   </span></a>        </span><span class="s0">try</span><span class="s1">: 
+<a name="l43"><span class="ln">43   </span></a>            </span><span class="s2"># infinite loop- do not reset for every requests</span><span class="s1"> 
+<a name="l44"><span class="ln">44   </span></a>            </span><span class="s0">while True</span><span class="s1">: 
+<a name="l45"><span class="ln">45   </span></a>                cli_soc, address = soc.accept() 
+<a name="l46"><span class="ln">46   </span></a>                connection = ClientSocket(cli_soc) 
+<a name="l47"><span class="ln">47   </span></a>                 
+<a name="l48"><span class="ln">48   </span></a>                ip, port = str(address[</span><span class="s3">0</span><span class="s1">]), str(address[</span><span class="s3">1</span><span class="s1">]) 
+<a name="l49"><span class="ln">49   </span></a>                print(</span><span class="s4">&quot;Incoming connection -&gt; &quot; </span><span class="s1">+ ip + </span><span class="s4">&quot;:&quot; </span><span class="s1">+ port) 
+<a name="l50"><span class="ln">50   </span></a>                </span><span class="s0">try</span><span class="s1">: 
+<a name="l51"><span class="ln">51   </span></a>                    Thread(target=self.manage_incoming_connection, args=(connection, ip, port)).start() 
+<a name="l52"><span class="ln">52   </span></a>                </span><span class="s0">except</span><span class="s1">: 
+<a name="l53"><span class="ln">53   </span></a>                    print(</span><span class="s4">&quot;Thread did not start.&quot;</span><span class="s1">) 
+<a name="l54"><span class="ln">54   </span></a>                    traceback.print_exc() 
+<a name="l55"><span class="ln">55   </span></a>        </span><span class="s0">except </span><span class="s1">KeyboardInterrupt: 
+<a name="l56"><span class="ln">56   </span></a>            </span><span class="s0">pass</span><span class="s1"> 
+<a name="l57"><span class="ln">57   </span></a>        </span><span class="s0">finally</span><span class="s1">: 
+<a name="l58"><span class="ln">58   </span></a>            </span><span class="s2"># Clean up.</span><span class="s1"> 
+<a name="l59"><span class="ln">59   </span></a>            </span><span class="s0">for </span><span class="s1">room_id </span><span class="s0">in </span><span class="s1">self.teacher_list: 
+<a name="l60"><span class="ln">60   </span></a>                self.teacher_list[room_id].sender.close() 
+<a name="l61"><span class="ln">61   </span></a>                self.teacher_list[room_id].receiver.close() 
+<a name="l62"><span class="ln">62   </span></a>            </span><span class="s0">for </span><span class="s1">student_handler </span><span class="s0">in </span><span class="s1">self.student_list: 
+<a name="l63"><span class="ln">63   </span></a>                student_handler.sender.close() 
+<a name="l64"><span class="ln">64   </span></a>                student_handler.receiver.close() 
+<a name="l65"><span class="ln">65   </span></a>            soc.close() 
+<a name="l66"><span class="ln">66   </span></a> 
+<a name="l67"><span class="ln">67   </span></a>    </span><span class="s0">def </span><span class="s1">manage_incoming_connection(self, socket, ip, port): 
+<a name="l68"><span class="ln">68   </span></a>        </span><span class="s2">'''Differentiate between Student or Teacher'''</span><span class="s1"> 
+<a name="l69"><span class="ln">69   </span></a> 
+<a name="l70"><span class="ln">70   </span></a>        decoded_input = socket.recv_with_size_and_decode() 
+<a name="l71"><span class="ln">71   </span></a>        print(decoded_input) 
+<a name="l72"><span class="ln">72   </span></a> 
+<a name="l73"><span class="ln">73   </span></a>        cmd = decoded_input[</span><span class="s3">0</span><span class="s1">] 
+<a name="l74"><span class="ln">74   </span></a> 
+<a name="l75"><span class="ln">75   </span></a>        </span><span class="s0">if </span><span class="s1">cmd == constant.I_AM_TEACHER_SENDER: 
+<a name="l76"><span class="ln">76   </span></a>            </span><span class="s2"># room</span><span class="s1"> 
+<a name="l77"><span class="ln">77   </span></a>            room = decoded_input[</span><span class="s3">1</span><span class="s1">] 
+<a name="l78"><span class="ln">78   </span></a>            self.room_count += </span><span class="s3">1</span><span class="s1"> 
+<a name="l79"><span class="ln">79   </span></a>            room_id = str(uuid.uuid4())[:</span><span class="s3">4</span><span class="s1">]+str(self.room_count) 
+<a name="l80"><span class="ln">80   </span></a>            room.set_id(room_id) 
+<a name="l81"><span class="ln">81   </span></a>            self.room_list.append(room) 
+<a name="l82"><span class="ln">82   </span></a> 
+<a name="l83"><span class="ln">83   </span></a>            </span><span class="s2"># teacher</span><span class="s1"> 
+<a name="l84"><span class="ln">84   </span></a>            teacher = room.teacher 
+<a name="l85"><span class="ln">85   </span></a>            </span><span class="s2"># tell teacher his room id</span><span class="s1"> 
+<a name="l86"><span class="ln">86   </span></a>            socket.sendall_with_size([constant.CREATE_ROOM_SUCCESS,room_id]) 
+<a name="l87"><span class="ln">87   </span></a>            </span><span class="s2"># teacher handler</span><span class="s1"> 
+<a name="l88"><span class="ln">88   </span></a>            teacherHandler = TeacherHanlder(self,socket,teacher,room) 
+<a name="l89"><span class="ln">89   </span></a>            self.teacher_list[room_id] = teacherHandler 
+<a name="l90"><span class="ln">90   </span></a>            teacherHandler.start() 
+<a name="l91"><span class="ln">91   </span></a> 
+<a name="l92"><span class="ln">92   </span></a>        </span><span class="s0">elif </span><span class="s1">cmd == constant.I_AM_STUDENT_SENDER: 
+<a name="l93"><span class="ln">93   </span></a>            student = decoded_input[</span><span class="s3">1</span><span class="s1">] 
+<a name="l94"><span class="ln">94   </span></a>            self.student_count += </span><span class="s3">1</span><span class="s1"> 
+<a name="l95"><span class="ln">95   </span></a>            student_id = str(uuid.uuid4())[:</span><span class="s3">5</span><span class="s1">] + str(self.student_count) 
+<a name="l96"><span class="ln">96   </span></a>            student.set_id(student_id) 
+<a name="l97"><span class="ln">97   </span></a>            </span><span class="s2"># send room list to student and tell them their id</span><span class="s1"> 
+<a name="l98"><span class="ln">98   </span></a>            socket.sendall_with_size([student_id,self.room_list]) 
+<a name="l99"><span class="ln">99   </span></a>            </span><span class="s2"># student handler</span><span class="s1"> 
+<a name="l100"><span class="ln">100  </span></a>            studentHandler = StudentHandler(self,socket,student) 
+<a name="l101"><span class="ln">101  </span></a>            self.student_list[student_id] = studentHandler 
+<a name="l102"><span class="ln">102  </span></a>            studentHandler.start() 
+<a name="l103"><span class="ln">103  </span></a> 
+<a name="l104"><span class="ln">104  </span></a>        </span><span class="s0">elif </span><span class="s1">cmd == constant.I_AM_TEACHER_RECEIVER: 
+<a name="l105"><span class="ln">105  </span></a>            room_id = decoded_input[</span><span class="s3">1</span><span class="s1">] 
+<a name="l106"><span class="ln">106  </span></a>            socket.sendall_with_size(constant.SUCCESS) 
+<a name="l107"><span class="ln">107  </span></a>            self.teacher_list[room_id].set_sender(socket) 
+<a name="l108"><span class="ln">108  </span></a> 
+<a name="l109"><span class="ln">109  </span></a>        </span><span class="s0">elif </span><span class="s1">cmd == constant.I_AM_STUDENT_RECEIVER: 
+<a name="l110"><span class="ln">110  </span></a>            student_id = decoded_input[</span><span class="s3">1</span><span class="s1">] 
+<a name="l111"><span class="ln">111  </span></a>            socket.sendall_with_size(constant.SUCCESS) 
+<a name="l112"><span class="ln">112  </span></a>            self.student_list[student_id].set_sender(socket) 
+<a name="l113"><span class="ln">113  </span></a> 
+<a name="l114"><span class="ln">114  </span></a>        </span><span class="s0">elif </span><span class="s1">cmd == constant.I_AM_TEACHER_VIDEO_SENDER: 
+<a name="l115"><span class="ln">115  </span></a>            room_id = decoded_input[</span><span class="s3">1</span><span class="s1">] 
+<a name="l116"><span class="ln">116  </span></a>            socket.sendall_with_size(constant.SUCCESS) 
+<a name="l117"><span class="ln">117  </span></a>            self.teacher_list[room_id].set_video_receiver(socket) 
+<a name="l118"><span class="ln">118  </span></a>         
+<a name="l119"><span class="ln">119  </span></a>        </span><span class="s0">elif </span><span class="s1">cmd == constant.I_AM_TEACHER_SOUND_SENDER: 
+<a name="l120"><span class="ln">120  </span></a>            room_id = decoded_input[</span><span class="s3">1</span><span class="s1">] 
+<a name="l121"><span class="ln">121  </span></a>            socket.sendall_with_size(constant.SUCCESS) 
+<a name="l122"><span class="ln">122  </span></a>            self.teacher_list[room_id].set_sound_receiver(socket) 
+<a name="l123"><span class="ln">123  </span></a>         
+<a name="l124"><span class="ln">124  </span></a>        </span><span class="s0">elif </span><span class="s1">cmd == constant.I_AM_STUDENT_VIDEO_RECEIVER: 
+<a name="l125"><span class="ln">125  </span></a>            student_id = decoded_input[</span><span class="s3">1</span><span class="s1">] 
+<a name="l126"><span class="ln">126  </span></a>            socket.sendall_with_size(constant.SUCCESS) 
+<a name="l127"><span class="ln">127  </span></a>            self.student_list[student_id].set_video_sender(socket) 
+<a name="l128"><span class="ln">128  </span></a> 
+<a name="l129"><span class="ln">129  </span></a> 
+<a name="l130"><span class="ln">130  </span></a>        </span><span class="s0">elif </span><span class="s1">cmd == constant.I_AM_STUDENT_SOUND_RECEIVER: 
+<a name="l131"><span class="ln">131  </span></a>            student_id = decoded_input[</span><span class="s3">1</span><span class="s1">] 
+<a name="l132"><span class="ln">132  </span></a>            socket.sendall_with_size(constant.SUCCESS) 
+<a name="l133"><span class="ln">133  </span></a>            self.student_list[student_id].set_sound_sender(socket) 
+<a name="l134"><span class="ln">134  </span></a> 
+<a name="l135"><span class="ln">135  </span></a>        </span><span class="s0">else</span><span class="s1">: 
+<a name="l136"><span class="ln">136  </span></a>            socket.sendall_with_size(</span><span class="s4">&quot;Error: You are not teacher or student.&quot;</span><span class="s1">) 
+<a name="l137"><span class="ln">137  </span></a>            socket.close() 
+<a name="l138"><span class="ln">138  </span></a> 
+<a name="l139"><span class="ln">139  </span></a>        print(</span><span class="s4">&quot;=======================================&quot;</span><span class="s1">) 
+<a name="l140"><span class="ln">140  </span></a> 
+<a name="l141"><span class="ln">141  </span></a>    </span><span class="s0">def </span><span class="s1">inactive_handler(self): 
+<a name="l142"><span class="ln">142  </span></a>        Timer(</span><span class="s3">1.0</span><span class="s1">,self.inactive_handler).start() 
+<a name="l143"><span class="ln">143  </span></a> 
+<a name="l144"><span class="ln">144  </span></a>        inactive_room = [] 
+<a name="l145"><span class="ln">145  </span></a>        </span><span class="s0">for </span><span class="s1">room_id </span><span class="s0">in </span><span class="s1">self.teacher_list: 
+<a name="l146"><span class="ln">146  </span></a>            </span><span class="s0">if not </span><span class="s1">self.teacher_list[room_id].isAlive(): 
+<a name="l147"><span class="ln">147  </span></a>                inactive_room.append(room_id) 
+<a name="l148"><span class="ln">148  </span></a> 
+<a name="l149"><span class="ln">149  </span></a>        </span><span class="s0">for </span><span class="s1">room_id </span><span class="s0">in </span><span class="s1">inactive_room: 
+<a name="l150"><span class="ln">150  </span></a>            </span><span class="s0">del </span><span class="s1">self.teacher_list[room_id] 
+<a name="l151"><span class="ln">151  </span></a>        self.room_list = [room </span><span class="s0">for </span><span class="s1">room </span><span class="s0">in </span><span class="s1">self.room_list </span><span class="s0">if </span><span class="s1">room.id </span><span class="s0">not in </span><span class="s1">inactive_room] 
+<a name="l152"><span class="ln">152  </span></a> 
+<a name="l153"><span class="ln">153  </span></a>        inactive_student = [] 
+<a name="l154"><span class="ln">154  </span></a>        </span><span class="s0">for </span><span class="s1">student_id </span><span class="s0">in </span><span class="s1">self.student_list: 
+<a name="l155"><span class="ln">155  </span></a>            </span><span class="s0">if not </span><span class="s1">self.student_list[student_id].isAlive(): 
+<a name="l156"><span class="ln">156  </span></a>                inactive_student.append(student_id) 
+<a name="l157"><span class="ln">157  </span></a>        </span><span class="s0">for </span><span class="s1">student_id </span><span class="s0">in </span><span class="s1">inactive_student: 
+<a name="l158"><span class="ln">158  </span></a>            </span><span class="s0">del </span><span class="s1">self.student_list[student_id] 
+<a name="l159"><span class="ln">159  </span></a> 
+<a name="l160"><span class="ln">160  </span></a></span><span class="s0">if </span><span class="s1">__name__ == </span><span class="s4">&quot;__main__&quot;</span><span class="s1">: 
+<a name="l161"><span class="ln">161  </span></a>    server = Server() 
+<a name="l162"><span class="ln">162  </span></a>    server.start_server() 
+<a name="l163"><span class="ln">163  </span></a></span></pre>
+</body>
+</html>

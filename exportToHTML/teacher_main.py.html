@@ -1,0 +1,244 @@
+<html>
+<head>
+<title>teacher_main.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #999999; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(0,0,128); font-weight: bold; }
+.s1 { color: rgb(0,0,0); }
+.s2 { color: rgb(0,128,128); font-weight: bold; }
+.s3 { color: rgb(0,0,255); }
+.s4 { color: rgb(128,128,128); font-style: italic; }
+</style>
+</head>
+<BODY BGCOLOR="#ffffff">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+teacher_main.py</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">import </span><span class="s1">sys 
+<a name="l2"><span class="ln">2    </span></a></span><span class="s0">from </span><span class="s1">PyQt5.QtCore </span><span class="s0">import </span><span class="s1">* 
+<a name="l3"><span class="ln">3    </span></a></span><span class="s0">from </span><span class="s1">PyQt5.QtWidgets </span><span class="s0">import </span><span class="s1">* 
+<a name="l4"><span class="ln">4    </span></a></span><span class="s0">from </span><span class="s1">PyQt5.QtGui </span><span class="s0">import </span><span class="s1">* 
+<a name="l5"><span class="ln">5    </span></a></span><span class="s0">from </span><span class="s1">UI.teacher_main_ui </span><span class="s0">import </span><span class="s1">Ui_Form 
+<a name="l6"><span class="ln">6    </span></a></span><span class="s0">from </span><span class="s1">chat_window </span><span class="s0">import </span><span class="s1">ChatWindow 
+<a name="l7"><span class="ln">7    </span></a></span><span class="s0">from </span><span class="s1">validator </span><span class="s0">import </span><span class="s1">* 
+<a name="l8"><span class="ln">8    </span></a></span><span class="s0">from </span><span class="s1">streamer_thread </span><span class="s0">import </span><span class="s1">StreamerThread 
+<a name="l9"><span class="ln">9    </span></a></span><span class="s0">from </span><span class="s1">sound_streamer_thread </span><span class="s0">import </span><span class="s1">SoundStreamerThread 
+<a name="l10"><span class="ln">10   </span></a></span><span class="s0">from </span><span class="s1">threading </span><span class="s0">import </span><span class="s1">Thread 
+<a name="l11"><span class="ln">11   </span></a> 
+<a name="l12"><span class="ln">12   </span></a></span><span class="s0">from </span><span class="s1">Room </span><span class="s0">import </span><span class="s1">Room 
+<a name="l13"><span class="ln">13   </span></a></span><span class="s0">from </span><span class="s1">Teacher </span><span class="s0">import </span><span class="s1">Teacher 
+<a name="l14"><span class="ln">14   </span></a></span><span class="s0">from </span><span class="s1">Student </span><span class="s0">import </span><span class="s1">Student 
+<a name="l15"><span class="ln">15   </span></a></span><span class="s0">from </span><span class="s1">ClientSocket </span><span class="s0">import </span><span class="s1">ClientSocket 
+<a name="l16"><span class="ln">16   </span></a></span><span class="s0">import </span><span class="s1">constant 
+<a name="l17"><span class="ln">17   </span></a></span><span class="s0">import </span><span class="s1">socket 
+<a name="l18"><span class="ln">18   </span></a></span><span class="s0">import </span><span class="s1">struct 
+<a name="l19"><span class="ln">19   </span></a></span><span class="s0">import </span><span class="s1">pickle 
+<a name="l20"><span class="ln">20   </span></a></span><span class="s0">import </span><span class="s1">traceback 
+<a name="l21"><span class="ln">21   </span></a> 
+<a name="l22"><span class="ln">22   </span></a></span><span class="s0">class </span><span class="s1">TeacherMain(QWidget): 
+<a name="l23"><span class="ln">23   </span></a> 
+<a name="l24"><span class="ln">24   </span></a>    chat_window_updater = pyqtSignal(str) 
+<a name="l25"><span class="ln">25   </span></a> 
+<a name="l26"><span class="ln">26   </span></a>    </span><span class="s0">def </span><span class="s1">__init__(self, info_window): 
+<a name="l27"><span class="ln">27   </span></a>        QWidget.__init__(self, </span><span class="s0">None</span><span class="s1">) 
+<a name="l28"><span class="ln">28   </span></a> 
+<a name="l29"><span class="ln">29   </span></a>        self.info_window = info_window 
+<a name="l30"><span class="ln">30   </span></a>        self.chat_window = ChatWindow() 
+<a name="l31"><span class="ln">31   </span></a>        self.chat_window.hide() 
+<a name="l32"><span class="ln">32   </span></a> 
+<a name="l33"><span class="ln">33   </span></a>        self.streamer_thread = </span><span class="s0">None</span><span class="s1"> 
+<a name="l34"><span class="ln">34   </span></a>        self.sound_streamer_thread = </span><span class="s0">None</span><span class="s1"> 
+<a name="l35"><span class="ln">35   </span></a> 
+<a name="l36"><span class="ln">36   </span></a>        self.ui = Ui_Form() 
+<a name="l37"><span class="ln">37   </span></a>        self.ui.setupUi(self) 
+<a name="l38"><span class="ln">38   </span></a>        self.setWindowTitle(</span><span class="s2">&quot;Teaching Lobby&quot;</span><span class="s1">) 
+<a name="l39"><span class="ln">39   </span></a> 
+<a name="l40"><span class="ln">40   </span></a>        self.students = [] 
+<a name="l41"><span class="ln">41   </span></a>        self.materials = [] 
+<a name="l42"><span class="ln">42   </span></a> 
+<a name="l43"><span class="ln">43   </span></a>        self.playing = </span><span class="s0">False</span><span class="s1"> 
+<a name="l44"><span class="ln">44   </span></a>        self.full_capacity = </span><span class="s3">0</span><span class="s1"> 
+<a name="l45"><span class="ln">45   </span></a>        self.current_capacity = </span><span class="s3">0</span><span class="s1"> 
+<a name="l46"><span class="ln">46   </span></a> 
+<a name="l47"><span class="ln">47   </span></a>        self.sender = </span><span class="s0">None</span><span class="s1"> 
+<a name="l48"><span class="ln">48   </span></a>        self.receiver = </span><span class="s0">None</span><span class="s1"> 
+<a name="l49"><span class="ln">49   </span></a>        self.video_sender = </span><span class="s0">None</span><span class="s1"> 
+<a name="l50"><span class="ln">50   </span></a>        self.sound_sender = </span><span class="s0">None</span><span class="s1"> 
+<a name="l51"><span class="ln">51   </span></a>        self.receiver_thread_running = </span><span class="s0">False</span><span class="s1"> 
+<a name="l52"><span class="ln">52   </span></a> 
+<a name="l53"><span class="ln">53   </span></a>        box_layout = QVBoxLayout() 
+<a name="l54"><span class="ln">54   </span></a>        box_layout.setSpacing(</span><span class="s3">10</span><span class="s1">) 
+<a name="l55"><span class="ln">55   </span></a>        box_layout.setAlignment(Qt.AlignTop) 
+<a name="l56"><span class="ln">56   </span></a>        self.list_container = QWidget() 
+<a name="l57"><span class="ln">57   </span></a>        pal = self.list_container.palette() 
+<a name="l58"><span class="ln">58   </span></a>        pal.setColor(self.list_container.backgroundRole(), Qt.white) 
+<a name="l59"><span class="ln">59   </span></a>        self.list_container.setPalette(pal) 
+<a name="l60"><span class="ln">60   </span></a>        self.list_container.setLayout(box_layout) 
+<a name="l61"><span class="ln">61   </span></a> 
+<a name="l62"><span class="ln">62   </span></a>        self.ui.start_button.clicked.connect(self.start_stop) 
+<a name="l63"><span class="ln">63   </span></a>        self.ui.material_button.clicked.connect(self.add_material) 
+<a name="l64"><span class="ln">64   </span></a>        self.ui.exit_button.clicked.connect(self.end_connection) 
+<a name="l65"><span class="ln">65   </span></a>        self.ui.kick_button.clicked.connect(self.kick_selected) 
+<a name="l66"><span class="ln">66   </span></a> 
+<a name="l67"><span class="ln">67   </span></a>        self.ui.scroll_area.setWidget(self.list_container) 
+<a name="l68"><span class="ln">68   </span></a>        self.ui.scroll_area.verticalScrollBar().rangeChanged.connect(self.scroll_to_material_bottom) 
+<a name="l69"><span class="ln">69   </span></a> 
+<a name="l70"><span class="ln">70   </span></a>        self.chat_window_updater.connect(self.update_chat_window_text) 
+<a name="l71"><span class="ln">71   </span></a> 
+<a name="l72"><span class="ln">72   </span></a>        self.update_student_list() 
+<a name="l73"><span class="ln">73   </span></a> 
+<a name="l74"><span class="ln">74   </span></a> 
+<a name="l75"><span class="ln">75   </span></a>    </span><span class="s0">def </span><span class="s1">set_sender(self, sender): 
+<a name="l76"><span class="ln">76   </span></a>        self.sender = sender 
+<a name="l77"><span class="ln">77   </span></a> 
+<a name="l78"><span class="ln">78   </span></a>    </span><span class="s0">def </span><span class="s1">set_receiver(self, rec): 
+<a name="l79"><span class="ln">79   </span></a>        self.receiver = rec 
+<a name="l80"><span class="ln">80   </span></a> 
+<a name="l81"><span class="ln">81   </span></a>    </span><span class="s0">def </span><span class="s1">set_video_sender(self,video_sender): 
+<a name="l82"><span class="ln">82   </span></a>        self.video_sender =  video_sender 
+<a name="l83"><span class="ln">83   </span></a> 
+<a name="l84"><span class="ln">84   </span></a>    </span><span class="s0">def </span><span class="s1">set_sound_sender(self,sound_sender): 
+<a name="l85"><span class="ln">85   </span></a>        self.sound_sender = sound_sender 
+<a name="l86"><span class="ln">86   </span></a> 
+<a name="l87"><span class="ln">87   </span></a>    </span><span class="s0">def </span><span class="s1">start_receiver_thread(self): 
+<a name="l88"><span class="ln">88   </span></a>        </span><span class="s0">try</span><span class="s1">: 
+<a name="l89"><span class="ln">89   </span></a>            self.receiver_thread_running = </span><span class="s0">True</span><span class="s1"> 
+<a name="l90"><span class="ln">90   </span></a>            self.receiver_thread = Thread(target = self.receiver_handler, args=(self.receiver,)) 
+<a name="l91"><span class="ln">91   </span></a>            self.receiver_thread.start() 
+<a name="l92"><span class="ln">92   </span></a>        </span><span class="s0">except</span><span class="s1">: 
+<a name="l93"><span class="ln">93   </span></a>            traceback.print_exc() 
+<a name="l94"><span class="ln">94   </span></a> 
+<a name="l95"><span class="ln">95   </span></a>    @pyqtSlot(str) 
+<a name="l96"><span class="ln">96   </span></a>    </span><span class="s0">def </span><span class="s1">update_chat_window_text(self, value): 
+<a name="l97"><span class="ln">97   </span></a>        self.chat_window.add_text(value) 
+<a name="l98"><span class="ln">98   </span></a> 
+<a name="l99"><span class="ln">99   </span></a>    </span><span class="s0">def </span><span class="s1">receiver_handler(self, receiver): 
+<a name="l100"><span class="ln">100  </span></a>        </span><span class="s0">while </span><span class="s1">self.receiver_thread_running: 
+<a name="l101"><span class="ln">101  </span></a>            decoded_input = receiver.recv_with_size_and_decode() 
+<a name="l102"><span class="ln">102  </span></a>            </span><span class="s0">if </span><span class="s1">decoded_input == </span><span class="s0">None</span><span class="s1">: 
+<a name="l103"><span class="ln">103  </span></a>                print(</span><span class="s2">&quot;Server has down.&quot;</span><span class="s1">) 
+<a name="l104"><span class="ln">104  </span></a>                self.exit_room() 
+<a name="l105"><span class="ln">105  </span></a>            cmd = decoded_input[</span><span class="s3">0</span><span class="s1">] 
+<a name="l106"><span class="ln">106  </span></a>            </span><span class="s0">if </span><span class="s1">cmd == constant.STUDENT_LIST_UPDATED: 
+<a name="l107"><span class="ln">107  </span></a>                self.students = decoded_input[</span><span class="s3">1</span><span class="s1">] 
+<a name="l108"><span class="ln">108  </span></a>                self.update_student_list() 
+<a name="l109"><span class="ln">109  </span></a>            </span><span class="s0">elif </span><span class="s1">cmd == constant.MESSAGE_FROM_STUDENT: 
+<a name="l110"><span class="ln">110  </span></a>                </span><span class="s0">if </span><span class="s1">self.playing: 
+<a name="l111"><span class="ln">111  </span></a>                    data = decoded_input[</span><span class="s3">1</span><span class="s1">] 
+<a name="l112"><span class="ln">112  </span></a>                    student = data[</span><span class="s3">0</span><span class="s1">] 
+<a name="l113"><span class="ln">113  </span></a>                    msg = data[</span><span class="s3">1</span><span class="s1">] 
+<a name="l114"><span class="ln">114  </span></a>                    msg = student.name + </span><span class="s2">&quot;(&quot; </span><span class="s1">+ student.id + </span><span class="s2">&quot;):&quot; </span><span class="s1">+ msg 
+<a name="l115"><span class="ln">115  </span></a>                    self.chat_window_updater.emit(msg) 
+<a name="l116"><span class="ln">116  </span></a>                    </span><span class="s4"># Please check if it is your own msg, so don't print it.</span><span class="s1"> 
+<a name="l117"><span class="ln">117  </span></a>                    print(student, </span><span class="s2">&quot;: &quot;</span><span class="s1">, msg) 
+<a name="l118"><span class="ln">118  </span></a> 
+<a name="l119"><span class="ln">119  </span></a>    </span><span class="s0">def </span><span class="s1">start_stop(self): 
+<a name="l120"><span class="ln">120  </span></a>        self.playing = </span><span class="s0">not </span><span class="s1">self.playing 
+<a name="l121"><span class="ln">121  </span></a>        </span><span class="s0">if </span><span class="s1">self.playing: 
+<a name="l122"><span class="ln">122  </span></a>            self.sender.sendall_with_size([constant.START_LIVE,</span><span class="s0">None</span><span class="s1">]) 
+<a name="l123"><span class="ln">123  </span></a>            self.streamer_thread = StreamerThread(self.video_sender) 
+<a name="l124"><span class="ln">124  </span></a>            self.sound_streamer_thread = SoundStreamerThread(self.sound_sender) 
+<a name="l125"><span class="ln">125  </span></a>            self.streamer_thread.start() 
+<a name="l126"><span class="ln">126  </span></a>            self.sound_streamer_thread.start() 
+<a name="l127"><span class="ln">127  </span></a> 
+<a name="l128"><span class="ln">128  </span></a>            self.showMinimized() 
+<a name="l129"><span class="ln">129  </span></a>            self.ui.start_button.setText(</span><span class="s2">&quot;Stop streaming&quot;</span><span class="s1">) 
+<a name="l130"><span class="ln">130  </span></a>            self.chat_window.show() 
+<a name="l131"><span class="ln">131  </span></a>            self.chat_window.setWindowState(self.chat_window.windowState() &amp; ~Qt.WindowMinimized | Qt.WindowActive) 
+<a name="l132"><span class="ln">132  </span></a>            self.chat_window.activateWindow() 
+<a name="l133"><span class="ln">133  </span></a>        </span><span class="s0">else</span><span class="s1">: 
+<a name="l134"><span class="ln">134  </span></a>            self.sender.sendall_with_size([constant.END_LIVE,</span><span class="s0">None</span><span class="s1">]) 
+<a name="l135"><span class="ln">135  </span></a>            self.streamer_thread.stop() 
+<a name="l136"><span class="ln">136  </span></a>            self.sound_streamer_thread.stop() 
+<a name="l137"><span class="ln">137  </span></a> 
+<a name="l138"><span class="ln">138  </span></a>            self.streamer_thread = </span><span class="s0">None</span><span class="s1"> 
+<a name="l139"><span class="ln">139  </span></a>            self.sound_streamer_thread = </span><span class="s0">None</span><span class="s1"> 
+<a name="l140"><span class="ln">140  </span></a> 
+<a name="l141"><span class="ln">141  </span></a>            self.ui.start_button.setText(</span><span class="s2">&quot;Start streaming&quot;</span><span class="s1">) 
+<a name="l142"><span class="ln">142  </span></a>            self.chat_window.hide() 
+<a name="l143"><span class="ln">143  </span></a> 
+<a name="l144"><span class="ln">144  </span></a> 
+<a name="l145"><span class="ln">145  </span></a>    </span><span class="s0">def </span><span class="s1">kick_selected(self): 
+<a name="l146"><span class="ln">146  </span></a>        index = self.ui.student_list.currentRow() 
+<a name="l147"><span class="ln">147  </span></a>        </span><span class="s0">if </span><span class="s1">index != -</span><span class="s3">1</span><span class="s1">: 
+<a name="l148"><span class="ln">148  </span></a>            student_id = self.students[index].id 
+<a name="l149"><span class="ln">149  </span></a>            self.students.pop(index) 
+<a name="l150"><span class="ln">150  </span></a>            self.sender.sendall_with_size([constant.KICK_STUDENT, student_id]) 
+<a name="l151"><span class="ln">151  </span></a> 
+<a name="l152"><span class="ln">152  </span></a> 
+<a name="l153"><span class="ln">153  </span></a>    </span><span class="s0">def </span><span class="s1">update_student_list(self): 
+<a name="l154"><span class="ln">154  </span></a>        self.ui.student_list.clear() 
+<a name="l155"><span class="ln">155  </span></a>        </span><span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">self.students: 
+<a name="l156"><span class="ln">156  </span></a>            self.ui.student_list.addItem(QListWidgetItem(i.id + </span><span class="s2">&quot; &quot; </span><span class="s1">+ i.name)) 
+<a name="l157"><span class="ln">157  </span></a>        self.set_current_capacity(len(self.students)) 
+<a name="l158"><span class="ln">158  </span></a> 
+<a name="l159"><span class="ln">159  </span></a>    </span><span class="s0">def </span><span class="s1">add_material(self): 
+<a name="l160"><span class="ln">160  </span></a>        entered = self.ui.material_edit.text() 
+<a name="l161"><span class="ln">161  </span></a>        </span><span class="s0">if </span><span class="s1">is_valid_string(entered): 
+<a name="l162"><span class="ln">162  </span></a>            self.materials.append(entered) 
+<a name="l163"><span class="ln">163  </span></a> 
+<a name="l164"><span class="ln">164  </span></a>            label = QLabel(entered) 
+<a name="l165"><span class="ln">165  </span></a>            label.setMargin(</span><span class="s3">10</span><span class="s1">) 
+<a name="l166"><span class="ln">166  </span></a>            label.setStyleSheet(</span><span class="s2">&quot;QLabel { background:rgb(200,200,200);}&quot;</span><span class="s1">) 
+<a name="l167"><span class="ln">167  </span></a>            label.setFixedHeight(</span><span class="s3">50</span><span class="s1">) 
+<a name="l168"><span class="ln">168  </span></a>            self.list_container.layout().addWidget(label) 
+<a name="l169"><span class="ln">169  </span></a> 
+<a name="l170"><span class="ln">170  </span></a>            </span><span class="s4">#self.ui.material_browser.setText(self.ui.material_browser.toPlainText() + entered + &quot;\n&quot;)</span><span class="s1"> 
+<a name="l171"><span class="ln">171  </span></a>            self.sender.sendall_with_size([constant.ADD_MATERIAL, self.materials]) 
+<a name="l172"><span class="ln">172  </span></a>            self.ui.material_edit.setText(</span><span class="s2">&quot;&quot;</span><span class="s1">) 
+<a name="l173"><span class="ln">173  </span></a> 
+<a name="l174"><span class="ln">174  </span></a>    </span><span class="s0">def </span><span class="s1">scroll_to_material_bottom(self, min, maxi): 
+<a name="l175"><span class="ln">175  </span></a>        self.ui.scroll_area.verticalScrollBar().setValue(maxi) 
+<a name="l176"><span class="ln">176  </span></a> 
+<a name="l177"><span class="ln">177  </span></a>    </span><span class="s0">def </span><span class="s1">end_connection(self): 
+<a name="l178"><span class="ln">178  </span></a>        self.receiver_thread_running = </span><span class="s0">False</span><span class="s1"> 
+<a name="l179"><span class="ln">179  </span></a>        self.sender.sendall_with_size([constant.CLOSE_ROOM]) 
+<a name="l180"><span class="ln">180  </span></a>        self.sender.close() 
+<a name="l181"><span class="ln">181  </span></a>        self.receiver.close() 
+<a name="l182"><span class="ln">182  </span></a>        self.exit_room() 
+<a name="l183"><span class="ln">183  </span></a> 
+<a name="l184"><span class="ln">184  </span></a>    </span><span class="s0">def </span><span class="s1">exit_room(self): 
+<a name="l185"><span class="ln">185  </span></a>        </span><span class="s0">if </span><span class="s1">self.streamer_thread != </span><span class="s0">None</span><span class="s1">: 
+<a name="l186"><span class="ln">186  </span></a>            self.streamer_thread.stop() 
+<a name="l187"><span class="ln">187  </span></a>            self.streamer_thread = </span><span class="s0">None</span><span class="s1"> 
+<a name="l188"><span class="ln">188  </span></a>        self.playing = </span><span class="s0">False</span><span class="s1"> 
+<a name="l189"><span class="ln">189  </span></a>        self.info_window.clear_info() 
+<a name="l190"><span class="ln">190  </span></a>        self.info_window.show() 
+<a name="l191"><span class="ln">191  </span></a>        self.chat_window.clear_text() 
+<a name="l192"><span class="ln">192  </span></a>        self.chat_window.hide() 
+<a name="l193"><span class="ln">193  </span></a>        self.hide() 
+<a name="l194"><span class="ln">194  </span></a> 
+<a name="l195"><span class="ln">195  </span></a>    </span><span class="s0">def </span><span class="s1">set_current_capacity(self, cap): 
+<a name="l196"><span class="ln">196  </span></a>        self.current_capacity = cap 
+<a name="l197"><span class="ln">197  </span></a>        self.update_capacity() 
+<a name="l198"><span class="ln">198  </span></a> 
+<a name="l199"><span class="ln">199  </span></a>    </span><span class="s0">def </span><span class="s1">set_full_capacity(self, cap): 
+<a name="l200"><span class="ln">200  </span></a>        self.full_capacity = cap 
+<a name="l201"><span class="ln">201  </span></a>        self.update_capacity() 
+<a name="l202"><span class="ln">202  </span></a> 
+<a name="l203"><span class="ln">203  </span></a>    </span><span class="s0">def </span><span class="s1">update_capacity(self): 
+<a name="l204"><span class="ln">204  </span></a>        text = str(self.current_capacity) + </span><span class="s2">&quot;/&quot; </span><span class="s1">+ str(self.full_capacity) 
+<a name="l205"><span class="ln">205  </span></a>        self.ui.capacity_label.setText(text) 
+<a name="l206"><span class="ln">206  </span></a> 
+<a name="l207"><span class="ln">207  </span></a>    </span><span class="s0">def </span><span class="s1">set_info(self, id, name, room_name, description): 
+<a name="l208"><span class="ln">208  </span></a>        self.ui.id_label.setText(id) 
+<a name="l209"><span class="ln">209  </span></a>        self.ui.teacher_name_label.setText(name) 
+<a name="l210"><span class="ln">210  </span></a>        self.ui.room_name_label.setText(room_name) 
+<a name="l211"><span class="ln">211  </span></a>        self.ui.description_label.setText(description) 
+<a name="l212"><span class="ln">212  </span></a> 
+<a name="l213"><span class="ln">213  </span></a>    </span><span class="s0">def </span><span class="s1">closeEvent(self, event): 
+<a name="l214"><span class="ln">214  </span></a>        self.end_connection() 
+<a name="l215"><span class="ln">215  </span></a> 
+<a name="l216"><span class="ln">216  </span></a>    </span><span class="s0">def </span><span class="s1">show(self): 
+<a name="l217"><span class="ln">217  </span></a>        </span><span class="s0">if </span><span class="s1">self.playing: 
+<a name="l218"><span class="ln">218  </span></a>            self.ui.start_button.setText(</span><span class="s2">&quot;Stop streaming&quot;</span><span class="s1">) 
+<a name="l219"><span class="ln">219  </span></a>        </span><span class="s0">else</span><span class="s1">: 
+<a name="l220"><span class="ln">220  </span></a>            self.ui.start_button.setText(</span><span class="s2">&quot;Start streaming&quot;</span><span class="s1">) 
+<a name="l221"><span class="ln">221  </span></a>        QWidget.show(self) 
+<a name="l222"><span class="ln">222  </span></a></span></pre>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<html>
+<head>
+<title>TeacherHanlder.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #999999; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(0,0,128); font-weight: bold; }
+.s1 { color: rgb(0,0,0); }
+.s2 { color: rgb(128,128,128); font-style: italic; }
+.s3 { color: rgb(0,128,128); font-weight: bold; }
+.s4 { color: rgb(0,0,255); }
+</style>
+</head>
+<BODY BGCOLOR="#ffffff">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+TeacherHanlder.py</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">from </span><span class="s1">threading </span><span class="s0">import </span><span class="s1">Thread 
+<a name="l2"><span class="ln">2    </span></a></span><span class="s0">import </span><span class="s1">pickle 
+<a name="l3"><span class="ln">3    </span></a></span><span class="s0">import </span><span class="s1">socket 
+<a name="l4"><span class="ln">4    </span></a></span><span class="s0">import </span><span class="s1">sys 
+<a name="l5"><span class="ln">5    </span></a></span><span class="s0">import </span><span class="s1">struct 
+<a name="l6"><span class="ln">6    </span></a> 
+<a name="l7"><span class="ln">7    </span></a></span><span class="s0">from </span><span class="s1">ClientSocket </span><span class="s0">import </span><span class="s1">ClientSocket 
+<a name="l8"><span class="ln">8    </span></a></span><span class="s0">from </span><span class="s1">VideoHandler </span><span class="s0">import </span><span class="s1">VideoHandler 
+<a name="l9"><span class="ln">9    </span></a></span><span class="s0">from </span><span class="s1">SoundHandler </span><span class="s0">import </span><span class="s1">SoundHandler 
+<a name="l10"><span class="ln">10   </span></a></span><span class="s0">from </span><span class="s1">Teacher </span><span class="s0">import </span><span class="s1">Teacher 
+<a name="l11"><span class="ln">11   </span></a></span><span class="s0">import </span><span class="s1">constant 
+<a name="l12"><span class="ln">12   </span></a> 
+<a name="l13"><span class="ln">13   </span></a> 
+<a name="l14"><span class="ln">14   </span></a></span><span class="s0">class </span><span class="s1">TeacherHanlder(Thread): 
+<a name="l15"><span class="ln">15   </span></a> 
+<a name="l16"><span class="ln">16   </span></a>    </span><span class="s0">def </span><span class="s1">__init__(self, server, receiver, teacher, room): 
+<a name="l17"><span class="ln">17   </span></a>        Thread.__init__(self) 
+<a name="l18"><span class="ln">18   </span></a>        self.alive = </span><span class="s0">True  </span><span class="s2"># use for server to remove this from the teacher_list</span><span class="s1"> 
+<a name="l19"><span class="ln">19   </span></a>        self.server = server 
+<a name="l20"><span class="ln">20   </span></a>        self.teacher = teacher 
+<a name="l21"><span class="ln">21   </span></a> 
+<a name="l22"><span class="ln">22   </span></a>        self.receiver = receiver 
+<a name="l23"><span class="ln">23   </span></a>        self.sender = </span><span class="s0">None</span><span class="s1"> 
+<a name="l24"><span class="ln">24   </span></a>        self.video_receiver = </span><span class="s0">None</span><span class="s1"> 
+<a name="l25"><span class="ln">25   </span></a>        self.sound_receiver = </span><span class="s0">None</span><span class="s1"> 
+<a name="l26"><span class="ln">26   </span></a>        self.video_handler = </span><span class="s0">None</span><span class="s1"> 
+<a name="l27"><span class="ln">27   </span></a>        self.sound_handler = </span><span class="s0">None</span><span class="s1"> 
+<a name="l28"><span class="ln">28   </span></a> 
+<a name="l29"><span class="ln">29   </span></a>        self.room = room 
+<a name="l30"><span class="ln">30   </span></a>        self.student_list = []  </span><span class="s2"># list of studentHandler</span><span class="s1"> 
+<a name="l31"><span class="ln">31   </span></a> 
+<a name="l32"><span class="ln">32   </span></a>    </span><span class="s0">def </span><span class="s1">run(self): 
+<a name="l33"><span class="ln">33   </span></a>        print(</span><span class="s3">&quot;Teacher Thread:&quot;</span><span class="s1">, self.teacher) 
+<a name="l34"><span class="ln">34   </span></a>        print(self.room) 
+<a name="l35"><span class="ln">35   </span></a> 
+<a name="l36"><span class="ln">36   </span></a>        </span><span class="s0">while True</span><span class="s1">: 
+<a name="l37"><span class="ln">37   </span></a>            </span><span class="s0">if </span><span class="s1">self.sender == </span><span class="s0">None</span><span class="s1">: 
+<a name="l38"><span class="ln">38   </span></a>                </span><span class="s0">continue</span><span class="s1"> 
+<a name="l39"><span class="ln">39   </span></a>            decoded_input = self.receiver.recv_with_size_and_decode() 
+<a name="l40"><span class="ln">40   </span></a>            </span><span class="s0">if </span><span class="s1">decoded_input == </span><span class="s0">None</span><span class="s1">: 
+<a name="l41"><span class="ln">41   </span></a>                self.disconnected() 
+<a name="l42"><span class="ln">42   </span></a>                </span><span class="s0">return</span><span class="s1"> 
+<a name="l43"><span class="ln">43   </span></a> 
+<a name="l44"><span class="ln">44   </span></a>            command = decoded_input[</span><span class="s4">0</span><span class="s1">] 
+<a name="l45"><span class="ln">45   </span></a>            </span><span class="s0">if </span><span class="s1">command == constant.START_LIVE: 
+<a name="l46"><span class="ln">46   </span></a>                self.cmd_start_live() 
+<a name="l47"><span class="ln">47   </span></a>            </span><span class="s0">elif </span><span class="s1">command == constant.END_LIVE: 
+<a name="l48"><span class="ln">48   </span></a>                self.cmd_end_live() 
+<a name="l49"><span class="ln">49   </span></a>            </span><span class="s0">elif </span><span class="s1">command == constant.ADD_MATERIAL: 
+<a name="l50"><span class="ln">50   </span></a>                materials = decoded_input[</span><span class="s4">1</span><span class="s1">] 
+<a name="l51"><span class="ln">51   </span></a>                self.cmd_added_material(materials) 
+<a name="l52"><span class="ln">52   </span></a>            </span><span class="s0">elif </span><span class="s1">command == constant.REMOVE_MATERIAL: 
+<a name="l53"><span class="ln">53   </span></a>                material = decoded_input[</span><span class="s4">1</span><span class="s1">] 
+<a name="l54"><span class="ln">54   </span></a>                self.cmd_remove_material(materials) 
+<a name="l55"><span class="ln">55   </span></a>            </span><span class="s0">elif </span><span class="s1">command == constant.KICK_STUDENT: 
+<a name="l56"><span class="ln">56   </span></a>                student_id = decoded_input[</span><span class="s4">1</span><span class="s1">] 
+<a name="l57"><span class="ln">57   </span></a>                self.cmd_kick_student(student_id) 
+<a name="l58"><span class="ln">58   </span></a>            </span><span class="s0">elif </span><span class="s1">command == constant.CLOSE_ROOM: 
+<a name="l59"><span class="ln">59   </span></a>                self.cmd_close_room() 
+<a name="l60"><span class="ln">60   </span></a>                </span><span class="s0">return</span><span class="s1"> 
+<a name="l61"><span class="ln">61   </span></a> 
+<a name="l62"><span class="ln">62   </span></a>    </span><span class="s0">def </span><span class="s1">cmd_start_live(self): 
+<a name="l63"><span class="ln">63   </span></a>        print(self.teacher.name, </span><span class="s3">&quot;starting a live.&quot;</span><span class="s1">) 
+<a name="l64"><span class="ln">64   </span></a>        self.notify_all_student(constant.START_LIVE,</span><span class="s0">None</span><span class="s1">) 
+<a name="l65"><span class="ln">65   </span></a>        self.video_handler = VideoHandler(self.student_list,self.video_receiver) 
+<a name="l66"><span class="ln">66   </span></a>        self.sound_handler = SoundHandler(self.student_list,self.sound_receiver) 
+<a name="l67"><span class="ln">67   </span></a>        self.video_handler.start() 
+<a name="l68"><span class="ln">68   </span></a>        self.sound_handler.start() 
+<a name="l69"><span class="ln">69   </span></a> 
+<a name="l70"><span class="ln">70   </span></a>    </span><span class="s0">def </span><span class="s1">cmd_end_live(self): 
+<a name="l71"><span class="ln">71   </span></a>        print(self.teacher.name, </span><span class="s3">&quot;end a live.&quot;</span><span class="s1">) 
+<a name="l72"><span class="ln">72   </span></a>        self.notify_all_student(constant.END_LIVE,</span><span class="s0">None</span><span class="s1">) 
+<a name="l73"><span class="ln">73   </span></a>        self.video_handler.stop() 
+<a name="l74"><span class="ln">74   </span></a>        self.sound_handler.stop() 
+<a name="l75"><span class="ln">75   </span></a>        self.video_handler = </span><span class="s0">None</span><span class="s1"> 
+<a name="l76"><span class="ln">76   </span></a>        self.sound_handler = </span><span class="s0">None</span><span class="s1"> 
+<a name="l77"><span class="ln">77   </span></a> 
+<a name="l78"><span class="ln">78   </span></a>    </span><span class="s0">def </span><span class="s1">cmd_added_material(self, materials): 
+<a name="l79"><span class="ln">79   </span></a>        print(self.teacher.name, </span><span class="s3">&quot;added a materail -&gt;&quot;</span><span class="s1">, materials) 
+<a name="l80"><span class="ln">80   </span></a>        self.room.set_materials(materials) 
+<a name="l81"><span class="ln">81   </span></a>        self.notify_all_student(constant.REFRESH_MATERIAL, materials) 
+<a name="l82"><span class="ln">82   </span></a> 
+<a name="l83"><span class="ln">83   </span></a>    </span><span class="s0">def </span><span class="s1">cmd_remove_material(self, materials): 
+<a name="l84"><span class="ln">84   </span></a>        print(self.teacher.name, </span><span class="s3">&quot;removed a materail -&gt;&quot;</span><span class="s1">, material) 
+<a name="l85"><span class="ln">85   </span></a>        self.room.set_materials(materials) 
+<a name="l86"><span class="ln">86   </span></a>        self.notify_all_student(constant.REFRESH_MATERIAL, materials) 
+<a name="l87"><span class="ln">87   </span></a> 
+<a name="l88"><span class="ln">88   </span></a>    </span><span class="s0">def </span><span class="s1">cmd_kick_student(self, student_id): 
+<a name="l89"><span class="ln">89   </span></a>        print(self.teacher.name, </span><span class="s3">&quot;kick student -&gt;&quot;</span><span class="s1">, student_id) 
+<a name="l90"><span class="ln">90   </span></a>        target = </span><span class="s0">None</span><span class="s1"> 
+<a name="l91"><span class="ln">91   </span></a>        </span><span class="s0">for </span><span class="s1">studentHandler </span><span class="s0">in </span><span class="s1">self.student_list: 
+<a name="l92"><span class="ln">92   </span></a>            </span><span class="s0">if </span><span class="s1">studentHandler.student.id == student_id: 
+<a name="l93"><span class="ln">93   </span></a>                studentHandler.teacher = </span><span class="s0">None</span><span class="s1"> 
+<a name="l94"><span class="ln">94   </span></a>                target = studentHandler 
+<a name="l95"><span class="ln">95   </span></a>                studentHandler.notify_student(constant.KICK_STUDENT, </span><span class="s0">None</span><span class="s1">) 
+<a name="l96"><span class="ln">96   </span></a>        self.student_list.remove(target) 
+<a name="l97"><span class="ln">97   </span></a> 
+<a name="l98"><span class="ln">98   </span></a>        student_data_list = [] 
+<a name="l99"><span class="ln">99   </span></a>        </span><span class="s0">for </span><span class="s1">studentHandler </span><span class="s0">in </span><span class="s1">self.student_list: 
+<a name="l100"><span class="ln">100  </span></a>            student_data_list.append(studentHandler.student) 
+<a name="l101"><span class="ln">101  </span></a>        self.notify_all_student( 
+<a name="l102"><span class="ln">102  </span></a>            constant.STUDENT_LIST_UPDATED, student_data_list) 
+<a name="l103"><span class="ln">103  </span></a>        self.notify_teacher(constant.STUDENT_LIST_UPDATED, student_data_list) 
+<a name="l104"><span class="ln">104  </span></a> 
+<a name="l105"><span class="ln">105  </span></a>    </span><span class="s0">def </span><span class="s1">cmd_close_room(self): 
+<a name="l106"><span class="ln">106  </span></a>        print(self.teacher.name, </span><span class="s3">&quot;closed a room.&quot;</span><span class="s1">) 
+<a name="l107"><span class="ln">107  </span></a>        self.disconnected() 
+<a name="l108"><span class="ln">108  </span></a> 
+<a name="l109"><span class="ln">109  </span></a>    </span><span class="s0">def </span><span class="s1">add_student_handler(self, studentHandler): 
+<a name="l110"><span class="ln">110  </span></a>        </span><span class="s0">if </span><span class="s1">len(self.student_list) &gt;= self.room.max_student: 
+<a name="l111"><span class="ln">111  </span></a>            studentHandler.teacher = </span><span class="s0">None</span><span class="s1"> 
+<a name="l112"><span class="ln">112  </span></a>            </span><span class="s0">return </span><span class="s1">studentHandler.notify_student(constant.JOIN_ROOM_FAIL, </span><span class="s3">&quot;Room is full.&quot;</span><span class="s1">) 
+<a name="l113"><span class="ln">113  </span></a>         
+<a name="l114"><span class="ln">114  </span></a>        self.student_list.append(studentHandler) 
+<a name="l115"><span class="ln">115  </span></a>        student_data_list = [] 
+<a name="l116"><span class="ln">116  </span></a>        </span><span class="s0">for </span><span class="s1">studentHandler </span><span class="s0">in </span><span class="s1">self.student_list: 
+<a name="l117"><span class="ln">117  </span></a>            student_data_list.append(studentHandler.student) 
+<a name="l118"><span class="ln">118  </span></a> 
+<a name="l119"><span class="ln">119  </span></a>        studentHandler.notify_student(constant.JOIN_ROOM_SUCCESS, [self.room,student_data_list]) 
+<a name="l120"><span class="ln">120  </span></a> 
+<a name="l121"><span class="ln">121  </span></a>        self.notify_all_student( 
+<a name="l122"><span class="ln">122  </span></a>            constant.STUDENT_LIST_UPDATED, student_data_list) 
+<a name="l123"><span class="ln">123  </span></a>        self.notify_teacher(constant.STUDENT_LIST_UPDATED, student_data_list) 
+<a name="l124"><span class="ln">124  </span></a> 
+<a name="l125"><span class="ln">125  </span></a>        </span><span class="s0">if </span><span class="s1">self.video_handler != </span><span class="s0">None and </span><span class="s1">self.sound_handler != </span><span class="s0">None</span><span class="s1">: 
+<a name="l126"><span class="ln">126  </span></a>            print(</span><span class="s3">&quot;Enter while live&quot;</span><span class="s1">) 
+<a name="l127"><span class="ln">127  </span></a>            studentHandler.notify_student(constant.START_LIVE,</span><span class="s0">None</span><span class="s1">) 
+<a name="l128"><span class="ln">128  </span></a>            self.video_handler.update_student_list(self.student_list) 
+<a name="l129"><span class="ln">129  </span></a>            self.sound_handler.update_student_list(self.student_list) 
+<a name="l130"><span class="ln">130  </span></a> 
+<a name="l131"><span class="ln">131  </span></a>    </span><span class="s0">def </span><span class="s1">remove_student_handler(self, studentHandler): 
+<a name="l132"><span class="ln">132  </span></a>        self.student_list.remove(studentHandler) 
+<a name="l133"><span class="ln">133  </span></a>        student_data_list = [] 
+<a name="l134"><span class="ln">134  </span></a>        </span><span class="s0">for </span><span class="s1">studentHandler </span><span class="s0">in </span><span class="s1">self.student_list: 
+<a name="l135"><span class="ln">135  </span></a>            student_data_list.append(studentHandler.student) 
+<a name="l136"><span class="ln">136  </span></a>        self.notify_all_student( 
+<a name="l137"><span class="ln">137  </span></a>            constant.STUDENT_LIST_UPDATED, student_data_list) 
+<a name="l138"><span class="ln">138  </span></a>        self.notify_teacher(constant.STUDENT_LIST_UPDATED, student_data_list) 
+<a name="l139"><span class="ln">139  </span></a> 
+<a name="l140"><span class="ln">140  </span></a>        </span><span class="s0">if </span><span class="s1">self.video_handler != </span><span class="s0">None and </span><span class="s1">self.sound_handler != </span><span class="s0">None</span><span class="s1">: 
+<a name="l141"><span class="ln">141  </span></a>            print(</span><span class="s3">&quot;Leave while live&quot;</span><span class="s1">) 
+<a name="l142"><span class="ln">142  </span></a>            self.video_handler.update_student_list(self.student_list) 
+<a name="l143"><span class="ln">143  </span></a>            self.sound_handler.update_student_list(self.student_list) 
+<a name="l144"><span class="ln">144  </span></a> 
+<a name="l145"><span class="ln">145  </span></a>    </span><span class="s0">def </span><span class="s1">notify_all_student(self, cmd, data): 
+<a name="l146"><span class="ln">146  </span></a>        </span><span class="s0">for </span><span class="s1">student </span><span class="s0">in </span><span class="s1">self.student_list: 
+<a name="l147"><span class="ln">147  </span></a>            student.notify_student(cmd, data) 
+<a name="l148"><span class="ln">148  </span></a> 
+<a name="l149"><span class="ln">149  </span></a>    </span><span class="s0">def </span><span class="s1">notify_teacher(self, cmd, data): 
+<a name="l150"><span class="ln">150  </span></a>        </span><span class="s0">if </span><span class="s1">self.sender != </span><span class="s0">None</span><span class="s1">: 
+<a name="l151"><span class="ln">151  </span></a>            self.sender.sendall_with_size([cmd, data]) 
+<a name="l152"><span class="ln">152  </span></a> 
+<a name="l153"><span class="ln">153  </span></a>    </span><span class="s0">def </span><span class="s1">set_sender(self, sender): 
+<a name="l154"><span class="ln">154  </span></a>        self.sender = sender 
+<a name="l155"><span class="ln">155  </span></a> 
+<a name="l156"><span class="ln">156  </span></a>    </span><span class="s0">def </span><span class="s1">set_video_receiver(self,video_receiver): 
+<a name="l157"><span class="ln">157  </span></a>        self.video_receiver = video_receiver 
+<a name="l158"><span class="ln">158  </span></a> 
+<a name="l159"><span class="ln">159  </span></a>    </span><span class="s0">def </span><span class="s1">set_sound_receiver(self,sound_receiver): 
+<a name="l160"><span class="ln">160  </span></a>        self.sound_receiver = sound_receiver 
+<a name="l161"><span class="ln">161  </span></a> 
+<a name="l162"><span class="ln">162  </span></a>    </span><span class="s0">def </span><span class="s1">disconnected(self): 
+<a name="l163"><span class="ln">163  </span></a>        </span><span class="s2">''' Clean up after teacher disconnected'''</span><span class="s1"> 
+<a name="l164"><span class="ln">164  </span></a>        </span><span class="s2"># tell every student that teacher has disconnected</span><span class="s1"> 
+<a name="l165"><span class="ln">165  </span></a>        </span><span class="s0">for </span><span class="s1">student </span><span class="s0">in </span><span class="s1">self.student_list: 
+<a name="l166"><span class="ln">166  </span></a>            student.teacher = </span><span class="s0">None</span><span class="s1"> 
+<a name="l167"><span class="ln">167  </span></a>            student.notify_student(constant.CLOSE_ROOM,</span><span class="s3">&quot;The room has been closed.&quot;</span><span class="s1">) 
+<a name="l168"><span class="ln">168  </span></a>        self.sender.close() 
+<a name="l169"><span class="ln">169  </span></a>        self.receiver.close() 
+<a name="l170"><span class="ln">170  </span></a></span></pre>
+</body>
+</html>

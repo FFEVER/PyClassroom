@@ -1,0 +1,169 @@
+<html>
+<head>
+<title>studentInput.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #999999; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(0,0,128); font-weight: bold; }
+.s1 { color: rgb(0,0,0); }
+.s2 { color: rgb(0,128,128); font-weight: bold; }
+.s3 { color: rgb(128,128,128); font-style: italic; }
+.s4 { color: rgb(0,0,255); }
+</style>
+</head>
+<BODY BGCOLOR="#ffffff">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+studentInput.py</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">import </span><span class="s1">sys 
+<a name="l2"><span class="ln">2    </span></a></span><span class="s0">from </span><span class="s1">PyQt5 </span><span class="s0">import </span><span class="s1">QtCore, QtGui, QtWidgets 
+<a name="l3"><span class="ln">3    </span></a></span><span class="s0">from </span><span class="s1">UI.studentinputinfo </span><span class="s0">import </span><span class="s1">Ui_Form 
+<a name="l4"><span class="ln">4    </span></a></span><span class="s0">from </span><span class="s1">studentLobby </span><span class="s0">import </span><span class="s1">StudentLobby 
+<a name="l5"><span class="ln">5    </span></a> 
+<a name="l6"><span class="ln">6    </span></a> 
+<a name="l7"><span class="ln">7    </span></a></span><span class="s0">from </span><span class="s1">Student </span><span class="s0">import </span><span class="s1">Student 
+<a name="l8"><span class="ln">8    </span></a></span><span class="s0">from </span><span class="s1">ClientSocket </span><span class="s0">import </span><span class="s1">ClientSocket 
+<a name="l9"><span class="ln">9    </span></a></span><span class="s0">import </span><span class="s1">constant 
+<a name="l10"><span class="ln">10   </span></a> 
+<a name="l11"><span class="ln">11   </span></a></span><span class="s0">import </span><span class="s1">socket 
+<a name="l12"><span class="ln">12   </span></a></span><span class="s0">import </span><span class="s1">sys 
+<a name="l13"><span class="ln">13   </span></a></span><span class="s0">import </span><span class="s1">struct 
+<a name="l14"><span class="ln">14   </span></a></span><span class="s0">import </span><span class="s1">pickle 
+<a name="l15"><span class="ln">15   </span></a></span><span class="s0">import </span><span class="s1">traceback 
+<a name="l16"><span class="ln">16   </span></a></span><span class="s0">from </span><span class="s1">threading </span><span class="s0">import </span><span class="s1">Thread 
+<a name="l17"><span class="ln">17   </span></a></span><span class="s0">from </span><span class="s1">validator </span><span class="s0">import </span><span class="s1">* 
+<a name="l18"><span class="ln">18   </span></a> 
+<a name="l19"><span class="ln">19   </span></a> 
+<a name="l20"><span class="ln">20   </span></a></span><span class="s0">class </span><span class="s1">StudentInput(QtWidgets.QMainWindow): 
+<a name="l21"><span class="ln">21   </span></a>    onInputClosed = QtCore.pyqtSignal() 
+<a name="l22"><span class="ln">22   </span></a> 
+<a name="l23"><span class="ln">23   </span></a>    </span><span class="s0">def </span><span class="s1">__init__(self): 
+<a name="l24"><span class="ln">24   </span></a>        QtWidgets.QMainWindow.__init__(self, </span><span class="s0">None</span><span class="s1">) 
+<a name="l25"><span class="ln">25   </span></a>        self.ui = Ui_Form() 
+<a name="l26"><span class="ln">26   </span></a>        self.ui.setupUi(self) 
+<a name="l27"><span class="ln">27   </span></a>        self.ui.startButton.clicked.connect(self.startButtonOnClick) 
+<a name="l28"><span class="ln">28   </span></a> 
+<a name="l29"><span class="ln">29   </span></a>        self.nextPage = StudentLobby() 
+<a name="l30"><span class="ln">30   </span></a>        self.nextPage.on_lobby_closed.connect(self.onLobbyClose) 
+<a name="l31"><span class="ln">31   </span></a> 
+<a name="l32"><span class="ln">32   </span></a>        self.setWindowTitle(</span><span class="s2">&quot;Enter Your Name!&quot;</span><span class="s1">) 
+<a name="l33"><span class="ln">33   </span></a> 
+<a name="l34"><span class="ln">34   </span></a>    </span><span class="s0">def </span><span class="s1">startButtonOnClick(self): 
+<a name="l35"><span class="ln">35   </span></a>        </span><span class="s3"># save input name</span><span class="s1"> 
+<a name="l36"><span class="ln">36   </span></a>        self.inputName = self.ui.inputBox.text() 
+<a name="l37"><span class="ln">37   </span></a> 
+<a name="l38"><span class="ln">38   </span></a>        </span><span class="s0">if not </span><span class="s1">is_valid_string(self.inputName): 
+<a name="l39"><span class="ln">39   </span></a>            </span><span class="s0">return</span><span class="s1"> 
+<a name="l40"><span class="ln">40   </span></a> 
+<a name="l41"><span class="ln">41   </span></a>        sender, student_id, room_list = self.create_sender(Student(self.inputName)) 
+<a name="l42"><span class="ln">42   </span></a>        receiver = self.create_receiver(student_id) 
+<a name="l43"><span class="ln">43   </span></a>        video_receiver = self.create_video_receiver(student_id) 
+<a name="l44"><span class="ln">44   </span></a>        sound_receiver = self.create_sound_receiver(student_id) 
+<a name="l45"><span class="ln">45   </span></a> 
+<a name="l46"><span class="ln">46   </span></a> 
+<a name="l47"><span class="ln">47   </span></a>        self.nextPage.setRoomList(room_list) 
+<a name="l48"><span class="ln">48   </span></a>        self.nextPage.updateRoomList() 
+<a name="l49"><span class="ln">49   </span></a> 
+<a name="l50"><span class="ln">50   </span></a>        self.nextPage.setSender(sender) 
+<a name="l51"><span class="ln">51   </span></a>        self.nextPage.setReceiver(receiver) 
+<a name="l52"><span class="ln">52   </span></a>        self.nextPage.setVideoReceiver(video_receiver) 
+<a name="l53"><span class="ln">53   </span></a>        self.nextPage.setSoundReceiver(sound_receiver) 
+<a name="l54"><span class="ln">54   </span></a>        self.nextPage.setStudentId(student_id) 
+<a name="l55"><span class="ln">55   </span></a> 
+<a name="l56"><span class="ln">56   </span></a>        self.nextPage.createServerHandler() 
+<a name="l57"><span class="ln">57   </span></a> 
+<a name="l58"><span class="ln">58   </span></a>        </span><span class="s3"># open lobby</span><span class="s1"> 
+<a name="l59"><span class="ln">59   </span></a>        self.hide() 
+<a name="l60"><span class="ln">60   </span></a>        self.nextPage.show() 
+<a name="l61"><span class="ln">61   </span></a> 
+<a name="l62"><span class="ln">62   </span></a>    </span><span class="s0">def </span><span class="s1">connect_to_server(self, socket, host, port): 
+<a name="l63"><span class="ln">63   </span></a>        </span><span class="s0">try</span><span class="s1">: 
+<a name="l64"><span class="ln">64   </span></a>            socket.connect((host, port)) 
+<a name="l65"><span class="ln">65   </span></a>            </span><span class="s0">return </span><span class="s1">socket 
+<a name="l66"><span class="ln">66   </span></a>        </span><span class="s0">except</span><span class="s1">: 
+<a name="l67"><span class="ln">67   </span></a>            print(</span><span class="s2">&quot;Connection error&quot;</span><span class="s1">) 
+<a name="l68"><span class="ln">68   </span></a>            sys.exit() 
+<a name="l69"><span class="ln">69   </span></a> 
+<a name="l70"><span class="ln">70   </span></a>    </span><span class="s0">def </span><span class="s1">create_sender(self, student): 
+<a name="l71"><span class="ln">71   </span></a>        </span><span class="s3">''' if can connect to server this will return (sender,student_id,room_list) '''</span><span class="s1"> 
+<a name="l72"><span class="ln">72   </span></a>        soc = socket.socket()         </span><span class="s3"># Create a socket object</span><span class="s1"> 
+<a name="l73"><span class="ln">73   </span></a>        host = socket.gethostname()  </span><span class="s3"># Get local machine name</span><span class="s1"> 
+<a name="l74"><span class="ln">74   </span></a>        port = constant.PORT                </span><span class="s3"># Reserve a port for your service.</span><span class="s1"> 
+<a name="l75"><span class="ln">75   </span></a> 
+<a name="l76"><span class="ln">76   </span></a>        soc = self.connect_to_server(soc, host, port) 
+<a name="l77"><span class="ln">77   </span></a>        sender = ClientSocket(soc) 
+<a name="l78"><span class="ln">78   </span></a> 
+<a name="l79"><span class="ln">79   </span></a>        data = [] 
+<a name="l80"><span class="ln">80   </span></a>        data.append(constant.I_AM_STUDENT_SENDER) 
+<a name="l81"><span class="ln">81   </span></a>        data.append(student) 
+<a name="l82"><span class="ln">82   </span></a>        sender.sendall_with_size(data) 
+<a name="l83"><span class="ln">83   </span></a> 
+<a name="l84"><span class="ln">84   </span></a>        decoded_input = sender.recv_with_size_and_decode() 
+<a name="l85"><span class="ln">85   </span></a>        student_id = decoded_input[</span><span class="s4">0</span><span class="s1">] 
+<a name="l86"><span class="ln">86   </span></a>        room_list = decoded_input[</span><span class="s4">1</span><span class="s1">] 
+<a name="l87"><span class="ln">87   </span></a>        print(student_id, room_list) 
+<a name="l88"><span class="ln">88   </span></a>        </span><span class="s0">return </span><span class="s1">(sender, student_id, room_list) 
+<a name="l89"><span class="ln">89   </span></a> 
+<a name="l90"><span class="ln">90   </span></a>    </span><span class="s0">def </span><span class="s1">create_receiver(self, student_id): 
+<a name="l91"><span class="ln">91   </span></a>        </span><span class="s3">''' if can connect to server this will return receiver '''</span><span class="s1"> 
+<a name="l92"><span class="ln">92   </span></a>        soc = socket.socket()         </span><span class="s3"># Create a socket object</span><span class="s1"> 
+<a name="l93"><span class="ln">93   </span></a>        host = socket.gethostname()  </span><span class="s3"># Get local machine name</span><span class="s1"> 
+<a name="l94"><span class="ln">94   </span></a>        port = constant.PORT                </span><span class="s3"># Reserve a port for your service.</span><span class="s1"> 
+<a name="l95"><span class="ln">95   </span></a> 
+<a name="l96"><span class="ln">96   </span></a>        soc = self.connect_to_server(soc, host, port) 
+<a name="l97"><span class="ln">97   </span></a>        receiver = ClientSocket(soc) 
+<a name="l98"><span class="ln">98   </span></a> 
+<a name="l99"><span class="ln">99   </span></a>        data = [constant.I_AM_STUDENT_RECEIVER, student_id] 
+<a name="l100"><span class="ln">100  </span></a>        receiver.sendall_with_size(data) 
+<a name="l101"><span class="ln">101  </span></a> 
+<a name="l102"><span class="ln">102  </span></a>        is_success = receiver.recv_with_size_and_decode() 
+<a name="l103"><span class="ln">103  </span></a>        print(</span><span class="s2">&quot;create_receiver is &quot;</span><span class="s1">, is_success) 
+<a name="l104"><span class="ln">104  </span></a> 
+<a name="l105"><span class="ln">105  </span></a>        </span><span class="s0">return </span><span class="s1">receiver 
+<a name="l106"><span class="ln">106  </span></a> 
+<a name="l107"><span class="ln">107  </span></a>    </span><span class="s0">def </span><span class="s1">create_video_receiver(self, student_id): 
+<a name="l108"><span class="ln">108  </span></a>        </span><span class="s3">''' if can connect to server this will return receiver '''</span><span class="s1"> 
+<a name="l109"><span class="ln">109  </span></a>        soc = socket.socket()  </span><span class="s3"># Create a socket object</span><span class="s1"> 
+<a name="l110"><span class="ln">110  </span></a>        host = socket.gethostname()  </span><span class="s3"># Get local machine name</span><span class="s1"> 
+<a name="l111"><span class="ln">111  </span></a>        port = constant.PORT  </span><span class="s3"># Reserve a port for your service.</span><span class="s1"> 
+<a name="l112"><span class="ln">112  </span></a> 
+<a name="l113"><span class="ln">113  </span></a>        soc = self.connect_to_server(soc, host, port) 
+<a name="l114"><span class="ln">114  </span></a>        video_sender = ClientSocket(soc) 
+<a name="l115"><span class="ln">115  </span></a> 
+<a name="l116"><span class="ln">116  </span></a>        data = [constant.I_AM_STUDENT_VIDEO_RECEIVER, student_id] 
+<a name="l117"><span class="ln">117  </span></a>        video_sender.sendall_with_size(data) 
+<a name="l118"><span class="ln">118  </span></a> 
+<a name="l119"><span class="ln">119  </span></a>        is_success = video_sender.recv_with_size_and_decode() 
+<a name="l120"><span class="ln">120  </span></a>        print(</span><span class="s2">&quot;create_video_receiver is &quot;</span><span class="s1">, is_success) 
+<a name="l121"><span class="ln">121  </span></a> 
+<a name="l122"><span class="ln">122  </span></a>        </span><span class="s0">return </span><span class="s1">video_sender 
+<a name="l123"><span class="ln">123  </span></a> 
+<a name="l124"><span class="ln">124  </span></a>    </span><span class="s0">def </span><span class="s1">create_sound_receiver(self, student_id): 
+<a name="l125"><span class="ln">125  </span></a>        </span><span class="s3">''' if can connect to server this will return receiver '''</span><span class="s1"> 
+<a name="l126"><span class="ln">126  </span></a>        soc = socket.socket()  </span><span class="s3"># Create a socket object</span><span class="s1"> 
+<a name="l127"><span class="ln">127  </span></a>        host = socket.gethostname()  </span><span class="s3"># Get local machine name</span><span class="s1"> 
+<a name="l128"><span class="ln">128  </span></a>        port = constant.PORT  </span><span class="s3"># Reserve a port for your service.</span><span class="s1"> 
+<a name="l129"><span class="ln">129  </span></a> 
+<a name="l130"><span class="ln">130  </span></a>        soc = self.connect_to_server(soc, host, port) 
+<a name="l131"><span class="ln">131  </span></a>        sound_sender = ClientSocket(soc) 
+<a name="l132"><span class="ln">132  </span></a> 
+<a name="l133"><span class="ln">133  </span></a>        data = [constant.I_AM_STUDENT_SOUND_RECEIVER, student_id] 
+<a name="l134"><span class="ln">134  </span></a>        sound_sender.sendall_with_size(data) 
+<a name="l135"><span class="ln">135  </span></a> 
+<a name="l136"><span class="ln">136  </span></a>        is_success = sound_sender.recv_with_size_and_decode() 
+<a name="l137"><span class="ln">137  </span></a>        print(</span><span class="s2">&quot;create_sound_receiver is &quot;</span><span class="s1">, is_success) 
+<a name="l138"><span class="ln">138  </span></a> 
+<a name="l139"><span class="ln">139  </span></a>        </span><span class="s0">return </span><span class="s1">sound_sender 
+<a name="l140"><span class="ln">140  </span></a> 
+<a name="l141"><span class="ln">141  </span></a>    @QtCore.pyqtSlot() 
+<a name="l142"><span class="ln">142  </span></a>    </span><span class="s0">def </span><span class="s1">onLobbyClose(self): 
+<a name="l143"><span class="ln">143  </span></a>        </span><span class="s0">pass</span><span class="s1"> 
+<a name="l144"><span class="ln">144  </span></a>        </span><span class="s3">#print(&quot;Input Close&quot;)</span><span class="s1"> 
+<a name="l145"><span class="ln">145  </span></a>        </span><span class="s3"># self.onInputClosed.emit()</span><span class="s1"> 
+<a name="l146"><span class="ln">146  </span></a>        </span><span class="s3"># self.close()</span><span class="s1"> 
+<a name="l147"><span class="ln">147  </span></a></span></pre>
+</body>
+</html>

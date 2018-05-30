@@ -1,0 +1,322 @@
+<html>
+<head>
+<title>studentLobby.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #999999; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(0,0,128); font-weight: bold; }
+.s1 { color: rgb(0,0,0); }
+.s2 { color: rgb(128,128,128); font-style: italic; }
+.s3 { color: rgb(0,0,255); }
+.s4 { color: rgb(0,128,128); font-weight: bold; }
+</style>
+</head>
+<BODY BGCOLOR="#ffffff">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+studentLobby.py</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">import </span><span class="s1">sys 
+<a name="l2"><span class="ln">2    </span></a> 
+<a name="l3"><span class="ln">3    </span></a></span><span class="s0">from </span><span class="s1">PyQt5 </span><span class="s0">import </span><span class="s1">QtCore, QtGui, QtWidgets 
+<a name="l4"><span class="ln">4    </span></a></span><span class="s0">from </span><span class="s1">UI.lobbystudent </span><span class="s0">import </span><span class="s1">Ui_Form 
+<a name="l5"><span class="ln">5    </span></a></span><span class="s0">from </span><span class="s1">studentMain </span><span class="s0">import </span><span class="s1">StudentMain 
+<a name="l6"><span class="ln">6    </span></a> 
+<a name="l7"><span class="ln">7    </span></a></span><span class="s0">from </span><span class="s1">Student </span><span class="s0">import </span><span class="s1">Student 
+<a name="l8"><span class="ln">8    </span></a></span><span class="s0">from </span><span class="s1">ClientSocket </span><span class="s0">import </span><span class="s1">ClientSocket 
+<a name="l9"><span class="ln">9    </span></a></span><span class="s0">import </span><span class="s1">constant 
+<a name="l10"><span class="ln">10   </span></a> 
+<a name="l11"><span class="ln">11   </span></a></span><span class="s0">import </span><span class="s1">socket 
+<a name="l12"><span class="ln">12   </span></a></span><span class="s0">import </span><span class="s1">sys 
+<a name="l13"><span class="ln">13   </span></a></span><span class="s0">import </span><span class="s1">struct 
+<a name="l14"><span class="ln">14   </span></a></span><span class="s0">import </span><span class="s1">pickle 
+<a name="l15"><span class="ln">15   </span></a></span><span class="s0">import </span><span class="s1">traceback 
+<a name="l16"><span class="ln">16   </span></a></span><span class="s0">from </span><span class="s1">threading </span><span class="s0">import </span><span class="s1">Thread 
+<a name="l17"><span class="ln">17   </span></a> 
+<a name="l18"><span class="ln">18   </span></a> 
+<a name="l19"><span class="ln">19   </span></a></span><span class="s0">class </span><span class="s1">StudentLobby(QtWidgets.QMainWindow): 
+<a name="l20"><span class="ln">20   </span></a>    join_room_success = QtCore.pyqtSignal(list) 
+<a name="l21"><span class="ln">21   </span></a>    kicked = QtCore.pyqtSignal(str) 
+<a name="l22"><span class="ln">22   </span></a>    join_room_failed = QtCore.pyqtSignal(str) 
+<a name="l23"><span class="ln">23   </span></a>    student_list_updated = QtCore.pyqtSignal(list) 
+<a name="l24"><span class="ln">24   </span></a>    room_closed = QtCore.pyqtSignal(str) 
+<a name="l25"><span class="ln">25   </span></a>    refresh_materials = QtCore.pyqtSignal(list) 
+<a name="l26"><span class="ln">26   </span></a>    live_start = QtCore.pyqtSignal() 
+<a name="l27"><span class="ln">27   </span></a>    live_end = QtCore.pyqtSignal() 
+<a name="l28"><span class="ln">28   </span></a>    msg_receive = QtCore.pyqtSignal(str) 
+<a name="l29"><span class="ln">29   </span></a> 
+<a name="l30"><span class="ln">30   </span></a>    on_lobby_closed = QtCore.pyqtSignal() 
+<a name="l31"><span class="ln">31   </span></a> 
+<a name="l32"><span class="ln">32   </span></a>    </span><span class="s0">def </span><span class="s1">__init__(self): 
+<a name="l33"><span class="ln">33   </span></a>        QtWidgets.QMainWindow.__init__(self, </span><span class="s0">None</span><span class="s1">) 
+<a name="l34"><span class="ln">34   </span></a>        self.ui = Ui_Form() 
+<a name="l35"><span class="ln">35   </span></a>        self.ui.setupUi(self) 
+<a name="l36"><span class="ln">36   </span></a> 
+<a name="l37"><span class="ln">37   </span></a>        self.sender = </span><span class="s0">None</span><span class="s1"> 
+<a name="l38"><span class="ln">38   </span></a>        self.receiver = </span><span class="s0">None</span><span class="s1"> 
+<a name="l39"><span class="ln">39   </span></a>        self.video_receiver = </span><span class="s0">None</span><span class="s1"> 
+<a name="l40"><span class="ln">40   </span></a>        self.sound_receiver = </span><span class="s0">None</span><span class="s1"> 
+<a name="l41"><span class="ln">41   </span></a>        self.student_id = </span><span class="s0">None</span><span class="s1"> 
+<a name="l42"><span class="ln">42   </span></a> 
+<a name="l43"><span class="ln">43   </span></a>        self.nextPage = StudentMain() 
+<a name="l44"><span class="ln">44   </span></a>        self.is_in_room = </span><span class="s0">False</span><span class="s1"> 
+<a name="l45"><span class="ln">45   </span></a> 
+<a name="l46"><span class="ln">46   </span></a>        self.ui.searchButton.clicked.connect(self.searchClicked) 
+<a name="l47"><span class="ln">47   </span></a>        self.ui.refreshButton.clicked.connect(self.refreshClicked) 
+<a name="l48"><span class="ln">48   </span></a>        self.ui.joinButton.clicked.connect(self.joinClicked) 
+<a name="l49"><span class="ln">49   </span></a> 
+<a name="l50"><span class="ln">50   </span></a>        </span><span class="s2"># connect signal &amp; slot</span><span class="s1"> 
+<a name="l51"><span class="ln">51   </span></a>        self.join_room_success.connect(self.onJoinRoomSuccess) 
+<a name="l52"><span class="ln">52   </span></a>        self.join_room_failed.connect(self.onJoinRoomFailed) 
+<a name="l53"><span class="ln">53   </span></a>        self.kicked.connect(self.onKicked) 
+<a name="l54"><span class="ln">54   </span></a>        self.nextPage.onCloseButtonClicked.connect(self.onExitRoom) 
+<a name="l55"><span class="ln">55   </span></a>        self.student_list_updated.connect(self.onStudentListUpdated) 
+<a name="l56"><span class="ln">56   </span></a>        self.room_closed.connect(self.onRoomClosed) 
+<a name="l57"><span class="ln">57   </span></a>        self.refresh_materials.connect(self.onMaterialRefresh) 
+<a name="l58"><span class="ln">58   </span></a>        self.live_start.connect(self.onLiveStart) 
+<a name="l59"><span class="ln">59   </span></a>        self.live_end.connect(self.onLiveEnd) 
+<a name="l60"><span class="ln">60   </span></a>        self.msg_receive.connect(self.onMessageReceive) 
+<a name="l61"><span class="ln">61   </span></a>        self.nextPage.onSendTextButtonClicked.connect(self.onMessageSend) 
+<a name="l62"><span class="ln">62   </span></a> 
+<a name="l63"><span class="ln">63   </span></a>        self.ui.table.verticalHeader().setVisible(</span><span class="s0">False</span><span class="s1">) 
+<a name="l64"><span class="ln">64   </span></a>        self.ui.table.setColumnWidth(</span><span class="s3">0</span><span class="s1">, </span><span class="s3">50</span><span class="s1">) 
+<a name="l65"><span class="ln">65   </span></a>        self.ui.table.setColumnWidth(</span><span class="s3">1</span><span class="s1">, </span><span class="s3">189</span><span class="s1">) 
+<a name="l66"><span class="ln">66   </span></a>        self.ui.table.setColumnWidth(</span><span class="s3">2</span><span class="s1">, </span><span class="s3">150</span><span class="s1">) 
+<a name="l67"><span class="ln">67   </span></a>        self.ui.table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows) 
+<a name="l68"><span class="ln">68   </span></a> 
+<a name="l69"><span class="ln">69   </span></a>        </span><span class="s2">#self.model = QtGui.QStandardItemModel(self.ui.listView)</span><span class="s1"> 
+<a name="l70"><span class="ln">70   </span></a> 
+<a name="l71"><span class="ln">71   </span></a>        self.receiver_thread_running = </span><span class="s0">True</span><span class="s1"> 
+<a name="l72"><span class="ln">72   </span></a> 
+<a name="l73"><span class="ln">73   </span></a>        self.allCourses = </span><span class="s0">None</span><span class="s1"> 
+<a name="l74"><span class="ln">74   </span></a>        self.shownCourses = </span><span class="s0">None</span><span class="s1"> 
+<a name="l75"><span class="ln">75   </span></a> 
+<a name="l76"><span class="ln">76   </span></a>    </span><span class="s0">def </span><span class="s1">setSender(self, sender): 
+<a name="l77"><span class="ln">77   </span></a>        self.sender = sender 
+<a name="l78"><span class="ln">78   </span></a> 
+<a name="l79"><span class="ln">79   </span></a>    </span><span class="s0">def </span><span class="s1">setReceiver(self, receiver): 
+<a name="l80"><span class="ln">80   </span></a>        self.receiver = receiver 
+<a name="l81"><span class="ln">81   </span></a>     
+<a name="l82"><span class="ln">82   </span></a>    </span><span class="s0">def </span><span class="s1">setVideoReceiver(self,video_receiver): 
+<a name="l83"><span class="ln">83   </span></a>        self.video_receiver = video_receiver 
+<a name="l84"><span class="ln">84   </span></a>     
+<a name="l85"><span class="ln">85   </span></a>    </span><span class="s0">def </span><span class="s1">setSoundReceiver(self,sound_receiver): 
+<a name="l86"><span class="ln">86   </span></a>        self.sound_receiver = sound_receiver 
+<a name="l87"><span class="ln">87   </span></a> 
+<a name="l88"><span class="ln">88   </span></a>    </span><span class="s0">def </span><span class="s1">setStudentId(self, student_id): 
+<a name="l89"><span class="ln">89   </span></a>        self.student_id = student_id 
+<a name="l90"><span class="ln">90   </span></a> 
+<a name="l91"><span class="ln">91   </span></a>    </span><span class="s0">def </span><span class="s1">createServerHandler(self): 
+<a name="l92"><span class="ln">92   </span></a>        self.receiver_thread_running = </span><span class="s0">True</span><span class="s1"> 
+<a name="l93"><span class="ln">93   </span></a> 
+<a name="l94"><span class="ln">94   </span></a>        Thread(target=self.receiver_handler, args=(self.receiver,)).start() 
+<a name="l95"><span class="ln">95   </span></a> 
+<a name="l96"><span class="ln">96   </span></a>    </span><span class="s0">def </span><span class="s1">updateRoomList(self): 
+<a name="l97"><span class="ln">97   </span></a>        self.ui.table.setRowCount(</span><span class="s3">0</span><span class="s1">) 
+<a name="l98"><span class="ln">98   </span></a>        </span><span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">range(len(self.shownCourses)): 
+<a name="l99"><span class="ln">99   </span></a>            self.ui.table.insertRow(i) 
+<a name="l100"><span class="ln">100  </span></a>            self.ui.table.setItem(i, </span><span class="s3">0</span><span class="s1">, QtWidgets.QTableWidgetItem(self.shownCourses[i].id)) 
+<a name="l101"><span class="ln">101  </span></a>            self.ui.table.setItem(i, </span><span class="s3">1</span><span class="s1">, QtWidgets.QTableWidgetItem(self.shownCourses[i].name)) 
+<a name="l102"><span class="ln">102  </span></a>            self.ui.table.setItem(i, </span><span class="s3">2</span><span class="s1">, QtWidgets.QTableWidgetItem(self.shownCourses[i].teacher.name)) 
+<a name="l103"><span class="ln">103  </span></a>            </span><span class="s2">#self.model.appendRow(item)</span><span class="s1"> 
+<a name="l104"><span class="ln">104  </span></a>        </span><span class="s2">#self.ui.listView.setModel(self.model)</span><span class="s1"> 
+<a name="l105"><span class="ln">105  </span></a> 
+<a name="l106"><span class="ln">106  </span></a>    </span><span class="s0">def </span><span class="s1">setRoomList(self, roomList): 
+<a name="l107"><span class="ln">107  </span></a>        print(</span><span class="s4">&quot;roomList: &quot;</span><span class="s1">, roomList) 
+<a name="l108"><span class="ln">108  </span></a>        self.allCourses = roomList 
+<a name="l109"><span class="ln">109  </span></a>        self.shownCourses = roomList 
+<a name="l110"><span class="ln">110  </span></a>        print(</span><span class="s4">&quot;self.shownCourse: &quot;</span><span class="s1">, self.shownCourses) 
+<a name="l111"><span class="ln">111  </span></a>        print(</span><span class="s4">&quot;self.allCourses: &quot;</span><span class="s1">, self.allCourses) 
+<a name="l112"><span class="ln">112  </span></a> 
+<a name="l113"><span class="ln">113  </span></a>    </span><span class="s0">def </span><span class="s1">joinClicked(self): 
+<a name="l114"><span class="ln">114  </span></a> 
+<a name="l115"><span class="ln">115  </span></a>        index = self.ui.table.currentRow() 
+<a name="l116"><span class="ln">116  </span></a> 
+<a name="l117"><span class="ln">117  </span></a>        </span><span class="s0">if </span><span class="s1">index == -</span><span class="s3">1</span><span class="s1">: 
+<a name="l118"><span class="ln">118  </span></a>            </span><span class="s0">return</span><span class="s1"> 
+<a name="l119"><span class="ln">119  </span></a> 
+<a name="l120"><span class="ln">120  </span></a>        room_id = self.shownCourses[index].id 
+<a name="l121"><span class="ln">121  </span></a> 
+<a name="l122"><span class="ln">122  </span></a>        self.sender.sendall_with_size([constant.JOIN_ROOM, room_id]) 
+<a name="l123"><span class="ln">123  </span></a> 
+<a name="l124"><span class="ln">124  </span></a>    </span><span class="s0">def </span><span class="s1">searchClicked(self): 
+<a name="l125"><span class="ln">125  </span></a>        self.filterCourses() 
+<a name="l126"><span class="ln">126  </span></a>        self.updateRoomList() 
+<a name="l127"><span class="ln">127  </span></a> 
+<a name="l128"><span class="ln">128  </span></a>    </span><span class="s0">def </span><span class="s1">refreshClicked(self): 
+<a name="l129"><span class="ln">129  </span></a>        self.sender.sendall_with_size([constant.REFRESH_ROOM_LIST]) 
+<a name="l130"><span class="ln">130  </span></a> 
+<a name="l131"><span class="ln">131  </span></a>    @QtCore.pyqtSlot(list) 
+<a name="l132"><span class="ln">132  </span></a>    </span><span class="s0">def </span><span class="s1">onJoinRoomSuccess(self, data_list): 
+<a name="l133"><span class="ln">133  </span></a>        self.is_in_room = </span><span class="s0">True</span><span class="s1"> 
+<a name="l134"><span class="ln">134  </span></a>        room = data_list[</span><span class="s3">0</span><span class="s1">] 
+<a name="l135"><span class="ln">135  </span></a>        student_list = data_list[</span><span class="s3">1</span><span class="s1">] 
+<a name="l136"><span class="ln">136  </span></a>        self.nextPage.setRoom(room) 
+<a name="l137"><span class="ln">137  </span></a>        self.nextPage.setStudentList(student_list) 
+<a name="l138"><span class="ln">138  </span></a>        self.nextPage.setUI() 
+<a name="l139"><span class="ln">139  </span></a>        self.hide() 
+<a name="l140"><span class="ln">140  </span></a>        self.nextPage.show() 
+<a name="l141"><span class="ln">141  </span></a> 
+<a name="l142"><span class="ln">142  </span></a>    @QtCore.pyqtSlot(str) 
+<a name="l143"><span class="ln">143  </span></a>    </span><span class="s0">def </span><span class="s1">onJoinRoomFailed(self, msg): 
+<a name="l144"><span class="ln">144  </span></a>        QtWidgets.QMessageBox.critical(self, </span><span class="s4">&quot;Join error.&quot;</span><span class="s1">, msg) 
+<a name="l145"><span class="ln">145  </span></a> 
+<a name="l146"><span class="ln">146  </span></a>    @QtCore.pyqtSlot(str) 
+<a name="l147"><span class="ln">147  </span></a>    </span><span class="s0">def </span><span class="s1">onKicked(self, string): 
+<a name="l148"><span class="ln">148  </span></a>        self.is_in_room = </span><span class="s0">False</span><span class="s1"> 
+<a name="l149"><span class="ln">149  </span></a>        QtWidgets.QMessageBox.critical(self, </span><span class="s4">&quot;&quot;</span><span class="s1">, string) 
+<a name="l150"><span class="ln">150  </span></a>        self.nextPage.hide() 
+<a name="l151"><span class="ln">151  </span></a>        self.show() 
+<a name="l152"><span class="ln">152  </span></a>        self.nextPage = StudentMain() 
+<a name="l153"><span class="ln">153  </span></a>        self.nextPage.onCloseButtonClicked.connect(self.onExitRoom) 
+<a name="l154"><span class="ln">154  </span></a>        self.nextPage.onSendTextButtonClicked.connect(self.onMessageSend) 
+<a name="l155"><span class="ln">155  </span></a> 
+<a name="l156"><span class="ln">156  </span></a>    @QtCore.pyqtSlot() 
+<a name="l157"><span class="ln">157  </span></a>    </span><span class="s0">def </span><span class="s1">onExitRoom(self): 
+<a name="l158"><span class="ln">158  </span></a>        self.is_in_room = </span><span class="s0">False</span><span class="s1"> 
+<a name="l159"><span class="ln">159  </span></a>        self.sender.sendall_with_size([constant.LEAVE_ROOM]) 
+<a name="l160"><span class="ln">160  </span></a>        self.show() 
+<a name="l161"><span class="ln">161  </span></a>        self.nextPage.hide() 
+<a name="l162"><span class="ln">162  </span></a>        self.nextPage = StudentMain() 
+<a name="l163"><span class="ln">163  </span></a>        self.nextPage.onCloseButtonClicked.connect(self.onExitRoom) 
+<a name="l164"><span class="ln">164  </span></a>        self.nextPage.onSendTextButtonClicked.connect(self.onMessageSend) 
+<a name="l165"><span class="ln">165  </span></a> 
+<a name="l166"><span class="ln">166  </span></a>    @QtCore.pyqtSlot(list) 
+<a name="l167"><span class="ln">167  </span></a>    </span><span class="s0">def </span><span class="s1">onStudentListUpdated(self, student_list): 
+<a name="l168"><span class="ln">168  </span></a>        self.nextPage.updateViewInfo(student_list) 
+<a name="l169"><span class="ln">169  </span></a> 
+<a name="l170"><span class="ln">170  </span></a>    @QtCore.pyqtSlot(str) 
+<a name="l171"><span class="ln">171  </span></a>    </span><span class="s0">def </span><span class="s1">onRoomClosed(self, msg): 
+<a name="l172"><span class="ln">172  </span></a>        self.is_in_room = </span><span class="s0">False</span><span class="s1"> 
+<a name="l173"><span class="ln">173  </span></a>        QtWidgets.QMessageBox.critical(self, </span><span class="s4">&quot;Room closed&quot;</span><span class="s1">, msg) 
+<a name="l174"><span class="ln">174  </span></a>        self.show() 
+<a name="l175"><span class="ln">175  </span></a>        self.nextPage.hide() 
+<a name="l176"><span class="ln">176  </span></a>        </span><span class="s0">if </span><span class="s1">self.nextPage.stream_handler != </span><span class="s0">None</span><span class="s1">: 
+<a name="l177"><span class="ln">177  </span></a>            print(</span><span class="s4">&quot;Live now -&gt; closing videoHandler&quot;</span><span class="s1">) 
+<a name="l178"><span class="ln">178  </span></a>            self.nextPage.stopStreamThread() 
+<a name="l179"><span class="ln">179  </span></a>        self.nextPage = StudentMain() 
+<a name="l180"><span class="ln">180  </span></a>        self.nextPage.onCloseButtonClicked.connect(self.onExitRoom) 
+<a name="l181"><span class="ln">181  </span></a>        self.nextPage.onSendTextButtonClicked.connect(self.onMessageSend) 
+<a name="l182"><span class="ln">182  </span></a> 
+<a name="l183"><span class="ln">183  </span></a>    @QtCore.pyqtSlot(list) 
+<a name="l184"><span class="ln">184  </span></a>    </span><span class="s0">def </span><span class="s1">onMaterialRefresh(self, materials_list): 
+<a name="l185"><span class="ln">185  </span></a>        self.nextPage.addMaterial(materials_list[len(materials_list)-</span><span class="s3">1</span><span class="s1">]) 
+<a name="l186"><span class="ln">186  </span></a> 
+<a name="l187"><span class="ln">187  </span></a>    @QtCore.pyqtSlot() 
+<a name="l188"><span class="ln">188  </span></a>    </span><span class="s0">def </span><span class="s1">onLiveStart(self): 
+<a name="l189"><span class="ln">189  </span></a>        self.nextPage.startStreamThread(self.video_receiver,self.sound_receiver) 
+<a name="l190"><span class="ln">190  </span></a>        self.nextPage.hide_cover() 
+<a name="l191"><span class="ln">191  </span></a> 
+<a name="l192"><span class="ln">192  </span></a>    @QtCore.pyqtSlot() 
+<a name="l193"><span class="ln">193  </span></a>    </span><span class="s0">def </span><span class="s1">onLiveEnd(self): 
+<a name="l194"><span class="ln">194  </span></a>        self.nextPage.stopStreamThread() 
+<a name="l195"><span class="ln">195  </span></a>        self.nextPage.show_cover() 
+<a name="l196"><span class="ln">196  </span></a> 
+<a name="l197"><span class="ln">197  </span></a>    @QtCore.pyqtSlot(str) 
+<a name="l198"><span class="ln">198  </span></a>    </span><span class="s0">def </span><span class="s1">onMessageReceive(self,msg): 
+<a name="l199"><span class="ln">199  </span></a>        self.nextPage.update_message_box(msg) 
+<a name="l200"><span class="ln">200  </span></a> 
+<a name="l201"><span class="ln">201  </span></a>    @QtCore.pyqtSlot(str) 
+<a name="l202"><span class="ln">202  </span></a>    </span><span class="s0">def </span><span class="s1">onMessageSend(self,msg): 
+<a name="l203"><span class="ln">203  </span></a>        self.sender.sendall_with_size([constant.SEND_MSG,msg]) 
+<a name="l204"><span class="ln">204  </span></a> 
+<a name="l205"><span class="ln">205  </span></a>    </span><span class="s2"># # replaced method, don't change its name</span><span class="s1"> 
+<a name="l206"><span class="ln">206  </span></a>    </span><span class="s0">def </span><span class="s1">closeEvent(self, event): 
+<a name="l207"><span class="ln">207  </span></a>        self.receiver_thread_running = </span><span class="s0">False</span><span class="s1"> 
+<a name="l208"><span class="ln">208  </span></a>        self.sender.close() 
+<a name="l209"><span class="ln">209  </span></a>        self.receiver.close() 
+<a name="l210"><span class="ln">210  </span></a>        event.accept() 
+<a name="l211"><span class="ln">211  </span></a> 
+<a name="l212"><span class="ln">212  </span></a>    </span><span class="s0">def </span><span class="s1">receiver_handler(self, receiver): 
+<a name="l213"><span class="ln">213  </span></a>        </span><span class="s0">while </span><span class="s1">self.receiver_thread_running: 
+<a name="l214"><span class="ln">214  </span></a>            decoded_input = self.receiver.recv_with_size_and_decode() 
+<a name="l215"><span class="ln">215  </span></a>            </span><span class="s0">if </span><span class="s1">decoded_input == </span><span class="s0">None</span><span class="s1">: 
+<a name="l216"><span class="ln">216  </span></a>                print(</span><span class="s4">&quot;Server has down.&quot;</span><span class="s1">) 
+<a name="l217"><span class="ln">217  </span></a>                </span><span class="s0">break</span><span class="s1"> 
+<a name="l218"><span class="ln">218  </span></a>            print(decoded_input) 
+<a name="l219"><span class="ln">219  </span></a> 
+<a name="l220"><span class="ln">220  </span></a>            cmd = decoded_input[</span><span class="s3">0</span><span class="s1">] 
+<a name="l221"><span class="ln">221  </span></a>            print(self.is_in_room, cmd) 
+<a name="l222"><span class="ln">222  </span></a>            </span><span class="s0">if not </span><span class="s1">self.is_in_room: 
+<a name="l223"><span class="ln">223  </span></a>                </span><span class="s0">if </span><span class="s1">cmd == constant.REFRESH_ROOM_LIST: 
+<a name="l224"><span class="ln">224  </span></a>                    room_list = decoded_input[</span><span class="s3">1</span><span class="s1">] 
+<a name="l225"><span class="ln">225  </span></a>                    self.setRoomList(room_list) 
+<a name="l226"><span class="ln">226  </span></a>                    self.updateRoomList() 
+<a name="l227"><span class="ln">227  </span></a> 
+<a name="l228"><span class="ln">228  </span></a>                </span><span class="s0">elif </span><span class="s1">cmd == constant.STUDENT_LIST_UPDATED: 
+<a name="l229"><span class="ln">229  </span></a>                    student_list = decoded_input[</span><span class="s3">1</span><span class="s1">] 
+<a name="l230"><span class="ln">230  </span></a>                    self.student_list_updated.emit(student_list) 
+<a name="l231"><span class="ln">231  </span></a> 
+<a name="l232"><span class="ln">232  </span></a>                </span><span class="s0">elif </span><span class="s1">cmd == constant.JOIN_ROOM_SUCCESS: 
+<a name="l233"><span class="ln">233  </span></a>                    data = decoded_input[</span><span class="s3">1</span><span class="s1">] 
+<a name="l234"><span class="ln">234  </span></a>                    room = data[</span><span class="s3">0</span><span class="s1">] 
+<a name="l235"><span class="ln">235  </span></a>                    student_list = data[</span><span class="s3">1</span><span class="s1">] 
+<a name="l236"><span class="ln">236  </span></a>                    self.join_room_success.emit(data) 
+<a name="l237"><span class="ln">237  </span></a>                    print(</span><span class="s4">&quot;Joined room: &quot;</span><span class="s1">, room) 
+<a name="l238"><span class="ln">238  </span></a> 
+<a name="l239"><span class="ln">239  </span></a>                </span><span class="s0">elif </span><span class="s1">cmd == constant.JOIN_ROOM_FAIL: 
+<a name="l240"><span class="ln">240  </span></a>                    msg = decoded_input[</span><span class="s3">1</span><span class="s1">] 
+<a name="l241"><span class="ln">241  </span></a>                    self.join_room_failed.emit(msg) 
+<a name="l242"><span class="ln">242  </span></a>                    print(</span><span class="s4">&quot;Join room failed: &quot;</span><span class="s1">, msg) 
+<a name="l243"><span class="ln">243  </span></a> 
+<a name="l244"><span class="ln">244  </span></a>                </span><span class="s0">else</span><span class="s1">: 
+<a name="l245"><span class="ln">245  </span></a>                    </span><span class="s0">continue</span><span class="s1"> 
+<a name="l246"><span class="ln">246  </span></a> 
+<a name="l247"><span class="ln">247  </span></a>            </span><span class="s0">else</span><span class="s1">: 
+<a name="l248"><span class="ln">248  </span></a>                </span><span class="s0">if </span><span class="s1">cmd == constant.MESSAGE_FROM_STUDENT: 
+<a name="l249"><span class="ln">249  </span></a>                    data = decoded_input[</span><span class="s3">1</span><span class="s1">] 
+<a name="l250"><span class="ln">250  </span></a>                    student = data[</span><span class="s3">0</span><span class="s1">] 
+<a name="l251"><span class="ln">251  </span></a>                    msg = data[</span><span class="s3">1</span><span class="s1">] 
+<a name="l252"><span class="ln">252  </span></a>                    </span><span class="s2"># Please check if it is your own msg, so don't print it.</span><span class="s1"> 
+<a name="l253"><span class="ln">253  </span></a>                    full_message = </span><span class="s4">&quot;[&quot; </span><span class="s1">+ student.id + </span><span class="s4">&quot;]&quot; </span><span class="s1">+ student.name + </span><span class="s4">&quot;: &quot; </span><span class="s1">+ msg 
+<a name="l254"><span class="ln">254  </span></a>                    print(full_message) 
+<a name="l255"><span class="ln">255  </span></a>                    self.msg_receive.emit(full_message) 
+<a name="l256"><span class="ln">256  </span></a> 
+<a name="l257"><span class="ln">257  </span></a>                </span><span class="s0">elif </span><span class="s1">cmd == constant.STUDENT_LIST_UPDATED: 
+<a name="l258"><span class="ln">258  </span></a>                    student_list = decoded_input[</span><span class="s3">1</span><span class="s1">] 
+<a name="l259"><span class="ln">259  </span></a>                    self.student_list_updated.emit(student_list) 
+<a name="l260"><span class="ln">260  </span></a> 
+<a name="l261"><span class="ln">261  </span></a>                </span><span class="s0">elif </span><span class="s1">cmd == constant.REFRESH_MATERIAL: 
+<a name="l262"><span class="ln">262  </span></a>                    materials = decoded_input[</span><span class="s3">1</span><span class="s1">] 
+<a name="l263"><span class="ln">263  </span></a>                    print(</span><span class="s4">&quot;Materials updated: &quot;</span><span class="s1">, materials) 
+<a name="l264"><span class="ln">264  </span></a>                    self.refresh_materials.emit(materials) 
+<a name="l265"><span class="ln">265  </span></a> 
+<a name="l266"><span class="ln">266  </span></a>                </span><span class="s0">elif </span><span class="s1">cmd == constant.KICK_STUDENT: 
+<a name="l267"><span class="ln">267  </span></a>                    print(</span><span class="s4">&quot;You have been kicked&quot;</span><span class="s1">) 
+<a name="l268"><span class="ln">268  </span></a>                    self.kicked.emit(</span><span class="s4">&quot;You have been kicked from the room.&quot;</span><span class="s1">) 
+<a name="l269"><span class="ln">269  </span></a> 
+<a name="l270"><span class="ln">270  </span></a>                </span><span class="s0">elif </span><span class="s1">cmd == constant.CLOSE_ROOM: 
+<a name="l271"><span class="ln">271  </span></a>                    print(</span><span class="s4">&quot;Room has been closed&quot;</span><span class="s1">) 
+<a name="l272"><span class="ln">272  </span></a>                    msg = decoded_input[</span><span class="s3">1</span><span class="s1">] 
+<a name="l273"><span class="ln">273  </span></a>                    self.room_closed.emit(msg) 
+<a name="l274"><span class="ln">274  </span></a> 
+<a name="l275"><span class="ln">275  </span></a>                </span><span class="s0">elif </span><span class="s1">cmd == constant.START_LIVE: 
+<a name="l276"><span class="ln">276  </span></a>                    print(</span><span class="s4">&quot;teacer has started live&quot;</span><span class="s1">) 
+<a name="l277"><span class="ln">277  </span></a>                    self.live_start.emit() 
+<a name="l278"><span class="ln">278  </span></a> 
+<a name="l279"><span class="ln">279  </span></a>                </span><span class="s0">elif </span><span class="s1">cmd == constant.END_LIVE: 
+<a name="l280"><span class="ln">280  </span></a>                    print(</span><span class="s4">&quot;teacher has ended live&quot;</span><span class="s1">) 
+<a name="l281"><span class="ln">281  </span></a>                    self.live_end.emit() 
+<a name="l282"><span class="ln">282  </span></a> 
+<a name="l283"><span class="ln">283  </span></a>        print(</span><span class="s4">&quot;Receiver END&quot;</span><span class="s1">) 
+<a name="l284"><span class="ln">284  </span></a> 
+<a name="l285"><span class="ln">285  </span></a>    </span><span class="s0">def </span><span class="s1">filterCourses(self): 
+<a name="l286"><span class="ln">286  </span></a>        self.shownCourses = [] 
+<a name="l287"><span class="ln">287  </span></a>        filter_text = str(self.ui.searchBox.text()).lower() 
+<a name="l288"><span class="ln">288  </span></a>        </span><span class="s0">if </span><span class="s1">self.ui.filter.currentIndex() == </span><span class="s3">0</span><span class="s1">: 
+<a name="l289"><span class="ln">289  </span></a>            </span><span class="s0">for </span><span class="s1">row </span><span class="s0">in </span><span class="s1">range(len(self.allCourses)): 
+<a name="l290"><span class="ln">290  </span></a>                row_id = self.allCourses[row].id.lower() 
+<a name="l291"><span class="ln">291  </span></a>                </span><span class="s0">if </span><span class="s1">filter_text == row_id: 
+<a name="l292"><span class="ln">292  </span></a>                    self.shownCourses.append(self.allCourses[row]) 
+<a name="l293"><span class="ln">293  </span></a>        </span><span class="s0">else</span><span class="s1">: 
+<a name="l294"><span class="ln">294  </span></a>            </span><span class="s0">for </span><span class="s1">row </span><span class="s0">in </span><span class="s1">range(len(self.allCourses)): 
+<a name="l295"><span class="ln">295  </span></a>                row_name = self.allCourses[row].name.lower() 
+<a name="l296"><span class="ln">296  </span></a>                </span><span class="s0">if </span><span class="s1">filter_text </span><span class="s0">in </span><span class="s1">row_name: 
+<a name="l297"><span class="ln">297  </span></a>                    self.shownCourses.append(self.allCourses[row]) 
+<a name="l298"><span class="ln">298  </span></a> 
+<a name="l299"><span class="ln">299  </span></a> 
+<a name="l300"><span class="ln">300  </span></a></span></pre>
+</body>
+</html>
